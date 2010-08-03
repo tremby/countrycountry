@@ -1,7 +1,7 @@
 <?php
 
-// filesystem path to the eqiat root directory -- one level above this file, 
-// ending in a trailing slash
+// filesystem path to the root directory -- one level above this file, ending in 
+// a trailing slash
 define("SITEROOT_LOCAL", dirname(dirname(__FILE__)) . "/");
 
 // query path to the site root directory ending in a trailing slash -- makes an 
