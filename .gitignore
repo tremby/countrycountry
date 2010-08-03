@@ -1,0 +1,11 @@
+*.swp
+*.swo
+
+filecollections/*
+! filecollections/README
+
+signalcollections/*
+! signalcollections/README
+
+cache/*
+! cache/README

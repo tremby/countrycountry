@@ -1,0 +1,266 @@
+<?php
+
+if (!isset($_REQUEST["uri"]))
+	badrequest("no signal id specified");
+
+// set up results endpoint
+require_once SITEROOT_LOCAL . "arc/ARC2.php";
+$config = array("remote_store_endpoint" => ENDPOINT_RESULTS);
+$store = ARC2::getRemoteStore($config);
+
+// get URI of frame data
+$query = prefix("off") . "SELECT * WHERE { ?framedata off:subject <" . $_REQUEST["uri"] . "> }";
+$row = $store->query($query, "row");
+
+if (empty($row))
+	die("frame data not found");
+
+$file = fopen($row["framedata"], "r");
+
+$model = null;
+$data = array();
+while ($line = trim(fgets($file))) {
+	if (preg_match('%^#model: %', $line)) {
+		// sort previous model's subarray by genre
+		if (!is_null($model))
+			ksort($data[$model]);
+
+		// new model
+		$model = substr($line, 8);
+		$data[$model] = array();
+
+		// get column names
+		$line = trim(fgets($file));
+		if ($line[0] != "#")
+			die("expected field URIs line after model line");
+		$uris = explode(",", substr($line, 1));
+
+		// structure for series data
+		foreach ($uris as $uri)
+			$data[$model][$uri] = array();
+	}
+
+	// skip blank lines
+	if (empty($line))
+		continue;
+
+	// exit if we start getting data but have no model
+	if (is_null($model))
+		die("expected model line");
+
+	// store values
+	$values = array_map("floatval", explode(",", $line));
+	foreach ($uris as $index => $uri)
+		$data[$model][$uri][] = $values[$index];
+}
+
+ksort($data);
+fclose($file);
+
+if (empty($data))
+	die("no data");
+
+$signalinfo = signalinfo($_REQUEST["uri"]);
+
+include "htmlheader.php";
+?>
+<h2>Results for <em><?php echo htmlspecialchars($signalinfo["trackname"]); ?></em> by <?php echo htmlspecialchars($signalinfo["artistname"]); ?></h2>
+
+<div class="cols">
+	<div class="cell">
+		<h3>Signal information</h3>
+		<dl>
+			<dt>Name</dt>
+			<dd>
+				<?php echo htmlspecialchars($signalinfo["trackname"]); ?>
+				<?php echo urilink($_REQUEST["uri"], "signal URI"); ?>
+				<?php echo urilink($signalinfo["track"], "track URI"); ?>
+			</dd>
+
+			<dt>Artist</dt>
+			<dd>
+				<?php echo htmlspecialchars($signalinfo["artistname"]); ?>
+				<?php echo urilink($signalinfo["artist"]); ?>
+			</dd>
+
+			<dt>Location</dt>
+			<dd>
+				<?php echo htmlspecialchars(iso3166toname(substr($signalinfo["country"], -2))); ?>
+				<?php echo urilink($signalinfo["country"]); ?>
+			</dd>
+
+			<dt>Record</dt>
+			<dd>
+				<?php echo htmlspecialchars($signalinfo["recordname"]); ?>
+				<?php echo urilink($signalinfo["record"]); ?>
+				(<?php echo date("Y-m-d", strtotime($signalinfo["recorddate"])); ?>),
+				track <?php echo $signalinfo["tracknumber"]; ?>
+			</dd>
+
+			<?php if (!empty($signalinfo["tags"])) { ?>
+				<dt>Record tags</dt>
+				<dd>
+					<ul>
+						<?php foreach ($signalinfo["tags"] as $tag) { ?>
+							<li>
+								<?php echo htmlspecialchars(uriendpart($tag["tag"])); ?>
+								<?php echo urilink($tag["tag"]); ?>
+							</li>
+						<?php } ?>
+					</ul>
+				</dd>
+			<?php } ?>
+
+			<?php if (!empty($signalinfo["availableas"])) { ?>
+				<dt>Available as</dt>
+				<dd>
+					<ul>
+						<?php foreach ($signalinfo["availableas"] as $aa) { ?>
+							<li>
+								<a href="<?php echo htmlspecialchars($aa["availableas"]); ?>">
+									<?php echo htmlspecialchars($aa["availableas"]); ?>
+								</a>
+							</li>
+						<?php } ?>
+					</ul>
+				</dd>
+			<?php } ?>
+		</dl>
+	</div>
+
+	<div class="cell">
+		<h3>Overall classification</h3>
+		<?php
+		$classifier_genre_weight = array();
+		foreach ($store->query(prefix(array_keys($ns)) . "
+			SELECT * WHERE {
+				?association
+					sim:subject <" . $_REQUEST["uri"] . "> ;
+					sim:method ?method ;
+					sim:weight ?weight ;
+					sim:object ?musicgenre .
+				?method pv:usedGuideline ?classifier
+			}
+			ORDER BY ?classifier ?musicgenre
+		", "rows") as $row) {
+			if (!isset($classifier_genre_weight[$row["classifier"]]))
+				$classifier_genre_weight[$row["classifier"]] = array();
+			$classifier_genre_weight[$row["classifier"]][$row["musicgenre"]] = floatval($row["weight"]);
+		}
+		?>
+		<dl class="single">
+			<?php foreach ($classifier_genre_weight as $classifier => $genre_weight) { ?>
+				<dt><?php echo htmlspecialchars(classifiermapping($classifier)); ?></dt>
+				<dd>
+					<div id="genrepiechart_<?php echo md5($classifier); ?>" style="width: 500px; height: 300px;"></div>
+					<?php
+					$piedata = array();
+					foreach ($genre_weight as $genre => $weight)
+						$piedata[] = array("label" => uriendpart($genre), "data" => $weight);
+					?>
+					<script type="text/javascript">
+						$.plot($("#genrepiechart_<?php echo md5($classifier); ?>"), <?php echo json_encode($piedata); ?>, {series:{pie:{show:true}}});
+					</script>
+				</dd>
+			<?php } ?>
+		</dl>
+	</div>
+</div>
+
+<h3>Classification over time</h3>
+<script type="text/javascript">
+	var graphs = {};
+</script>
+<dl>
+	<?php foreach ($data as $classifier => $genres) { ksort($genres); ?>
+		<dt><?php echo htmlspecialchars(classifiermapping($classifier)); ?></dt>
+		<dd>
+			<ul id="legend_<?php echo md5($classifier); ?>" class="serieslist">
+				<?php foreach ($genres as $genre => $framedata) { ?>
+					<li><label for="framedatachart_<?php echo md5($classifier); ?>_series_<?php echo md5($genre); ?>">
+						<input class="framedatachart_<?php echo md5($classifier); ?>_series" type="checkbox" id="framedatachart_<?php echo md5($classifier); ?>_series_<?php echo md5($genre); ?>" name="framedatachart_<?php echo md5($classifier); ?>_series_<?php echo md5($genre); ?>" checked="checked">
+						<?php echo htmlspecialchars(uriendpart($genre)); ?>
+					</label></li>
+				<?php } ?>
+			</ul>
+			<div id="framedatachart_<?php echo md5($classifier); ?>" style="width: 550px; height: 230px;"></div>
+			<script type="text/javascript">
+				graphs["<?php echo md5($classifier); ?>"] = {};
+				<?php
+				$datasets = array();
+				foreach ($genres as $genre => $framedata) {
+					$pairs = array();
+					foreach ($framedata as $i => $v)
+						$pairs[] = array($i, $v);
+					$datasets[md5($genre)] = array(
+						"label" => uriendpart($genre),
+						"data" => $pairs,
+					);
+				}
+				?>
+				graphs["<?php echo md5($classifier); ?>"].series = <?php echo json_encode($datasets); ?>;
+				var i = 0;
+				$("input.framedatachart_<?php echo md5($classifier); ?>_series").click(function() {
+					if (!$("#audioplayer").jPlayer("getData", "diag.isPlaying"))
+						plotgraph("<?php echo md5($classifier); ?>", null, null);
+				});
+				var graph = plotgraph("<?php echo md5($classifier); ?>", null, null);
+				var series = graph.getData();
+				$("#legend_<?php echo md5($classifier); ?> li").each(function(i, e) {
+					$(this).css("border-left", "1.5em solid " + series[i].color);
+				});
+			</script>
+		</dd>
+	<?php } ?>
+</dl>
+
+<h3>Listen</h3>
+<div id="audioplayer"></div>
+<div class="jp-single-player">
+	<div class="jp-interface">
+		<ul class="jp-controls">
+			<li><a href="#" id="jplayer_play" class="jp-play" tabindex="1">play</a></li>
+			<li><a href="#" id="jplayer_pause" class="jp-pause" tabindex="1">pause</a></li>
+			<li><a href="#" id="jplayer_stop" class="jp-stop" tabindex="1">stop</a></li>
+			<li><a href="#" id="jplayer_volume_min" class="jp-volume-min" tabindex="1">min volume</a></li>
+			<li><a href="#" id="jplayer_volume_max" class="jp-volume-max" tabindex="1">max volume</a></li>
+		</ul>
+		<div class="jp-progress">
+			<div id="jplayer_load_bar" class="jp-load-bar">
+				<div id="jplayer_play_bar" class="jp-play-bar"></div>
+			</div>
+		</div>
+		<div id="jplayer_volume_bar" class="jp-volume-bar">
+			<div id="jplayer_volume_bar_value" class="jp-volume-bar-value"></div>
+		</div>
+		<div id="jplayer_play_time" class="jp-play-time"></div>
+		<div id="jplayer_total_time" class="jp-total-time"></div>
+	</div>
+</div>
+<script type="text/javascript">
+	$(document).ready(function() {
+		$("#audioplayer").jPlayer({
+			swfPath: "<?php echo SITEROOT_WEB; ?>include/jquery.jplayer",
+			nativeSupport: true,
+			preload: "auto",
+			errorAlerts: true,
+			warningAlerts: true,
+			ready: function() {
+				this.element.jPlayer("setFile", "<?php echo $signalinfo["mp3"]; ?>");
+				this.element.jPlayer("onProgressChange", updatechart);
+			}
+		});
+	});
+	function updatechart(loadPercent, playedPercentRelative, playedPercentAbsolute, playedTime, totalTime) {
+		for (var md5sum in graphs) {
+			if ($("#audioplayer").jPlayer("getData", "diag.isPlaying"))
+				plotgraph(md5sum, playedTime / 1000, totalTime / 1000);
+			else
+				plotgraph(md5sum, null, totalTime / 1000);
+		}
+	};
+</script>
+
+<?php
+include "htmlfooter.php";
+?>

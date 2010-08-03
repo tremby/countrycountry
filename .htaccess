@@ -1,0 +1,5 @@
+RewriteEngine on
+RewriteRule ^([^./?]+)$				countrycountry.php?page=$1			[L,QSA]
+RewriteRule ^([^./?]+)\?(.*)$		countrycountry.php?page=$1&$2		[L,QSA]
+RewriteRule ^([^./?]+)/([0-9a-f]+)$	countrycountry.php?page=$1&id=$2	[L,QSA]
+RewriteRule ^([^./?]+)/(http.*)$	countrycountry.php?page=$1&uri=$2	[L,QSA]
