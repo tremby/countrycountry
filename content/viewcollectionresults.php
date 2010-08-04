@@ -8,7 +8,7 @@ if (!isset($_REQUEST["uri"])) {
 		<dl>
 			<dt><label for="uri">Collection URI</label></dt>
 			<dd>
-				<input type="text" width="64" name="uri" id="uri">
+				<input type="text" size="64" name="uri" id="uri">
 				(ungrounded)
 			</dd>
 
@@ -210,7 +210,7 @@ foreach ($classifier_genre as $classifier => $genres) {
 							<dt>Least</dt>
 							<dd>
 								<?php $info = signalinfo($leastmost[0]); ?>
-								<a href="<?php echo SITEROOT_WEB; ?>viewsignalresults/<?php echo urlencode($leastmost[0]); ?>">
+								<a href="<?php echo SITEROOT_WEB; ?>viewsignalresults?uri=<?php echo urlencode($leastmost[0]); ?>">
 									<em><?php echo htmlspecialchars($info["trackname"]); ?></em>
 									by <?php echo htmlspecialchars($info["artistname"]); ?>
 								</a>
@@ -218,7 +218,7 @@ foreach ($classifier_genre as $classifier => $genres) {
 							</dd>
 							<dt>Most</dt>
 							<dd>
-								<a href="<?php echo SITEROOT_WEB; ?>viewsignalresults/<?php echo urlencode($leastmost[1]); ?>">
+								<a href="<?php echo SITEROOT_WEB; ?>viewsignalresults?uri=<?php echo urlencode($leastmost[1]); ?>">
 									<?php $info = signalinfo($leastmost[1]); ?>
 									<em><?php echo htmlspecialchars($info["trackname"]); ?></em>
 								by <?php echo htmlspecialchars($info["artistname"]); ?>
@@ -298,7 +298,7 @@ foreach ($classifier_genre as $classifier => $genres) {
 	<?php foreach ($signals as $signal) { $signalinfo = signalinfo($signal); ?>
 		<tr>
 			<td title="<?php echo htmlspecialchars($signalinfo["artistname"]); ?> &ndash; <?php echo htmlspecialchars($signalinfo["trackname"]); ?>">
-				<a href="<?php echo SITEROOT_WEB; ?>viewsignalresults/<?php echo urlencode($signal); ?>">
+				<a href="<?php echo SITEROOT_WEB; ?>viewsignalresults?uri=<?php echo urlencode($signal); ?>">
 					<?php echo htmlspecialchars($signalinfo["trackname"]); ?>
 				</a>
 			</td>
