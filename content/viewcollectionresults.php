@@ -21,7 +21,7 @@ if (!isset($_REQUEST["uri"])) {
 	exit;
 }
 
-require_once SITEROOT_LOCAL . "arc/ARC2.php";
+require_once SITEROOT_LOCAL . "include/arc/ARC2.php";
 
 // get collection triples
 $collectionuri = $_REQUEST["uri"];

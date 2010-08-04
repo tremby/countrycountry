@@ -4,7 +4,7 @@ if (!isset($_REQUEST["uri"]))
 	badrequest("no signal id specified");
 
 // set up results endpoint
-require_once SITEROOT_LOCAL . "arc/ARC2.php";
+require_once SITEROOT_LOCAL . "include/arc/ARC2.php";
 $config = array("remote_store_endpoint" => ENDPOINT_RESULTS);
 $store = ARC2::getRemoteStore($config);
 

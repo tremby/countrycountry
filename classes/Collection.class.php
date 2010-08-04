@@ -136,7 +136,7 @@ class Collection {
 		$this->groundhash = md5(microtime());
 		$this->groundendpoint = $endpoint;
 
-		require_once SITEROOT_LOCAL . "arc/ARC2.php";
+		require_once SITEROOT_LOCAL . "include/arc/ARC2.php";
 		$conf = array(
 			"ns" => $ns,
 			"remote_store_endpoint" => $endpoint,
@@ -160,7 +160,7 @@ class Collection {
 	// get RDF
 	public function rdf() {
 		global $ns;
-		require_once SITEROOT_LOCAL . "arc/ARC2.php";
+		require_once SITEROOT_LOCAL . "include/arc/ARC2.php";
 
 		$conf = array("ns" => $ns);
 		$triples = array(
@@ -283,7 +283,7 @@ class Collection {
 	// get grounded RDF
 	public function groundedrdf() {
 		global $ns;
-		require_once SITEROOT_LOCAL . "arc/ARC2.php";
+		require_once SITEROOT_LOCAL . "include/arc/ARC2.php";
 
 		$conf = array("ns" => $ns);
 		$triples = array(
