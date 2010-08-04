@@ -8,6 +8,12 @@ $(document).ready(function() {
 		$(this).parents("dl:first").children("dd").not($(this).parents("dt:first").next("dd:first")).slideUp("fast");
 		$(this).parents("dt:first").next("dd:first").slideDown("fast");
 	});
+
+	// add input box to URI chooser for multiple collection results comparison
+	$("#addurifield").click(function() {
+		$("input[name=uri[]]:last").parents("li:first").clone().appendTo($("input[name=uri[]]:first").parents("ul:first"));
+		$("input[name=uri[]]:last").val("").focus();
+	});
 });
 function plotgraph(md5sum, plotto, xmax) {
 	//console.log("plotting graph " + md5sum + "!");
