@@ -366,20 +366,67 @@ if (!$collection->title())
 if (!$collection->author())
 	$problems[] = "Author required";
 ?>
-<?php if (!empty($problems)) { ?>
-	<p>Can't publish yet:</p>
-	<ul>
-		<?php foreach ($problems as $problem) { ?>
-			<li><?php echo htmlspecialchars($problem); ?></li>
-		<?php } ?>
-	</ul>
-<?php } else { ?>
-	<ul>
+<ul>
+	<?php if (!empty($problems)) { ?>
+		<li>
+			<p>Can't publish yet:</p>
+			<ul>
+				<?php foreach ($problems as $problem) { ?>
+					<li><?php echo htmlspecialchars($problem); ?></li>
+				<?php } ?>
+			</ul>
+		</li>
+	<?php } else { ?>
 		<li>
 			<a href="<?php echo SITEROOT_WEB; ?>publishcollection/<?php echo $collection->id(); ?>">Publish</a>
 		</li>
-	</ul>
-<?php } ?>
+	<?php } ?>
+	<li>
+		<p>Demo queries</p>
+		<ul>
+			<li>
+				<form action="<?php echo SITEROOT_WEB; ?>editcollection/<?php echo $collection->id(); ?>" method="post">
+					<input type="hidden" name="author" value="demo">
+					<input type="hidden" name="filteractive_artistcountry" value="true">
+					<input type="hidden" name="artistcountry_countrycode[]" value="ES">
+					<input type="hidden" name="description" value="A collection of Creative Commons-licensed music from Spanish artists">
+					<input type="hidden" name="title" value="Music from Spain">
+					<input type="submit" name="submit" value="Music from Spain (large set)">
+				</form>
+			</li>
+			<li>
+				<form action="<?php echo SITEROOT_WEB; ?>editcollection/<?php echo $collection->id(); ?>" method="post">
+					<input type="hidden" name="author" value="demo">
+					<input type="hidden" name="filteractive_artistcountry" value="true">
+					<input type="hidden" name="artistcountry_countrycode[]" value="PL">
+					<input type="hidden" name="description" value="A collection of Creative Commons-licensed music from Polish artists">
+					<input type="hidden" name="title" value="Music from Poland">
+					<input type="submit" name="submit" value="Music from Poland (large set)">
+				</form>
+			</li>
+			<li>
+				<form action="<?php echo SITEROOT_WEB; ?>editcollection/<?php echo $collection->id(); ?>" method="post">
+					<input type="hidden" name="author" value="demo">
+					<input type="hidden" name="filteractive_artistcountry" value="true">
+					<input type="hidden" name="artistcountry_countrycode[]" value="TR">
+					<input type="hidden" name="description" value="A collection of Creative Commons-licensed music from Turkish artists">
+					<input type="hidden" name="title" value="Music from Turkey">
+					<input type="submit" name="submit" value="Music from Turkey (small set)">
+				</form>
+			</li>
+			<li>
+				<form action="<?php echo SITEROOT_WEB; ?>editcollection/<?php echo $collection->id(); ?>" method="post">
+					<input type="hidden" name="author" value="demo">
+					<input type="hidden" name="filteractive_artistcountry" value="true">
+					<input type="hidden" name="artistcountry_countrycode[]" value="IE">
+					<input type="hidden" name="description" value="A collection of Creative Commons-licensed music from Irish artists">
+					<input type="hidden" name="title" value="Music from Ireland">
+					<input type="submit" name="submit" value="Music from Ireland (small set)">
+				</form>
+			</li>
+		</ul>
+	</li>
+</ul>
 
 <?php
 include "htmlfooter.php";
