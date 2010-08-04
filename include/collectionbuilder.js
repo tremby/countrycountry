@@ -1,11 +1,12 @@
 $(document).ready(function() {
+	// slidey definition lists
 	$("dl.single > dd").hide();
 	$("dl.single > dt:first-child + dd").show();
 	$("dl.single > dt").prepend("<a class=\"expandlink\" href=\"#\">+</a>");
 	$("dl.single > dt a.expandlink").click(function(e) {
 		e.preventDefault();
-		$(this).parents("dl:first").children("dd").not($(this).parents("dt:first").next("dd:first")).hide();
-		$(this).parents("dt:first").next("dd:first").show();
+		$(this).parents("dl:first").children("dd").not($(this).parents("dt:first").next("dd:first")).slideUp("fast");
+		$(this).parents("dt:first").next("dd:first").slideDown("fast");
 	});
 });
 function plotgraph(md5sum, plotto, xmax) {
