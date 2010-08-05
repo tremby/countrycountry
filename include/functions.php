@@ -155,13 +155,14 @@ function prefix($n) {
 // return results of a Sparql query to Jamendo
 // maxage is the number of seconds old an acceptable cached result can be 
 // (default one day, 0 means it must be collected newly. false means must be 
-// collected newly and the result will not be stored)
+// collected newly and the result will not be stored. true means use cached 
+// result however old it is)
 // type is passed straight through to Arc
-function queryjamendo($query, $maxage = 604800/*a week*//*86400/*1 day*/, $type = "rows") {
+function queryjamendo($query, $maxage = true/*604800/*a week*//*86400/*1 day*/, $type = "rows") {
 	$cachefile = SITEROOT_LOCAL . "cache/" . md5($query . $type);
 
 	// collect from cache if available and recent enough
-	if ($maxage !== false && $maxage > 0 && file_exists($cachefile) && time() < filemtime($cachefile) + $maxage)
+	if ($maxage === true && file_exists($cachefile) || $maxage !== false && $maxage > 0 && file_exists($cachefile) && time() < filemtime($cachefile) + $maxage)
 		return unserialize(file_get_contents($cachefile));
 
 	// cache is not to be used or cached file is out of date. query database
