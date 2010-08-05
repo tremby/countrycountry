@@ -29,6 +29,12 @@ foreach (glob(SITEROOT_LOCAL . "signalcollections/*.xml") as $filename) {
 	$collections[] = $collection;
 }
 
+function sortbydate($a, $b) {
+	return $a["modified"] - $b["modified"];
+}
+usort($collections, "sortbydate");
+$collections = array_reverse($collections);
+
 include "htmlheader.php";
 //echo "<pre>" . htmlspecialchars(print_r($collections, true)) . "</pre>";
 ?>
