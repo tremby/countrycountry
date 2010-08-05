@@ -9,6 +9,9 @@ ini_set("display_errors", true);
 // increase memory limit
 ini_set("memory_limit", "512M");
 
+// increase max execution time (thousands of queries takes a while)
+ini_set("max_execution_time", 300);
+
 // constants
 require_once "include/constants.php";
 
