@@ -235,9 +235,9 @@ class Collection {
 			array(
 				"s" => $this->uri() . "#execution",
 				"p" => $ns["pv"] . "usedGuideline",
-				"o" => $this->uri() . "#sparql",
+				"o" => $this->query(),
 				"s_type" => "uri",
-				"o_type" => "uri",
+				"o_type" => "literal",
 			),
 			array(
 				"s" => $this->uri() . "#execution",
@@ -344,7 +344,7 @@ class Collection {
 			array(
 				"s" => $this->groundeduri() . "#grounding",
 				"p" => $ns["pv"] . "accessedService",
-				"o" => "http://" . $_SERVER["HTTP_HOST"] . dirname($_SERVER["REQUEST_URI"]),
+				"o" => "http://repository.nema.ecs.soton.ac.uk/"),
 				"s_type" => "uri",
 				"o_type" => "uri",
 			),
