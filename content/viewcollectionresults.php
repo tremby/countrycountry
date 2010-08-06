@@ -174,6 +174,38 @@ include "htmlheader.php";
 	</div>
 </div>
 
+<h3>External links for the heaviest weighted genre</h3>
+<dl class="single">
+	<?php foreach ($classifier_averageweight as $classifier => $genre_weight) {
+		arsort($genre_weight, SORT_NUMERIC);
+		$heavy = array_shift(array_keys($genre_weight));
+		?>
+		<dt><?php echo htmlspecialchars(classifiermapping($classifier)); ?></dt>
+		<dd>
+			<p>Most heavily weighted genre: <strong><?php echo htmlspecialchars(uriendpart($heavy)); ?></strong> <?php echo urilink($heavy); ?></p>
+			<h4>Ten random artists from the same genre:</h4>
+			<?php
+			$artists = dbpediaartists($heavy);
+			if (empty($artists)) { ?>
+				<p>No artists matching this genre were found in DBpedia.</p>
+			<?php } else { ?>
+				<ul>
+					<?php foreach (array_rand($artists, 10) as $k) { ?>
+					<li>
+						<a href="<?php echo htmlspecialchars($artists[$k]["artist"]); ?>">
+							<?php echo htmlspecialchars($artists[$k]["artistname"]); ?>
+						</a>
+						from
+						<a href="<?php echo htmlspecialchars($artists[$k]["place"]); ?>">
+							<?php echo htmlspecialchars($artists[$k]["placename"]); ?>
+						</a>
+					<?php } ?>
+				</ul>
+			<?php } ?>
+		</dd>
+	<?php } ?>
+</dl>
+
 <h3>Most and least</h3>
 <?php
 $classifier_genre_mostleast = array();

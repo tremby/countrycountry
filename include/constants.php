@@ -21,6 +21,7 @@ $ns = array(
 	"ore" => "http://www.openarchives.org/ore/terms/",
 	"sim" => "http://purl.org/ontology/similarity/",
 	"off" => "http://purl.org/ontology/off/",
+	"dbpedia-owl" => "http://dbpedia.org/ontology/",
 );
 
 // Jamendo Sparql endpoint address
@@ -31,3 +32,6 @@ define("ENDPOINT_RESULTS", "http://results.nema.ecs.soton.ac.uk:8000/sparql/");
 
 // audiofile repository endpoint address
 define("ENDPOINT_REPOSITORY", "http://lslvm-bjn1.ecs.soton.ac.uk:8080/sparql/");
+
+// dbpedia endpoint
+define("ENDPOINT_DBPEDIA", "http://dbpedia.org/sparql/");

@@ -276,4 +276,38 @@ function classifiermapping($uri) {
 	return $uri;
 }
 
+// query dbpedia for artists and their locations given a genre and optionally a 
+// country URI
+function dbpediaartists($genreuri, $countryuri = null) {
+	require_once SITEROOT_LOCAL . "include/arc/ARC2.php";
+	$store = ARC2::getRemoteStore(array("remote_store_endpoint" => ENDPOINT_DBPEDIA));
+	$query = prefix(array("dbpedia-owl", "foaf")) . "
+		SELECT * WHERE {
+			?artist
+				dbpedia-owl:genre <$genreuri> .
+			{
+				?artist
+					a dbpedia-owl:Band ;
+					dbpedia-owl:hometown ?place .
+			} UNION {
+				?artist
+					a dbpedia-owl:MusicalArtist ;
+					dbpedia-owl:birthPlace ?place .
+			}
+			?artist
+				foaf:name ?artistname .
+			?place
+				foaf:name ?placename .
+		}
+	";
+	$dbartists = $store->query($query, "rows");
+	if (empty($dbartists))
+		return array();
+
+	if (is_null($countryuri))
+		return $dbartists;
+
+	return $dbartists;
+}
+
 ?>
