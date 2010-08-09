@@ -280,9 +280,9 @@ function classifiermapping($uri) {
 // country URI
 function dbpediaartists($genreuri, $countryuri = null) {
 	require_once SITEROOT_LOCAL . "include/arc/ARC2.php";
-	$store = ARC2::getRemoteStore(array("remote_store_endpoint" => ENDPOINT_DBPEDIA));
+	$store_dbpedia = ARC2::getRemoteStore(array("remote_store_endpoint" => ENDPOINT_DBPEDIA));
 	$query = prefix(array("dbpedia-owl", "foaf")) . "
-		SELECT * WHERE {
+		SELECT ?artist ?artistname ?place ?placename WHERE {
 			?artist
 				dbpedia-owl:genre <$genreuri> .
 			{
@@ -300,14 +300,58 @@ function dbpediaartists($genreuri, $countryuri = null) {
 				foaf:name ?placename .
 		}
 	";
-	$dbartists = $store->query($query, "rows");
+	$dbartists = $store_dbpedia->query($query, "rows");
 	if (empty($dbartists))
 		return array();
+
+	// weed out duplicate artists -- only want one place for each
+	$artisturis = array();
+	$dbartists2 = array();
+	foreach ($dbartists as $dbartist) {
+		if (!in_array($dbartist["artist"], $artisturis)) {
+			$artisturis[] = $dbartist["artist"];
+			$dbartists2[] = $dbartist;
+		}
+	}
+	$dbartists = $dbartists2;
 
 	if (is_null($countryuri))
 		return $dbartists;
 
-	return $dbartists;
+	// array of places
+	$places = array();
+	foreach ($dbartists as $dbartist)
+		$places[] = $dbartist["place"];
+	sort($places);
+	$places = array_unique($places);
+
+	// ask geonames for the dbpedia place URIs from the query above which are in 
+	// the country given
+	$subqueries = array();
+	foreach ($places as $place) $subqueries[] = "{
+		?feat
+			owl:sameAs <$place> ;
+			owl:sameAs ?same ;
+			geo:inCountry <" . $countryuri . "> .
+	}";
+	$query = prefix(array("owl", "geo")) . "
+		SELECT * WHERE {
+			" . implode(" UNION ", $subqueries) . "
+		}
+	";
+	$store_geonames = ARC2::getRemoteStore(array("remote_store_endpoint" => ENDPOINT_GEONAMES));
+	$result = $store_geonames->query($query, "rows");
+
+	$places_in_country = array();
+	foreach ($result as $geoplace)
+		$places_in_country[] = $geoplace["same"];
+
+	$dbartists_in_country = array();
+	foreach ($dbartists as $dbartist)
+		if (in_array($dbartist["place"], $places_in_country))
+			$dbartists_in_country[] = $dbartist;
+
+	return $dbartists_in_country;
 }
 
 ?>

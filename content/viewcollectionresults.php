@@ -183,22 +183,23 @@ include "htmlheader.php";
 		<dt><?php echo htmlspecialchars(classifiermapping($classifier)); ?></dt>
 		<dd>
 			<p>Most heavily weighted genre: <strong><?php echo htmlspecialchars(uriendpart($heavy)); ?></strong> <?php echo urilink($heavy); ?></p>
-			<h4>Ten random artists from the same genre:</h4>
+			<h4>Some random artists from the same genre:</h4>
 			<?php
 			$artists = dbpediaartists($heavy);
 			if (empty($artists)) { ?>
 				<p>No artists matching this genre were found in DBpedia.</p>
 			<?php } else { ?>
 				<ul>
-					<?php foreach (array_rand($artists, 10) as $k) { ?>
-					<li>
-						<a href="<?php echo htmlspecialchars($artists[$k]["artist"]); ?>">
-							<?php echo htmlspecialchars($artists[$k]["artistname"]); ?>
-						</a>
-						from
-						<a href="<?php echo htmlspecialchars($artists[$k]["place"]); ?>">
-							<?php echo htmlspecialchars($artists[$k]["placename"]); ?>
-						</a>
+					<?php foreach (array_rand($artists, min(count($artists), 10)) as $k) { ?>
+						<li>
+							<a href="<?php echo htmlspecialchars($artists[$k]["artist"]); ?>">
+								<?php echo htmlspecialchars($artists[$k]["artistname"]); ?>
+							</a>
+							from
+							<a href="<?php echo htmlspecialchars($artists[$k]["place"]); ?>">
+								<?php echo htmlspecialchars($artists[$k]["placename"]); ?>
+							</a>
+						</li>
 					<?php } ?>
 				</ul>
 			<?php } ?>

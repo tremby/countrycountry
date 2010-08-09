@@ -261,6 +261,45 @@ include "htmlheader.php";
 	};
 </script>
 
+<h3>External links for the heaviest weighted genre</h3>
+<dl class="single">
+	<?php foreach ($classifier_genre_weight as $classifier => $genre_weight) {
+		arsort($genre_weight, SORT_NUMERIC);
+		$heavy = array_shift(array_keys($genre_weight));
+		?>
+		<dt><?php echo htmlspecialchars(classifiermapping($classifier)); ?></dt>
+		<dd>
+			<p>Most heavily weighted genre: <strong><?php echo htmlspecialchars(uriendpart($heavy)); ?></strong> <?php echo urilink($heavy); ?></p>
+			<?php
+			$country = true;
+			$artists = dbpediaartists($heavy, $signalinfo["country"]);
+			if (empty($artists)) {
+				$country = false;
+				$artists = dbpediaartists($heavy);
+			}
+			?>
+			<h4>Some random artists from the same <?php if ($country) echo "country and "; ?>genre:</h4>
+			<?php if (empty($artists)) { ?>
+				<p>No artists matching this genre were found in DBpedia.</p>
+			<?php } else { ?>
+				<ul>
+					<?php foreach (array_rand($artists, min(count($artists), 10)) as $k) { ?>
+						<li>
+							<a href="<?php echo htmlspecialchars($artists[$k]["artist"]); ?>">
+								<?php echo htmlspecialchars($artists[$k]["artistname"]); ?>
+							</a>
+							from
+							<a href="<?php echo htmlspecialchars($artists[$k]["place"]); ?>">
+								<?php echo htmlspecialchars($artists[$k]["placename"]); ?>
+							</a>
+						</li>
+					<?php } ?>
+				</ul>
+			<?php } ?>
+		</dd>
+	<?php } ?>
+</dl>
+
 <?php
 include "htmlfooter.php";
 ?>

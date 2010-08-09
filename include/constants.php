@@ -22,6 +22,7 @@ $ns = array(
 	"sim" => "http://purl.org/ontology/similarity/",
 	"off" => "http://purl.org/ontology/off/",
 	"dbpedia-owl" => "http://dbpedia.org/ontology/",
+	"owl" => "http://www.w3.org/2002/07/owl#",
 );
 
 // Jamendo Sparql endpoint address
@@ -35,3 +36,6 @@ define("ENDPOINT_REPOSITORY", "http://lslvm-bjn1.ecs.soton.ac.uk:8080/sparql/");
 
 // dbpedia endpoint
 define("ENDPOINT_DBPEDIA", "http://dbpedia.org/sparql/");
+
+// geonames endpoint
+define("ENDPOINT_GEONAMES", "http://geonames.nema.ecs.soton.ac.uk:9000/sparql/");
