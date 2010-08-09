@@ -383,48 +383,36 @@ if (!$collection->author())
 	<?php } ?>
 	<li>
 		<p>Demo queries</p>
-		<ul>
-			<li>
-				<form action="<?php echo SITEROOT_WEB; ?>editcollection/<?php echo $collection->id(); ?>" method="post">
-					<input type="hidden" name="author" value="demo">
-					<input type="hidden" name="filteractive_artistcountry" value="true">
-					<input type="hidden" name="artistcountry_countrycode[]" value="ES">
-					<input type="hidden" name="description" value="A collection of Creative Commons-licensed music from Spanish artists">
-					<input type="hidden" name="title" value="Music from Spain">
-					<input type="submit" name="submit" value="Music from Spain (large set)">
-				</form>
-			</li>
-			<li>
-				<form action="<?php echo SITEROOT_WEB; ?>editcollection/<?php echo $collection->id(); ?>" method="post">
-					<input type="hidden" name="author" value="demo">
-					<input type="hidden" name="filteractive_artistcountry" value="true">
-					<input type="hidden" name="artistcountry_countrycode[]" value="PL">
-					<input type="hidden" name="description" value="A collection of Creative Commons-licensed music from Polish artists">
-					<input type="hidden" name="title" value="Music from Poland">
-					<input type="submit" name="submit" value="Music from Poland (large set)">
-				</form>
-			</li>
-			<li>
-				<form action="<?php echo SITEROOT_WEB; ?>editcollection/<?php echo $collection->id(); ?>" method="post">
-					<input type="hidden" name="author" value="demo">
-					<input type="hidden" name="filteractive_artistcountry" value="true">
-					<input type="hidden" name="artistcountry_countrycode[]" value="TR">
-					<input type="hidden" name="description" value="A collection of Creative Commons-licensed music from Turkish artists">
-					<input type="hidden" name="title" value="Music from Turkey">
-					<input type="submit" name="submit" value="Music from Turkey (small set)">
-				</form>
-			</li>
-			<li>
-				<form action="<?php echo SITEROOT_WEB; ?>editcollection/<?php echo $collection->id(); ?>" method="post">
-					<input type="hidden" name="author" value="demo">
-					<input type="hidden" name="filteractive_artistcountry" value="true">
-					<input type="hidden" name="artistcountry_countrycode[]" value="IE">
-					<input type="hidden" name="description" value="A collection of Creative Commons-licensed music from Irish artists">
-					<input type="hidden" name="title" value="Music from Ireland">
-					<input type="submit" name="submit" value="Music from Ireland (small set)">
-				</form>
-			</li>
-		</ul>
+		<dl class="twocol">
+			<?php foreach (array(
+				array("Spain", 3000, "ES", "Spanish"),
+				array("Poland", 1100, "PL", "Polish"),
+				array("Turkey", 15, "TR", "Turkish"),
+				array("Ireland", 15, "IE", "Irish"),
+				array("Lithuania", 15, "LT", "Lithuanian"),
+				array("Iceland", 20, "IS", "Icelandic"),
+				array("Malta", 30, "MT", "Maltese"),
+				array("Estonia", 3, "EE", "Estonian"),
+			) as $country) { ?>
+				<dt>Music from <?php echo $country[0]; ?></dt>
+				<dd>
+					<ul>
+						<li><?php if ($country[1] >= 50) echo "Large"; else if ($country[1] >= 10) echo "Small"; else echo "Very small"; ?> set (~<?php echo $country[1]; ?>)</li>
+						<li><?php if ($country[1] >= 50) echo "Present on demo external HDD"; else echo "Present on VM HDD"; ?></li>
+						<li>
+							<form action="<?php echo SITEROOT_WEB; ?>editcollection/<?php echo $collection->id(); ?>" method="post">
+								<input type="hidden" name="author" value="demo">
+								<input type="hidden" name="filteractive_artistcountry" value="true">
+								<input type="hidden" name="artistcountry_countrycode[]" value="<?php echo $country[2]; ?>">
+								<input type="hidden" name="description" value="A collection of Creative Commons-licensed music from <?php echo $country[3]; ?> artists">
+								<input type="hidden" name="title" value="Music from <?php echo $country[0]; ?>">
+								<input type="submit" name="submit" value="Populate">
+							</form>
+						</li>
+					</ul>
+				</dd>
+			<?php } ?>
+		</dl>
 	</li>
 </ul>
 

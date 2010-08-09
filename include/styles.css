@@ -150,3 +150,12 @@ table.datatable td {
 	overflow: auto;
 	font-size: 80%;
 }
+
+.twocol {
+	column-count: 2;
+	column-spacing: 2em;
+	-moz-column-count: 2;
+	-moz-column-spacing: 2em;
+	-webkit-column-count: 2;
+	-webkit-column-spacing: 2em;
+}
