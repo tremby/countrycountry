@@ -344,7 +344,7 @@ class Collection {
 			array(
 				"s" => $this->groundeduri() . "#grounding",
 				"p" => $ns["pv"] . "accessedService",
-				"o" => "http://repository.nema.ecs.soton.ac.uk/"),
+				"o" => "http://repository.nema.ecs.soton.ac.uk/",
 				"s_type" => "uri",
 				"o_type" => "uri",
 			),
