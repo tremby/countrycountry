@@ -50,50 +50,34 @@ foreach ($_REQUEST["uri"] as $collectionuri) {
 	$collection["classifier_genre"] = array();
 	$collection["classifier_maxweight"] = array();
 
-	// for each signal
-	foreach ($collection["signals"] as $signal) {
-		// get associations for which this track is the subject
-		$query = prefix(array("mo", "sim", "pv")) . "
-			SELECT * WHERE {
-				?genreassociation
-					sim:subject <$signal> ;
-					sim:object ?musicgenre ;
-					sim:weight ?weight ;
-					sim:method ?associationmethod .
-				?associationmethod
-					pv:usedGuideline ?classifier .
-			}
-			ORDER BY ?classifier ?musicgenre
-		";
-		//echo $query;
-
-		$rows = $store->query($query, "rows");
+	// for each association
+	foreach (getassociations($collection["signals"]) as $row) {
+		$signal = $row["signal"];
 
 		// collect assertions about this track's genre
-		$collection["assertions"][$signal] = array();
-		foreach ($rows as $row) {
-			// if we haven't seen this classifier, note it
-			if (!in_array($row["classifier"], array_keys($collection["classifier_genre"])))
-				$collection["classifier_genre"][$row["classifier"]] = array();
-			// if we haven't seen this genre in this classifier, note it
-			if (!in_array($row["musicgenre"], $collection["classifier_genre"][$row["classifier"]]))
-				$collection["classifier_genre"][$row["classifier"]][] = $row["musicgenre"];
+		if (!isset($collection["assertions"][$signal]))
+			$collection["assertions"][$signal] = array();
 
-			//print_r($row);
-			if (!isset($collection["assertions"][$signal][$row["classifier"]]))
-				$collection["assertions"][$signal][$row["classifier"]] = array();
+		// if we haven't seen this classifier, note it
+		if (!in_array($row["classifier"], array_keys($collection["classifier_genre"])))
+			$collection["classifier_genre"][$row["classifier"]] = array();
+		// if we haven't seen this genre in this classifier, note it
+		if (!in_array($row["musicgenre"], $collection["classifier_genre"][$row["classifier"]]))
+			$collection["classifier_genre"][$row["classifier"]][] = $row["musicgenre"];
 
-			// skip if we already have a result for this track, classifier and genre
-			if (isset($collection["assertions"][$signal][$row["classifier"]][$row["musicgenre"]]))
-				continue;
+		if (!isset($collection["assertions"][$signal][$row["classifier"]]))
+			$collection["assertions"][$signal][$row["classifier"]] = array();
 
-			// store this result
-			$collection["assertions"][$signal][$row["classifier"]][$row["musicgenre"]] = floatval($row["weight"]);
+		// skip if we already have a result for this track, classifier and genre
+		if (isset($collection["assertions"][$signal][$row["classifier"]][$row["musicgenre"]]))
+			continue;
 
-			// update maximum weight for this classifier if appropriate
-			if (!isset($collection["classifier_maxweight"][$row["classifier"]]) || $collection["classifier_maxweight"][$row["classifier"]] < floatval($row["weight"]))
-				$collection["classifier_maxweight"][$row["classifier"]] = floatval($row["weight"]);
-		}
+		// store this result
+		$collection["assertions"][$signal][$row["classifier"]][$row["musicgenre"]] = floatval($row["weight"]);
+
+		// update maximum weight for this classifier if appropriate
+		if (!isset($collection["classifier_maxweight"][$row["classifier"]]) || $collection["classifier_maxweight"][$row["classifier"]] < floatval($row["weight"]))
+			$collection["classifier_maxweight"][$row["classifier"]] = floatval($row["weight"]);
 	}
 
 	// count up how many collections each signal appears in

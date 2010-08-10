@@ -354,4 +354,37 @@ function dbpediaartists($genreuri, $countryuri = null) {
 	return $dbartists_in_country;
 }
 
+// get all associations for given array of signals
+function getassociations($signals) {
+	require_once SITEROOT_LOCAL . "include/arc/ARC2.php";
+
+	// set up results endpoint
+	$config = array("remote_store_endpoint" => ENDPOINT_RESULTS);
+	$store = ARC2::getRemoteStore($config);
+
+	// build array of subqueries
+	$subqueries = array();
+	foreach ($signals as $signal) $subqueries[] = "{
+		?genreassociation
+			sim:subject <$signal> ;
+			sim:subject ?signal ;
+			sim:object ?musicgenre ;
+			sim:weight ?weight ;
+			sim:method ?associationmethod .
+		?associationmethod
+			pv:usedGuideline ?classifier .
+	}";
+
+	// build full query
+	$query = prefix(array("mo", "sim", "pv")) . "
+		SELECT * WHERE {
+			" . implode(" UNION ", $subqueries) . "
+		}
+		ORDER BY ?signal ?classifier ?musicgenre
+	";
+
+	// query endpoint, return result
+	return $store->query($query, "rows");
+}
+
 ?>

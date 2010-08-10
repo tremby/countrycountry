@@ -44,50 +44,34 @@ $assertions = array();
 $classifier_genre = array();
 $classifier_maxweight = array();
 
-// for each signal
-foreach ($signals as $signal) {
-	// get associations for which this track is the subject
-	$query = prefix(array("mo", "sim", "pv")) . "
-		SELECT * WHERE {
-			?genreassociation
-				sim:subject <$signal> ;
-				sim:object ?musicgenre ;
-				sim:weight ?weight ;
-				sim:method ?associationmethod .
-			?associationmethod
-				pv:usedGuideline ?classifier .
-		}
-		ORDER BY ?classifier ?musicgenre
-	";
-	//echo $query;
-
-	$rows = $store->query($query, "rows");
+// for each association
+foreach (getassociations($signals) as $row) {
+	$signal = $row["signal"];
 
 	// collect assertions about this track's genre
-	$assertions[$signal] = array();
-	foreach ($rows as $row) {
-		// if we haven't seen this classifier, note it
-		if (!in_array($row["classifier"], array_keys($classifier_genre)))
-			$classifier_genre[$row["classifier"]] = array();
-		// if we haven't seen this genre in this classifier, note it
-		if (!in_array($row["musicgenre"], $classifier_genre[$row["classifier"]]))
-			$classifier_genre[$row["classifier"]][] = $row["musicgenre"];
+	if (!isset($assertions[$signal]))
+		$assertions[$signal] = array();
 
-		//print_r($row);
-		if (!isset($assertions[$signal][$row["classifier"]]))
-			$assertions[$signal][$row["classifier"]] = array();
+	// if we haven't seen this classifier, note it
+	if (!in_array($row["classifier"], array_keys($classifier_genre)))
+		$classifier_genre[$row["classifier"]] = array();
+	// if we haven't seen this genre in this classifier, note it
+	if (!in_array($row["musicgenre"], $classifier_genre[$row["classifier"]]))
+		$classifier_genre[$row["classifier"]][] = $row["musicgenre"];
 
-		// skip if we already have a result for this track, classifier and genre
-		if (isset($assertions[$signal][$row["classifier"]][$row["musicgenre"]]))
-			continue;
+	if (!isset($assertions[$signal][$row["classifier"]]))
+		$assertions[$signal][$row["classifier"]] = array();
 
-		// store this result
-		$assertions[$signal][$row["classifier"]][$row["musicgenre"]] = floatval($row["weight"]);
+	// skip if we already have a result for this track, classifier and genre
+	if (isset($assertions[$signal][$row["classifier"]][$row["musicgenre"]]))
+		continue;
 
-		// update maximum weight for this classifier if appropriate
-		if (!isset($classifier_maxweight[$row["classifier"]]) || $classifier_maxweight[$row["classifier"]] < floatval($row["weight"]))
-			$classifier_maxweight[$row["classifier"]] = floatval($row["weight"]);
-	}
+	// store this result
+	$assertions[$signal][$row["classifier"]][$row["musicgenre"]] = floatval($row["weight"]);
+
+	// update maximum weight for this classifier if appropriate
+	if (!isset($classifier_maxweight[$row["classifier"]]) || $classifier_maxweight[$row["classifier"]] < floatval($row["weight"]))
+		$classifier_maxweight[$row["classifier"]] = floatval($row["weight"]);
 }
 
 include "htmlheader.php";
