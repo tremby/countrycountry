@@ -283,7 +283,7 @@ include "htmlheader.php";
 				<p>No artists matching this genre were found in DBpedia.</p>
 			<?php } else { ?>
 				<ul>
-					<?php foreach (array_rand($artists, min(count($artists), 10)) as $k) { ?>
+					<?php $a = array_rand($artists, min(count($artists), 10)); if (!is_array($a)) $a = array($a); foreach ($a as $k) { ?>
 						<li>
 							<a href="<?php echo htmlspecialchars($artists[$k]["artist"]); ?>">
 								<?php echo htmlspecialchars($artists[$k]["artistname"]); ?>
