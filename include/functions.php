@@ -362,6 +362,9 @@ function getassociations($signals) {
 	$config = array("remote_store_endpoint" => ENDPOINT_RESULTS);
 	$store = ARC2::getRemoteStore($config);
 
+	// array for results
+	$results = array();
+
 	// build array of subqueries
 	$subqueries = array();
 	foreach ($signals as $signal) $subqueries[] = "{
@@ -375,16 +378,26 @@ function getassociations($signals) {
 			pv:usedGuideline ?classifier .
 	}";
 
-	// build full query
-	$query = prefix(array("mo", "sim", "pv")) . "
-		SELECT * WHERE {
-			" . implode(" UNION ", $subqueries) . "
-		}
-		ORDER BY ?signal ?classifier ?musicgenre
-	";
+	// make queries with maximum 128 subqueries each (arbitrary number but 256 
+	// is too big and 4store baulks)
+	while (!empty($subqueries)) {
+		// get up to 128 remaining subqueries
+		$sq = array();
+		for ($i = 0; $i < 128 && !empty($subqueries); $i++)
+			$sq[] = array_shift($subqueries);
 
-	// query endpoint, return result
-	return $store->query($query, "rows");
+		// query the endpoint, add results to results array
+		$query = prefix(array("mo", "sim", "pv")) . "
+			SELECT * WHERE {
+				" . implode(" UNION ", $sq) . "
+			}
+			ORDER BY ?signal ?classifier ?musicgenre
+		";
+		$rows = $store->query($query, "rows");
+		$results = array_merge($results, $rows);
+	}
+
+	return $results;
 }
 
 ?>
