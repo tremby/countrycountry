@@ -2,10 +2,10 @@
 *.swo
 
 filecollections/*
-! filecollections/README
+!filecollections/README
 
 signalcollections/*
-! signalcollections/README
+!signalcollections/README
 
 cache/*
-! cache/README
+!cache/README
