@@ -294,8 +294,8 @@ foreach ($classifier_genre as $classifier => $genres) {
 -->
 
 <h3>Data table</h3>
-<?php if (empty($signals)) { ?>
-	<p>Not shown for signals with over 100 signals</p>
+<?php if (count($signals) > 100) { ?>
+	<p>Not shown for collections with over 100 signals</p>
 <?php } else { ?>
 	<table width="100%" class="datatable">
 		<tr>
