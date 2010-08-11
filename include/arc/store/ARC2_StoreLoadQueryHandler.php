@@ -379,7 +379,7 @@ class ARC2_StoreLoadQueryHandler extends ARC2_StoreQueryHandler {
 
   function checkSQLBuffers($force_write = 0, $reset_id_buffers = 0, $refresh_lock = 0, $split_tables = 0) {
     $con = $this->store->getDBCon();
-    if (!$this->keep_time_limit) @set_time_limit($this->v('time_limit', 60, $this->a));
+    if (!$this->keep_time_limit) @set_time_limit($this->v('time_limit', 240, $this->a));
     foreach (array('triple', 'g2t', 'id2val', 's2val', 'o2val') as $tbl) {
       $buffer_size = isset($this->sql_buffers[$tbl]) ? 1 : 0;
       if ($buffer_size && $force_write) {
