@@ -392,6 +392,7 @@ if (!$collection->author())
 				array("Lithuania", 15, "LT", "Lithuanian"),
 				array("Iceland", 20, "IS", "Icelandic"),
 				array("Malta", 30, "MT", "Maltese"),
+				array("Ukraine", 5, "UA", "Ukrainian"),
 				array("Estonia", 3, "EE", "Estonian"),
 			) as $country) { ?>
 				<dt>Music from <?php echo $country[0]; ?></dt>
