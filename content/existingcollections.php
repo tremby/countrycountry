@@ -38,42 +38,48 @@ $collections = array_reverse($collections);
 include "htmlheader.php";
 //echo "<pre>" . htmlspecialchars(print_r($collections, true)) . "</pre>";
 ?>
-<table>
-	<tr>
-		<th>Title</th>
-		<th>Author</th>
-		<th>Published</th>
-		<th>Description</th>
-		<th>Size</th>
-		<th>RDF</th>
-		<th>Groundings</th>
-		<th>Results</th>
-	</tr>
-	<?php foreach ($collections as $collection) { $aggregate = $collection["index"][$collection["uri"] . "#aggregate"]; ?>
+<form action="<?php echo SITEROOT_WEB; ?>viewmanycollectionresults" method="get">
+	<table>
 		<tr>
-			<td><?php echo htmlspecialchars($aggregate[$ns["dc"] . "title"][0]); ?></td>
-			<td><?php echo htmlspecialchars($aggregate[$ns["dc"] . "creator"][0]); ?></td>
-			<td><?php echo date("Y-m-d H:i:s O", $collection["modified"]); ?></td>
-			<td><?php if (isset($aggregate[$ns["dc"] . "description"])) echo htmlspecialchars($aggregate[$ns["dc"] . "description"][0]); ?></td>
-			<td><?php echo count($aggregate[$ns["ore"] . "aggregates"]); ?></td>
-			<td><?php echo urilink($collection["uri"]); ?></td>
-			<td><?php if (empty($collection["groundings"])) { ?>
-				None
-			<?php } else { ?>
-				<ul>
-					<?php foreach ($collection["groundings"] as $grounding) { ?>
-						<li>
-							<?php echo urilink($grounding["uri"], count($grounding["index"][$grounding["uri"] . "#aggregate"][$ns["ore"] . "aggregates"]) . " files"); ?>
-							&ndash;
-							<a href="http://myexperiment.nema.ecs.soton.ac.uk/workflows/all?collection=<?php echo urlencode($grounding["uri"]); ?>">Run in MyExperiment</a>
-						</li>
-					<?php } ?>
-				</ul>
-			<?php } ?></td>
-			<td><a href="<?php echo SITEROOT_WEB; ?>viewcollectionresults?uri=<?php echo urlencode($collection["uri"]); ?>">View</a></td>
+			<th>Title</th>
+			<th>Author</th>
+			<th>Published</th>
+			<th>Description</th>
+			<th>Size</th>
+			<th>RDF</th>
+			<th>Groundings</th>
+			<th>Results</th>
+			<th>Compare results</th>
 		</tr>
-	<?php } ?>
-</table>
+		<?php foreach ($collections as $collection) { $aggregate = $collection["index"][$collection["uri"] . "#aggregate"]; ?>
+			<tr>
+				<td><?php echo htmlspecialchars($aggregate[$ns["dc"] . "title"][0]); ?></td>
+				<td><?php echo htmlspecialchars($aggregate[$ns["dc"] . "creator"][0]); ?></td>
+				<td><?php echo date("Y-m-d H:i:s O", $collection["modified"]); ?></td>
+				<td><?php if (isset($aggregate[$ns["dc"] . "description"])) echo htmlspecialchars($aggregate[$ns["dc"] . "description"][0]); ?></td>
+				<td><?php echo count($aggregate[$ns["ore"] . "aggregates"]); ?></td>
+				<td><?php echo urilink($collection["uri"]); ?></td>
+				<td><?php if (empty($collection["groundings"])) { ?>
+					None
+				<?php } else { ?>
+					<ul>
+						<?php foreach ($collection["groundings"] as $grounding) { ?>
+							<li>
+								<?php echo urilink($grounding["uri"], count($grounding["index"][$grounding["uri"] . "#aggregate"][$ns["ore"] . "aggregates"]) . " files"); ?>
+								&ndash;
+								<a href="http://myexperiment.nema.ecs.soton.ac.uk/workflows/all?collection=<?php echo urlencode($grounding["uri"]); ?>">Run in MyExperiment</a>
+							</li>
+						<?php } ?>
+					</ul>
+				<?php } ?></td>
+				<td><a href="<?php echo SITEROOT_WEB; ?>viewcollectionresults?uri=<?php echo urlencode($collection["uri"]); ?>">View</a></td>
+				<td><input type="checkbox" name="uri[]" value="<?php echo htmlspecialchars($collection["uri"]); ?>"></td>
+			</tr>
+		<?php } ?>
+	</table>
+
+	<input type="submit" name="compare" value="Compare selected collections">
+</form>
 <?php
 include "htmlfooter.php";
 ?>
