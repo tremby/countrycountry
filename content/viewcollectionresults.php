@@ -294,56 +294,60 @@ foreach ($classifier_genre as $classifier => $genres) {
 -->
 
 <h3>Data table</h3>
-<table width="100%" class="datatable">
-	<tr>
-		<th rowspan="2">Signal</th>
-		<?php foreach ($classifier_genre as $classifier => $genres) { ?>
-			<th colspan="<?php echo count($genres); ?>"><?php echo htmlspecialchars(classifiermapping($classifier)); ?></th>
-		<?php } ?>
-	</tr>
-	<tr>
-		<?php foreach ($classifier_genre as $classifier => $genres) foreach ($genres as $index => $genre) { ?>
-			<th width="<?php echo 90 / $barcolumncount; ?>%" title="<?php echo htmlspecialchars(uriendpart($genre)); ?>"><?php echo htmlspecialchars(substr(uriendpart($genre), 0, 3)) . "&hellip;"; ?></th>
-		<?php } ?>
-	</tr>
-	<?php
-	$barcolumncount = 0;
-	foreach ($classifier_genre as $classifier => $genres)
-		$barcolumncount += count($genres);
-	$barcolumnwidth = 90 / $barcolumncount;
-	?>
-	<?php foreach ($signals as $signal) { $signalinfo = signalinfo($signal); ?>
+<?php if (empty($signals)) { ?>
+	<p>Not shown for signals with over 100 signals</p>
+<?php } else { ?>
+	<table width="100%" class="datatable">
 		<tr>
-			<td title="<?php echo htmlspecialchars($signalinfo["artistname"]); ?> &ndash; <?php echo htmlspecialchars($signalinfo["trackname"]); ?>">
-				<a href="<?php echo SITEROOT_WEB; ?>viewsignalresults?uri=<?php echo urlencode($signal); ?>">
-					<?php echo htmlspecialchars($signalinfo["trackname"]); ?>
-				</a>
-			</td>
-			<?php if (empty($assertions[$signal])) { ?>
-				<td class="nodata" colspan="<?php echo $barcolumncount; ?>">
-					No data
-				</td>
-			<?php } else foreach ($classifier_genre as $classifier => $genres) { ?>
-				<?php if (!isset($assertions[$signal][$classifier])) { ?>
-					<td colspan="<?php echo count($genres); ?>">No data</td>
-				<?php } else foreach ($genres as $genre) { ?>
-					<?php if (isset($assertions[$signal][$classifier][$genre])) { ?>
-						<td width="<?php echo 90 / $barcolumncount; ?>%" title="<?php echo $assertions[$signal][$classifier][$genre]; ?>">
-							<div class="barcontainer">
-								<div class="bar" style="width: <?php echo 100 * $assertions[$signal][$classifier][$genre] / $classifier_maxweight[$classifier]; ?>%;"></div>
-								<div class="weight"><?php echo sprintf("%.2f", $assertions[$signal][$classifier][$genre]); ?></div>
-							</div>
-						</td>
-					<?php } else { ?>
-						<td class="nodata" width="<?php echo 90 / $barcolumncount; ?>%">
-							-
-						</td>
-					<?php } ?>
-				<?php } ?>
+			<th rowspan="2">Signal</th>
+			<?php foreach ($classifier_genre as $classifier => $genres) { ?>
+				<th colspan="<?php echo count($genres); ?>"><?php echo htmlspecialchars(classifiermapping($classifier)); ?></th>
 			<?php } ?>
 		</tr>
-	<?php } ?>
-</table>
+		<tr>
+			<?php foreach ($classifier_genre as $classifier => $genres) foreach ($genres as $index => $genre) { ?>
+				<th width="<?php echo 90 / $barcolumncount; ?>%" title="<?php echo htmlspecialchars(uriendpart($genre)); ?>"><?php echo htmlspecialchars(substr(uriendpart($genre), 0, 3)) . "&hellip;"; ?></th>
+			<?php } ?>
+		</tr>
+		<?php
+		$barcolumncount = 0;
+		foreach ($classifier_genre as $classifier => $genres)
+			$barcolumncount += count($genres);
+		$barcolumnwidth = 90 / $barcolumncount;
+		?>
+		<?php foreach ($signals as $signal) { $signalinfo = signalinfo($signal); ?>
+			<tr>
+				<td title="<?php echo htmlspecialchars($signalinfo["artistname"]); ?> &ndash; <?php echo htmlspecialchars($signalinfo["trackname"]); ?>">
+					<a href="<?php echo SITEROOT_WEB; ?>viewsignalresults?uri=<?php echo urlencode($signal); ?>">
+						<?php echo htmlspecialchars($signalinfo["trackname"]); ?>
+					</a>
+				</td>
+				<?php if (empty($assertions[$signal])) { ?>
+					<td class="nodata" colspan="<?php echo $barcolumncount; ?>">
+						No data
+					</td>
+				<?php } else foreach ($classifier_genre as $classifier => $genres) { ?>
+					<?php if (!isset($assertions[$signal][$classifier])) { ?>
+						<td colspan="<?php echo count($genres); ?>">No data</td>
+					<?php } else foreach ($genres as $genre) { ?>
+						<?php if (isset($assertions[$signal][$classifier][$genre])) { ?>
+							<td width="<?php echo 90 / $barcolumncount; ?>%" title="<?php echo $assertions[$signal][$classifier][$genre]; ?>">
+								<div class="barcontainer">
+									<div class="bar" style="width: <?php echo 100 * $assertions[$signal][$classifier][$genre] / $classifier_maxweight[$classifier]; ?>%;"></div>
+									<div class="weight"><?php echo sprintf("%.2f", $assertions[$signal][$classifier][$genre]); ?></div>
+								</div>
+							</td>
+						<?php } else { ?>
+							<td class="nodata" width="<?php echo 90 / $barcolumncount; ?>%">
+								-
+							</td>
+						<?php } ?>
+					<?php } ?>
+				<?php } ?>
+			</tr>
+		<?php } ?>
+	</table>
+<?php } ?>
 
 <?php
 include "htmlfooter.php";
