@@ -10,7 +10,7 @@ $dir = SITEROOT_LOCAL . "/filecollections/" . $collection->id();
 if (!file_exists($dir))
 	mkdir($dir);
 
-$collection->ground("http://lslvm-bjn1.ecs.soton.ac.uk:8080/sparql/");
+$collection->ground(ENDPOINT_REPOSITORY);
 
 include "htmlheader.php";
 if (count($collection->groundedresults()) > 0) {
