@@ -245,14 +245,160 @@ function signalinfo($signal) {
 	", "rows");
 	$result[0]["availableas"] = array_merge($javailableas, $ravailableas);
 
-	foreach ($result[0]["availableas"] as $aa) {
-		if (strpos($aa["availableas"], "http://repository.nema.ecs.soton.ac.uk") === 0) {
-			$result[0]["mp3"] = $aa["availableas"] . ".mp3";
-			break;
+	return $result[0];
+}
+
+function audiosources($signal) {
+	$signalinfo = signalinfo($signal);
+
+	$audiosources = array();
+	foreach ($signalinfo["availableas"] as $aa) {
+		$source = findmp3($aa["availableas"]);
+		if ($source !== false)
+			$audiosources[] = $source;
+	}
+	$audiosources = array_unique($audiosources);
+
+	// rank by URL text contents
+	usort($audiosources, "rankmp3urls");
+	$audiosources = array_reverse($audiosources);
+
+	return $audiosources;
+}
+
+// follow a URI and try to get an MP3 from it
+function findmp3($uri, $depth = 0) {
+	// cancel if we're recursing too deeply
+	if ($depth > 5)
+		return false;
+
+	$c = curl_init();
+	curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($c, CURLOPT_CUSTOMREQUEST, "HEAD");
+	curl_setopt($c, CURLOPT_HEADER, true);
+	curl_setopt($c, CURLOPT_NOBODY, true);
+	curl_setopt($c, CURLOPT_URL, $uri);
+	curl_setopt($c, CURLOPT_HTTPHEADER, array(
+		//       MP3         XSPF playlist               M3U playlist           scrapeable    XML?                 other audio, could be playlist like M3U
+		"Accept: audio/mpeg, application/xspf+xml;q=0.8, audio/x-mpegurl;q=0.8, text/*;q=0.3, application/*;q=0.2, audio/*,q=0.1",
+	));
+
+	$headers = explode("\r\n", curl_exec($c));
+	$code = curl_getinfo($c, CURLINFO_HTTP_CODE);
+
+	// is this a redirection?
+	$redirect = $code >= 300 && $code < 400;
+
+	// was it ok?
+	$ok = $code >= 200 && $code < 300;
+
+	foreach ($headers as $header) {
+		if (!preg_match('%^.+:.+$%', $header))
+			continue;
+		list($key, $value) = preg_split('%\s*:\s*%', $header, 2);
+		$key = strtolower($key);
+
+		// if we have a new location and a redirect code, recurse
+		if ($key == "location" && $redirect)
+			return findmp3($value, $depth + 1);
+
+		// look for Content-Type header
+		if ($key == "content-type") {
+			// remove parameters
+			$contenttype = preg_replace('%^([^\s;]+/[^\s;]+).*$%', '\1', $value);
 		}
 	}
 
-	return $result[0];
+	if (!$ok)
+		return false;
+
+	if ($contenttype == "audio/mpeg")
+		// MP3
+		return $uri;
+
+	// get the contents
+	curl_setopt($c, CURLOPT_RETURNTRANSFER, true);
+	curl_setopt($c, CURLOPT_CUSTOMREQUEST, "GET");
+	curl_setopt($c, CURLOPT_HEADER, false);
+	curl_setopt($c, CURLOPT_NOBODY, false);
+
+	$contents = curl_exec($c);
+	$code = curl_getinfo($c, CURLINFO_HTTP_CODE);
+
+	// exit if not OK
+	if ($code < 200 || $code >= 300)
+		return false;
+
+	$urls = array();
+	if ($contenttype == "application/xspf+xml") {
+		// XSPF playlist
+		$xml = new SimpleXMLElement($contents);
+		foreach ($xml->trackList->track as $track)
+			$urls[] = (string) $track->location;
+	} else if ($contenttype == "audio/x-mpegurl") {
+		// M3U playlist
+		$lines = preg_split('%\s*(\r\n|\r|\n)\s*%', trim($contents));
+		foreach ($lines as $line)
+			// collect HTTP URL lines
+			if (preg_match('%^http%', $line))
+				$urls[] = $line;
+	} else {
+		// other -- scrape for URLs
+		preg_match_all('/(([\w]+:)?\/\/)?(([\d\w]|%[a-fA-f\d]{2,2})+(:([\d\w]|%[a-fA-f\d]{2,2})+)?@)?([\d\w][-\d\w]{0,253}[\d\w]\.)+[\w]{2,4}(:[\d]+)?(\/([-+_~.\d\w]|%[a-fA-f\d]{2,2})*)*(\?(&amp;?([-+_~.\d\w]|%[a-fA-f\d]{2,2})=?)*)?(#([-+_~.\d\w]|%[a-fA-f\d]{2,2})*)?/', $contents, $urls);
+		$urls = $urls[0];
+	}
+
+	// rank by URL text contents
+	usort($urls, "rankmp3urls");
+	$urls = array_reverse($urls);
+
+	if (empty($urls))
+		return false;
+
+	// return the most likely contender
+	foreach ($urls as $url) {
+		$r = findmp3($url, $depth + 1);
+		if ($r !== false)
+			return $r;
+	}
+}
+
+function mp3urlrank($url) {
+	$rank = 0;
+	if (preg_match('%\.mp3($|\?)%i', $url))
+		$rank += 10;
+	else if (preg_match('%mp3%i', $url))
+		$rank += 5;
+	if (preg_match('%repository.nema.ecs.soton.ac.uk%i', $url))
+		$rank += 5;
+	if (preg_match('%listen%i', $url))
+		$rank += 1;
+	if (preg_match('%stream%i', $url))
+		$rank += 1;
+	if (preg_match('%music%i', $url))
+		$rank += 1;
+	if (preg_match('%audio%i', $url))
+		$rank += 1;
+	if (preg_match('%signal%i', $url))
+		$rank += 1;
+	if (preg_match('%(album|cover)art%i', $url))
+		$rank -= 5;
+	if (preg_match('%cover%i', $url))
+		$rank -= 1;
+	if (preg_match('%art%i', $url))
+		$rank -= 1;
+	if (preg_match('%licen[cs]e%i', $url))
+		$rank -= 2;
+	if (preg_match('%creativecommons\.org%', $url))
+		$rank -= 10;
+	if (preg_match('%imgjam\.com%', $url))
+		$rank -= 10;
+
+	return $rank;
+}
+
+function rankmp3urls($a, $b) {
+	return mp3urlrank($a) - mp3urlrank($b);
 }
 
 function uriendpart($string) {

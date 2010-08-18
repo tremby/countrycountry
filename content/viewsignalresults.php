@@ -215,51 +215,72 @@ include "htmlheader.php";
 </dl>
 
 <h3>Listen</h3>
-<div id="audioplayer"></div>
-<div class="jp-single-player">
-	<div class="jp-interface">
-		<ul class="jp-controls">
-			<li><a href="#" id="jplayer_play" class="jp-play" tabindex="1">play</a></li>
-			<li><a href="#" id="jplayer_pause" class="jp-pause" tabindex="1">pause</a></li>
-			<li><a href="#" id="jplayer_stop" class="jp-stop" tabindex="1">stop</a></li>
-			<li><a href="#" id="jplayer_volume_min" class="jp-volume-min" tabindex="1">min volume</a></li>
-			<li><a href="#" id="jplayer_volume_max" class="jp-volume-max" tabindex="1">max volume</a></li>
-		</ul>
-		<div class="jp-progress">
-			<div id="jplayer_load_bar" class="jp-load-bar">
-				<div id="jplayer_play_bar" class="jp-play-bar"></div>
+<?php $audiosources = audiosources($_REQUEST["uri"]); if (empty($audiosources)) { ?>
+	<p>No audio sources were found</p>
+<?php } else { ?>
+	<h4>Choose audio source</h4>
+	<p>These audio sources were found from the "availableas" links</p>
+	<ul id="audiochooser">
+		<?php foreach ($audiosources as $source) { ?>
+			<li>
+				<a href="<?php echo htmlspecialchars($source); ?>">
+					<?php echo htmlspecialchars($source); ?>
+				</a>
+			</li>
+		<?php } ?>
+	</ul>
+
+	<h4>Audio controls</h4>
+	<div id="audioplayer"></div>
+	<div class="jp-single-player">
+		<div class="jp-interface">
+			<ul class="jp-controls">
+				<li><a href="#" id="jplayer_play" class="jp-play" tabindex="1">play</a></li>
+				<li><a href="#" id="jplayer_pause" class="jp-pause" tabindex="1">pause</a></li>
+				<li><a href="#" id="jplayer_stop" class="jp-stop" tabindex="1">stop</a></li>
+				<li><a href="#" id="jplayer_volume_min" class="jp-volume-min" tabindex="1">min volume</a></li>
+				<li><a href="#" id="jplayer_volume_max" class="jp-volume-max" tabindex="1">max volume</a></li>
+			</ul>
+			<div class="jp-progress">
+				<div id="jplayer_load_bar" class="jp-load-bar">
+					<div id="jplayer_play_bar" class="jp-play-bar"></div>
+				</div>
 			</div>
+			<div id="jplayer_volume_bar" class="jp-volume-bar">
+				<div id="jplayer_volume_bar_value" class="jp-volume-bar-value"></div>
+			</div>
+			<div id="jplayer_play_time" class="jp-play-time"></div>
+			<div id="jplayer_total_time" class="jp-total-time"></div>
 		</div>
-		<div id="jplayer_volume_bar" class="jp-volume-bar">
-			<div id="jplayer_volume_bar_value" class="jp-volume-bar-value"></div>
-		</div>
-		<div id="jplayer_play_time" class="jp-play-time"></div>
-		<div id="jplayer_total_time" class="jp-total-time"></div>
 	</div>
-</div>
-<script type="text/javascript">
-	$(document).ready(function() {
-		$("#audioplayer").jPlayer({
-			swfPath: "<?php echo SITEROOT_WEB; ?>include/jquery.jplayer",
-			nativeSupport: true,
-			preload: "auto",
-			errorAlerts: true,
-			warningAlerts: true,
-			ready: function() {
-				this.element.jPlayer("setFile", "<?php echo $signalinfo["mp3"]; ?>");
-				this.element.jPlayer("onProgressChange", updatechart);
-			}
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$("#audiochooser a").click(function(e) {
+				e.preventDefault();
+				$("#audioplayer").jPlayer("setFile", $(this).attr("href"));
+			});
+			$("#audioplayer").jPlayer({
+				swfPath: "<?php echo SITEROOT_WEB; ?>include/jquery.jplayer",
+				nativeSupport: true,
+				preload: "auto",
+				errorAlerts: true,
+				warningAlerts: true,
+				ready: function() {
+					this.element.jPlayer("setFile", "<?php echo $audiosources[0]; ?>");
+					this.element.jPlayer("onProgressChange", updatechart);
+				}
+			});
 		});
-	});
-	function updatechart(loadPercent, playedPercentRelative, playedPercentAbsolute, playedTime, totalTime) {
-		for (var md5sum in graphs) {
-			if ($("#audioplayer").jPlayer("getData", "diag.isPlaying"))
-				plotgraph(md5sum, playedTime / 1000, totalTime / 1000);
-			else
-				plotgraph(md5sum, null, totalTime / 1000);
-		}
-	};
-</script>
+		function updatechart(loadPercent, playedPercentRelative, playedPercentAbsolute, playedTime, totalTime) {
+			for (var md5sum in graphs) {
+				if ($("#audioplayer").jPlayer("getData", "diag.isPlaying"))
+					plotgraph(md5sum, playedTime / 1000, totalTime / 1000);
+				else
+					plotgraph(md5sum, null, totalTime / 1000);
+			}
+		};
+	</script>
+<?php } ?>
 
 <h3>External links for the heaviest weighted genre</h3>
 <dl class="single">
