@@ -34,9 +34,6 @@ div.jp-interface {
 	height:80px;
 	border:1px solid #009be3;
 }
-div.jp-single-player div.jp-interface {
-	border-bottom:none;
-}
 div.jp-playlist-player div.jp-interface {
 }
 
