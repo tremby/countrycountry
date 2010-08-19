@@ -546,4 +546,15 @@ function getassociations($signals) {
 	return $results;
 }
 
+// recursively delete a directory and its contents
+function rmrecursive($obj) {
+	if (is_dir($obj)) {
+		foreach (scandir($obj) as $o)
+			if ($o != "." && $o != "..")
+				rmrecursive("$obj/$o");
+		rmdir($obj);
+	} else
+		unlink($obj);
+}
+
 ?>

@@ -14,6 +14,10 @@ $(document).ready(function() {
 		$("input[name=uri[]]:last").parents("li:first").clone().appendTo($("input[name=uri[]]:first").parents("ul:first"));
 		$("input[name=uri[]]:last").val("").focus();
 	});
+
+	$(".deletebutton").click(function() {
+		return confirm("Are you sure you want to delete the collection '" + $(this).parents("tr:first").find("td:first").text() + "' and all its groundings?");
+	});
 });
 function plotgraph(md5sum, plotto, xmax) {
 	//console.log("plotting graph " + md5sum + "!");

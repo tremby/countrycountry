@@ -50,6 +50,7 @@ include "htmlheader.php";
 			<th>Groundings</th>
 			<th>Results</th>
 			<th>Compare results</th>
+			<th>Actions</th>
 		</tr>
 		<?php foreach ($collections as $collection) { $aggregate = $collection["index"][$collection["uri"] . "#aggregate"]; ?>
 			<tr>
@@ -74,6 +75,9 @@ include "htmlheader.php";
 				<?php } ?></td>
 				<td><a href="<?php echo SITEROOT_WEB; ?>viewcollectionresults?uri=<?php echo urlencode($collection["uri"]); ?>">View</a></td>
 				<td><input type="checkbox" name="uri[]" value="<?php echo htmlspecialchars($collection["uri"]); ?>"></td>
+				<td><ul>
+					<li><a class="deletebutton" href="<?php echo SITEROOT_WEB; ?>deletecollection?id=<?php echo urlencode($collection["hash"]); ?>">Delete</a></li>
+				</ul></td>
 			</tr>
 		<?php } ?>
 	</table>
