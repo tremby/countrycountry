@@ -7,23 +7,23 @@ body {
 	font-size: 9pt;
 	padding: 0;
 	margin: 0;
-	background-color: #aca;
+	background-color: #66c;
 	color: white;
 }
 
 a {
-	text-decoration: none;
-	color: #eee;
+	text-decoration: underline;
+	color: #bbf;
 }
 a:hover {
-	text-decoration: underline;
+	color: #ddf;
 }
 
 #body a {
-	color: #8a8;
+	color: #66a;
 }
 #body a:hover {
-	color: #aca;
+	color: #88c;
 }
 
 #header, #footer {
@@ -46,6 +46,8 @@ a:hover {
 #body {
 	background-color: white;
 	color: #444;
+	border: 3px solid #aac;
+	border-style: solid none;
 }
 
 h1 {
@@ -54,11 +56,11 @@ h1 {
 	font-weight: normal;
 }
 h3 {
-	background-color: #7a7;
+	background-color: #77a;
 	color: white;
 	font-weight: normal;
 	padding: 0.2em 0.5em;
-	border-bottom: 3px solid #aca;
+	border-bottom: 3px solid #aac;
 }
 
 #body {
