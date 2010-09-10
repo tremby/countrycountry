@@ -304,17 +304,17 @@ foreach ($classifier_genre as $classifier => $genres) {
 				<th colspan="<?php echo count($genres); ?>"><?php echo htmlspecialchars(classifiermapping($classifier)); ?></th>
 			<?php } ?>
 		</tr>
-		<tr>
-			<?php foreach ($classifier_genre as $classifier => $genres) foreach ($genres as $index => $genre) { ?>
-				<th width="<?php echo 90 / $barcolumncount; ?>%" title="<?php echo htmlspecialchars(uriendpart($genre)); ?>"><?php echo htmlspecialchars(substr(uriendpart($genre), 0, 3)) . "&hellip;"; ?></th>
-			<?php } ?>
-		</tr>
 		<?php
 		$barcolumncount = 0;
 		foreach ($classifier_genre as $classifier => $genres)
 			$barcolumncount += count($genres);
 		$barcolumnwidth = 90 / $barcolumncount;
 		?>
+		<tr>
+			<?php foreach ($classifier_genre as $classifier => $genres) foreach ($genres as $index => $genre) { ?>
+				<th width="<?php echo 90 / $barcolumncount; ?>%" title="<?php echo htmlspecialchars(uriendpart($genre)); ?>"><?php echo htmlspecialchars(substr(uriendpart($genre), 0, 3)) . "&hellip;"; ?></th>
+			<?php } ?>
+		</tr>
 		<?php foreach ($signals as $signal) { $signalinfo = signalinfo($signal); ?>
 			<tr>
 				<td title="<?php echo htmlspecialchars($signalinfo["artistname"]); ?> &ndash; <?php echo htmlspecialchars($signalinfo["trackname"]); ?>">
