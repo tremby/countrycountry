@@ -23,6 +23,7 @@ $ns = array(
 	"off" => "http://purl.org/ontology/off/",
 	"dbpedia-owl" => "http://dbpedia.org/ontology/",
 	"owl" => "http://www.w3.org/2002/07/owl#",
+	"rdfs" => "http://www.w3.org/2000/01/rdf-schema#",
 );
 
 // Jamendo Sparql endpoint address
@@ -39,3 +40,6 @@ define("ENDPOINT_DBPEDIA", "http://dbpedia.org/sparql/");
 
 // geonames endpoint
 define("ENDPOINT_GEONAMES", "http://geonames.nema.ecs.soton.ac.uk:9000/sparql/");
+
+// BBC data endpoint (note no slash at the end of this one)
+define("ENDPOINT_BBC", "http://api.talis.com/stores/bbc-backstage/services/sparql");

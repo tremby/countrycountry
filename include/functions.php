@@ -500,6 +500,50 @@ function dbpediaartists($genreuri, $countryuri = null) {
 	return $dbartists_in_country;
 }
 
+// get BBC URI which is the sameAs the given DBpedia URI. return false if there 
+// is none
+function bbcuri($dbpediauri) {
+	require_once SITEROOT_LOCAL . "include/arc/ARC2.php";
+
+	$query = prefix("owl") . "
+		SELECT * WHERE {
+			?bbcuri owl:sameAs <" . $dbpediauri . "> .
+			FILTER regex(str(?bbcuri), \"^http://www.bbc.co.uk/\") .
+		}
+	";
+	$store = ARC2::getRemoteStore(array("remote_store_endpoint" => ENDPOINT_BBC));
+	$result = $store->query($query, "rows");
+
+	if (empty($result))
+		return false;
+
+	return $result[0]["bbcuri"];
+}
+
+// get info from the BBC, given a BBC URI
+function bbcinfo($bbcuri) {
+	require_once SITEROOT_LOCAL . "include/arc/ARC2.php";
+
+	$store = ARC2::getRemoteStore(array("remote_store_endpoint" => ENDPOINT_BBC));
+
+	$query = prefix(array_keys($GLOBALS["ns"])) . "
+		SELECT * WHERE {
+			OPTIONAL { <$bbcuri> rdfs:comment ?comment . }
+			OPTIONAL { <$bbcuri> foaf:homepage ?homepage . }
+			OPTIONAL { <$bbcuri> mo:image ?image . }
+			OPTIONAL { <$bbcuri> mo:wikipedia ?wikipedia . }
+			OPTIONAL { <$bbcuri> mo:musicbrainz ?musicbrainz . }
+			OPTIONAL { <$bbcuri> mo:imdb ?imdb . }
+			OPTIONAL { <$bbcuri> mo:myspace ?myspace . }
+		}
+	";
+	$result = $store->query($query, "rows");
+
+	if (empty($result))
+		return array();
+	return $result[0];
+}
+
 // get all associations for given array of signals
 function getassociations($signals) {
 	require_once SITEROOT_LOCAL . "include/arc/ARC2.php";

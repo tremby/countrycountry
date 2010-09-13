@@ -161,3 +161,8 @@ table.datatable td {
 	-webkit-column-count: 2;
 	-webkit-column-spacing: 2em;
 }
+
+.hint {
+	color: #888;
+	font-size: 85%;
+}

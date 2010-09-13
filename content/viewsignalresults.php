@@ -282,6 +282,44 @@ include "htmlheader.php";
 	</script>
 <?php } ?>
 
+<h3>External links for this artist</h3>
+<?php
+$bbcuri = bbcuri($signalinfo["artist"]);
+if ($bbcuri === false) { ?>
+	<p>This artist doesn't appear to be featured on BBC Music.</p>
+<?php } else {
+	$bbcinfo = bbcinfo($bbcuri);
+	if (empty($bbcinfo)) { ?>
+		<p>None of the information seeked was found on BBC Music.</p>
+	<? } else { ?>
+		<ul>
+			<li><?php echo urilink($bbcuri, "BBC URI"); ?></li>
+			<?php if (isset($bbcinfo["comment"])) { ?>
+				<li><em><?php echo htmlspecialchars($bbcinfo["comment"]); ?></em></li>
+			<?php }
+			if (isset($bbcinfo["homepage"])) { ?>
+				<li><a href="<?php echo htmlspecialchars($bbcinfo["homepage"]); ?>">Homepage</a></li>
+			<?php }
+			if (isset($bbcinfo["wikipedia"])) { ?>
+				<li><a href="<?php echo htmlspecialchars($bbcinfo["wikipedia"]); ?>">Wikipedia article</a></li>
+			<?php }
+			if (isset($bbcinfo["musicbrainz"])) { ?>
+				<li><a href="<?php echo htmlspecialchars($bbcinfo["musicbrainz"]); ?>">Musicbrainz entry</a></li>
+			<?php }
+			if (isset($bbcinfo["myspace"])) { ?>
+				<li><a href="<?php echo htmlspecialchars($bbcinfo["myspace"]); ?>">Myspace page</a></li>
+			<?php }
+			if (isset($bbcinfo["imdb"])) { ?>
+				<li><a href="<?php echo htmlspecialchars($bbcinfo["imdb"]); ?>">IMDB entry</a></li>
+			<?php }
+			if (isset($bbcinfo["image"])) { ?>
+				<li><img src="<?php echo htmlspecialchars($bbcinfo["image"]); ?>"></li>
+			<?php } ?>
+		</ul>
+	<?php }
+}
+?>
+
 <h3>External links for the heaviest weighted genre</h3>
 <dl class="single">
 	<?php foreach ($classifier_genre_weight as $classifier => $genre_weight) {
@@ -300,6 +338,7 @@ include "htmlheader.php";
 			}
 			?>
 			<h4>Some random artists from the same <?php if ($country) echo "country and "; ?>genre:</h4>
+			<p class="hint">Data from DBpedia</p>
 			<?php if (empty($artists)) { ?>
 				<p>No artists matching this genre were found in DBpedia.</p>
 			<?php } else { ?>
@@ -313,6 +352,34 @@ include "htmlheader.php";
 							<a href="<?php echo htmlspecialchars($artists[$k]["place"]); ?>">
 								<?php echo htmlspecialchars($artists[$k]["placename"]); ?>
 							</a>
+							<?php if (($bbcuri = bbcuri($artists[$k]["artist"])) !== false) { ?>
+								<p class="hint">Further data from the BBC</p>
+								<ul>
+									<?php $bbcinfo = bbcinfo($bbcuri); ?>
+									<li><?php echo urilink($bbcuri, "BBC URI"); ?></li>
+									<?php if (isset($bbcinfo["comment"])) { ?>
+										<li><em><?php echo htmlspecialchars($bbcinfo["comment"]); ?></em></li>
+									<?php }
+									if (isset($bbcinfo["homepage"])) { ?>
+										<li><a href="<?php echo htmlspecialchars($bbcinfo["homepage"]); ?>">Homepage</a></li>
+									<?php }
+									if (isset($bbcinfo["wikipedia"])) { ?>
+										<li><a href="<?php echo htmlspecialchars($bbcinfo["wikipedia"]); ?>">Wikipedia article</a></li>
+									<?php }
+									if (isset($bbcinfo["musicbrainz"])) { ?>
+										<li><a href="<?php echo htmlspecialchars($bbcinfo["musicbrainz"]); ?>">Musicbrainz entry</a></li>
+									<?php }
+									if (isset($bbcinfo["myspace"])) { ?>
+										<li><a href="<?php echo htmlspecialchars($bbcinfo["myspace"]); ?>">Myspace page</a></li>
+									<?php }
+									if (isset($bbcinfo["imdb"])) { ?>
+										<li><a href="<?php echo htmlspecialchars($bbcinfo["imdb"]); ?>">IMDB entry</a></li>
+									<?php }
+									if (isset($bbcinfo["image"])) { ?>
+										<li><img src="<?php echo htmlspecialchars($bbcinfo["image"]); ?>"></li>
+									<?php } ?>
+								</ul>
+							<?php } ?>
 						</li>
 					<?php } ?>
 				</ul>

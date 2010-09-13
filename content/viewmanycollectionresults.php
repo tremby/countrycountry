@@ -200,6 +200,7 @@ include "htmlheader.php";
 						<dd>
 							<p>Most heavily weighted genre: <strong><?php echo htmlspecialchars(uriendpart($heavy)); ?></strong> <?php echo urilink($heavy); ?></p>
 							<h4>Some random artists from the same genre:</h4>
+							<p class="hint">Data from DBpedia</p>
 							<?php
 							$artists = dbpediaartists($heavy);
 							if (empty($artists)) { ?>
@@ -215,6 +216,34 @@ include "htmlheader.php";
 											<a href="<?php echo htmlspecialchars($artists[$k]["place"]); ?>">
 												<?php echo htmlspecialchars($artists[$k]["placename"]); ?>
 											</a>
+											<?php if (($bbcuri = bbcuri($artists[$k]["artist"])) !== false) { ?>
+												<p class="hint">Further data from the BBC</p>
+												<ul>
+													<?php $bbcinfo = bbcinfo($bbcuri); ?>
+													<li><?php echo urilink($bbcuri, "BBC URI"); ?></li>
+													<?php if (isset($bbcinfo["comment"])) { ?>
+														<li><em><?php echo htmlspecialchars($bbcinfo["comment"]); ?></em></li>
+													<?php }
+													if (isset($bbcinfo["homepage"])) { ?>
+														<li><a href="<?php echo htmlspecialchars($bbcinfo["homepage"]); ?>">Homepage</a></li>
+													<?php }
+													if (isset($bbcinfo["wikipedia"])) { ?>
+														<li><a href="<?php echo htmlspecialchars($bbcinfo["wikipedia"]); ?>">Wikipedia article</a></li>
+													<?php }
+													if (isset($bbcinfo["musicbrainz"])) { ?>
+														<li><a href="<?php echo htmlspecialchars($bbcinfo["musicbrainz"]); ?>">Musicbrainz entry</a></li>
+													<?php }
+													if (isset($bbcinfo["myspace"])) { ?>
+														<li><a href="<?php echo htmlspecialchars($bbcinfo["myspace"]); ?>">Myspace page</a></li>
+													<?php }
+													if (isset($bbcinfo["imdb"])) { ?>
+														<li><a href="<?php echo htmlspecialchars($bbcinfo["imdb"]); ?>">IMDB entry</a></li>
+													<?php }
+													if (isset($bbcinfo["image"])) { ?>
+														<li><img src="<?php echo htmlspecialchars($bbcinfo["image"]); ?>"></li>
+													<?php } ?>
+												</ul>
+											<?php } ?>
 										</li>
 									<?php } ?>
 								</ul>
