@@ -158,7 +158,7 @@ function prefix($n) {
 // collected newly and the result will not be stored. true means use cached 
 // result however old it is)
 // type is passed straight through to Arc
-function queryjamendo($query, $maxage = true/*604800/*a week*//*86400/*1 day*/, $type = "rows") {
+function queryjamendo($query, $maxage = 86400/*1 day*/, $type = "rows") {
 	$cachefile = SITEROOT_LOCAL . "cache/" . md5($query . $type);
 
 	// collect from cache if available and recent enough
