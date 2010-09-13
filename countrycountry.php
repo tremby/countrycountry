@@ -7,7 +7,7 @@ error_reporting(E_ALL);
 ini_set("display_errors", true);
 
 // increase memory limit
-ini_set("memory_limit", "512M");
+ini_set("memory_limit", "2G");
 
 // increase max execution time (thousands of queries takes a while)
 ini_set("max_execution_time", 300);
