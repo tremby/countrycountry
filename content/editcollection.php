@@ -354,9 +354,9 @@ include "htmlheader.php";
 			</tr>
 		<?php } ?>
 	</table>
-
 <?php } ?>
-<h3>Actions</h3>
+
+<h3>Publish this collection</h3>
 <?php
 $problems = array();
 if (count($collection->results()) == 0)
@@ -366,58 +366,54 @@ if (!$collection->title())
 if (!$collection->author())
 	$problems[] = "Author required";
 ?>
-<ul>
-	<?php if (!empty($problems)) { ?>
-		<li>
-			<p>Can't publish yet:</p>
-			<ul>
-				<?php foreach ($problems as $problem) { ?>
-					<li><?php echo htmlspecialchars($problem); ?></li>
-				<?php } ?>
-			</ul>
-		</li>
-	<?php } else { ?>
-		<li>
-			<a href="<?php echo SITEROOT_WEB; ?>publishcollection/<?php echo $collection->id(); ?>">Publish</a>
-		</li>
-	<?php } ?>
-	<?php if (isset($_GET["demo"])) { ?>
-		<li>
-			<p>Demo queries</p>
-			<dl class="twocol">
-				<?php foreach (array(
-					array("Spain", 3000, "ES", "Spanish"),
-					array("Poland", 1100, "PL", "Polish"),
-					array("Turkey", 15, "TR", "Turkish"),
-					array("Ireland", 15, "IE", "Irish"),
-					array("Lithuania", 15, "LT", "Lithuanian"),
-					array("Iceland", 20, "IS", "Icelandic"),
-					array("Malta", 30, "MT", "Maltese"),
-					array("Ukraine", 5, "UA", "Ukrainian"),
-					array("Estonia", 3, "EE", "Estonian"),
-				) as $country) { ?>
-					<dt>Music from <?php echo $country[0]; ?></dt>
-					<dd>
-						<ul>
-							<li><?php if ($country[1] >= 50) echo "Large"; else if ($country[1] >= 10) echo "Small"; else echo "Very small"; ?> set (~<?php echo $country[1]; ?>)</li>
-							<li><?php if ($country[1] >= 50) echo "Present on demo external HDD"; else echo "Present on VM HDD"; ?></li>
-							<li>
-								<form action="<?php echo SITEROOT_WEB; ?>editcollection/<?php echo $collection->id(); ?>" method="post">
-									<input type="hidden" name="author" value="demo">
-									<input type="hidden" name="filteractive_artistcountry" value="true">
-									<input type="hidden" name="artistcountry_countrycode[]" value="<?php echo $country[2]; ?>">
-									<input type="hidden" name="description" value="A collection of Creative Commons-licensed music from <?php echo $country[3]; ?> artists">
-									<input type="hidden" name="title" value="Music from <?php echo $country[0]; ?>">
-									<input type="submit" name="submit" value="Populate">
-								</form>
-							</li>
-						</ul>
-					</dd>
-				<?php } ?>
-			</dl>
-		</li>
-	<?php } ?>
-</ul>
+<?php if (!empty($problems)) { ?>
+	<p>The collection is not yet ready to be published.</p>
+	<ul>
+		<?php foreach ($problems as $problem) { ?>
+			<li><?php echo htmlspecialchars($problem); ?></li>
+		<?php } ?>
+	</ul>
+<?php } else { ?>
+	<p>The collection is ready to be published.</p>
+	<ul><li>
+		<a href="<?php echo SITEROOT_WEB; ?>publishcollection/<?php echo $collection->id(); ?>">Publish</a>
+	</li></ul>
+<?php } ?>
+
+<?php if (isset($_GET["demo"])) { ?>
+	<h3>Demo queries</h3>
+	<dl class="twocol">
+		<?php foreach (array(
+			array("Spain", 3000, "ES", "Spanish"),
+			array("Poland", 1100, "PL", "Polish"),
+			array("Turkey", 15, "TR", "Turkish"),
+			array("Ireland", 15, "IE", "Irish"),
+			array("Lithuania", 15, "LT", "Lithuanian"),
+			array("Iceland", 20, "IS", "Icelandic"),
+			array("Malta", 30, "MT", "Maltese"),
+			array("Ukraine", 5, "UA", "Ukrainian"),
+			array("Estonia", 3, "EE", "Estonian"),
+		) as $country) { ?>
+			<dt>Music from <?php echo $country[0]; ?></dt>
+			<dd>
+				<ul>
+					<li><?php if ($country[1] >= 50) echo "Large"; else if ($country[1] >= 10) echo "Small"; else echo "Very small"; ?> set (~<?php echo $country[1]; ?>)</li>
+					<li><?php if ($country[1] >= 50) echo "Present on demo external HDD"; else echo "Present on VM HDD"; ?></li>
+					<li>
+						<form action="<?php echo SITEROOT_WEB; ?>editcollection/<?php echo $collection->id(); ?>" method="post">
+							<input type="hidden" name="author" value="demo">
+							<input type="hidden" name="filteractive_artistcountry" value="true">
+							<input type="hidden" name="artistcountry_countrycode[]" value="<?php echo $country[2]; ?>">
+							<input type="hidden" name="description" value="A collection of Creative Commons-licensed music from <?php echo $country[3]; ?> artists">
+							<input type="hidden" name="title" value="Music from <?php echo $country[0]; ?>">
+							<input type="submit" name="submit" value="Populate">
+						</form>
+					</li>
+				</ul>
+			</dd>
+		<?php } ?>
+	</dl>
+<?php } ?>
 
 <?php
 include "htmlfooter.php";
