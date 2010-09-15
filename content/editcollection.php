@@ -283,7 +283,7 @@ include "htmlheader.php";
 					</dl>
 				</dd>
 
-				<dt>Submit</dt>
+				<dt>Update collection with new filters</dt>
 				<dd><input type="submit" name="submit" value="Update"></dd>
 			</dl>
 		</form>
