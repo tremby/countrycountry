@@ -32,6 +32,6 @@ header("Content-Script-Type: text/javascript");
 </head>
 <body>
 <div id="header">
-	<h1>NEMA: Country/country</h1>
+	<h1><a href="<?php echo SITEROOT_WEB; ?>">NEMA: Country/country</a></h1>
 </div>
 <div id="body">
