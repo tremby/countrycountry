@@ -142,11 +142,7 @@ $(document).ready(function() {
 		$(this).parents("li:first").find("dl").show("fast");
 	});
 
-	$("#results").hide();
-	$("#toggleresults").click(function(e) {
-		e.preventDefault();
-		$("#results").toggle("fast");
-	});
+	$("#showresults, #showfullquery, #showdemoqueries").fancybox();
 });
 <?php
 $headerjs = ob_get_clean();
@@ -156,146 +152,142 @@ include "htmlheader.php";
 
 <h2>New collection<?php if ($collection->title()) { ?> "<?php echo htmlspecialchars($collection->title()); ?>"<?php } ?></h2>
 
-<div class="cols">
-	<div class="cell">
-		<h3>Build collection</h3>
-		<form action="<?php echo SITEROOT_WEB; ?>editcollection/<?php echo $collection->id(); ?>" method="post">
-			<dl>
-				<dt><label for="title">Title</label></dt>
-				<dd><input type="text" size="64" name="title" id="title"<?php if ($collection->title()) { ?> value="<?php echo htmlspecialchars($collection->title()); ?>"<?php } ?>></dd>
+<h3>Build collection</h3>
 
-				<dt><label for="description">Description</label></dt>
-				<dd><textarea cols="64" rows="4" name="description" id="description"><?php if ($collection->description()) echo htmlspecialchars($collection->description()); ?></textarea></dd>
+<div class="hint">
+	<ul>
+		<li><a id="showdemoqueries" href="#demoqueries">Show demo query shortcuts</a></li>
+	</ul>
+</div>
 
-				<dt><label for="author">Author</label></dt>
-				<dd><input type="text" size="64" name="author" id="author"<?php if ($collection->author()) { ?> value="<?php echo htmlspecialchars($collection->author()); ?>"<?php } ?>></dd>
+<form action="<?php echo SITEROOT_WEB; ?>editcollection/<?php echo $collection->id(); ?>" method="post">
+	<dl>
+		<dt><label for="title">Title</label></dt>
+		<dd><input type="text" size="64" name="title" id="title"<?php if ($collection->title()) { ?> value="<?php echo htmlspecialchars($collection->title()); ?>"<?php } ?>></dd>
 
-				<dt>Filters</dt>
+		<dt><label for="description">Description</label></dt>
+		<dd><textarea cols="64" rows="4" name="description" id="description"><?php if ($collection->description()) echo htmlspecialchars($collection->description()); ?></textarea></dd>
+
+		<dt><label for="author">Author</label></dt>
+		<dd><input type="text" size="64" name="author" id="author"<?php if ($collection->author()) { ?> value="<?php echo htmlspecialchars($collection->author()); ?>"<?php } ?>></dd>
+
+		<dt>Filters</dt>
+		<dd>
+			<dl id="filters">
+				<dt>
+					<label>
+						<input type="checkbox" name="filteractive_artistname" id="filteractive_artistname" value="true"<?php if (isset($collection->data["filteractive_artistname"])) { ?> checked="checked"<?php } ?>>
+						Artist name
+					</label>
+				</dt>
 				<dd>
-					<dl id="filters">
-						<dt>
-							<label>
-								<input type="checkbox" name="filteractive_artistname" id="filteractive_artistname" value="true"<?php if (isset($collection->data["filteractive_artistname"])) { ?> checked="checked"<?php } ?>>
-								Artist name
-							</label>
-						</dt>
-						<dd>
-							<dl>
-								<dt><label for="artistname_regex">Regex</label></dt>
-								<dd><input type="text" size="64" name="artistname_regex" id="artistname_regex"<?php if (isset($collection->data["artistname_regex"])) { ?> value="<?php echo htmlspecialchars($collection->data["artistname_regex"]); ?>"<?php } ?>></dd>
+					<dl>
+						<dt><label for="artistname_regex">Regex</label></dt>
+						<dd><input type="text" size="64" name="artistname_regex" id="artistname_regex"<?php if (isset($collection->data["artistname_regex"])) { ?> value="<?php echo htmlspecialchars($collection->data["artistname_regex"]); ?>"<?php } ?>></dd>
 
-								<dt><label for="artistname_ci">Case insensitive</label></dt>
-								<dd><input type="checkbox" name="artistname_ci" id="artistname_ci" value="true"<?php if (isset($collection->data["artistname_ci"])) { ?> checked="checked"<?php } ?>></dd>
-							</dl>
-						</dd>
-						<dt>
-							<label>
-								<input type="checkbox" name="filteractive_artistcountry" id="filteractive_artistcountry" value="true"<?php if (isset($collection->data["filteractive_artistcountry"])) { ?> checked="checked"<?php } ?>>
-								Artist country
-							</label>
-						</dt>
+						<dt><label for="artistname_ci">Case insensitive</label></dt>
+						<dd><input type="checkbox" name="artistname_ci" id="artistname_ci" value="true"<?php if (isset($collection->data["artistname_ci"])) { ?> checked="checked"<?php } ?>></dd>
+					</dl>
+				</dd>
+				<dt>
+					<label>
+						<input type="checkbox" name="filteractive_artistcountry" id="filteractive_artistcountry" value="true"<?php if (isset($collection->data["filteractive_artistcountry"])) { ?> checked="checked"<?php } ?>>
+						Artist country
+					</label>
+				</dt>
+				<dd>
+					<dl>
+						<dt><label for="artistcountry_countrycode">Country</label></dt>
 						<dd>
-							<dl>
-								<dt><label for="artistcountry_countrycode">Country</label></dt>
-								<dd>
-									<select multiple="multiple" size="8" name="artistcountry_countrycode[]" id="artistcountry_countrycode">
-										<?php foreach ($countries as $cc => $name) { ?>
-											<option value="<?php echo htmlspecialchars($cc); ?>"<?php if (isset($collection->data["artistcountry_countrycode"]) && in_array($cc, $collection->data["artistcountry_countrycode"])) { ?> selected="selected"<?php } ?>><?php echo htmlspecialchars($name); ?></option>
-										<?php } ?>
-									</select>
-								</dd>
-							</dl>
-						</dd>
-						<dt>
-							<label>
-								<input type="checkbox" name="filteractive_recorddate" id="filteractive_recorddate" value="true"<?php if (isset($collection->data["filteractive_recorddate"])) { ?> checked="checked"<?php } ?>>
-								Record date (YYYY-MM-DD strings)
-							</label>
-						</dt>
-						<dd>
-							<dl>
-								<dt>
-									<input type="checkbox" name="recorddate_from_active" id="recorddate_from_active"<?php if (isset($collection->data["recorddate_from_active"])) { ?> checked="checked"<?php } ?>>
-									From
-								</dt>
-								<dd><input type="text" size="16" name="recorddate_from"<?php if (isset($collection->data["recorddate_from"])) { ?> value="<?php echo htmlspecialchars($collection->data["recorddate_from"]); ?>"<?php } ?>></dd>
-								<dt>
-									<input type="checkbox" name="recorddate_before_active" id="recorddate_before_active"<?php if (isset($collection->data["recorddate_before_active"])) { ?> checked="checked"<?php } ?>>
-									Before
-								</dt>
-								<dd><input type="text" size="16" name="recorddate_before"<?php if (isset($collection->data["recorddate_before"])) { ?> value="<?php echo htmlspecialchars($collection->data["recorddate_before"]); ?>"<?php } ?>></dd>
-							</dl>
-						</dd>
-						<dt>
-							<label>
-								<input type="checkbox" name="filteractive_recordname" id="filteractive_recordname" value="true"<?php if (isset($collection->data["filteractive_recordname"])) { ?> checked="checked"<?php } ?>>
-								Record name
-							</label>
-						</dt>
-						<dd>
-							<dl>
-								<dt><label for="recordname_regex">Regex</label></dt>
-								<dd><input type="text" size="64" name="recordname_regex" id="recordname_regex"<?php if (isset($collection->data["recordname_regex"])) { ?> value="<?php echo htmlspecialchars($collection->data["recordname_regex"]); ?>"<?php } ?>></dd>
-
-								<dt><label for="recordname_ci">Case insensitive</label></dt>
-								<dd><input type="checkbox" name="recordname_ci" id="recordname_ci" value="true"<?php if (isset($collection->data["recordname_ci"])) { ?> checked="checked"<?php } ?>></dd>
-							</dl>
-						</dd>
-						<dt>
-							<label>
-								<input type="checkbox" name="filteractive_recordtag" id="filteractive_recordtag" value="true"<?php if (isset($collection->data["filteractive_recordtag"])) { ?> checked="checked"<?php } ?>>
-								Record tag
-							</label>
-						</dt>
-						<dd>
-							<dl>
-								<dt><label for="recordtag_tag">Tag</label></dt>
-								<dd><input type="text" size="64" name="recordtag_tag" id="recordtag_tag"<?php if (isset($collection->data["recordtag_tag"])) { ?> value="<?php echo htmlspecialchars($collection->data["recordtag_tag"]); ?>"<?php } ?>></dd>
-							</dl>
-						</dd>
-						<dt>
-							<label>
-								<input type="checkbox" name="filteractive_trackname" id="filteractive_trackname" value="true"<?php if (isset($collection->data["filteractive_trackname"])) { ?> checked="checked"<?php } ?>>
-								Track name
-							</label>
-						</dt>
-						<dd>
-							<dl>
-								<dt><label for="trackname_regex">Regex</label></dt>
-								<dd><input type="text" size="64" name="trackname_regex" id="trackname_regex"<?php if (isset($collection->data["trackname_regex"])) { ?> value="<?php echo htmlspecialchars($collection->data["trackname_regex"]); ?>"<?php } ?>></dd>
-
-								<dt><label for="trackname_ci">Case insensitive</label></dt>
-								<dd><input type="checkbox" name="trackname_ci" id="trackname_ci" value="true"<?php if (isset($collection->data["trackname_ci"])) { ?> checked="checked"<?php } ?>></dd>
-							</dl>
-						</dd>
-						<dt>
-							<label>
-								<input type="checkbox" name="filteractive_tracknumber" id="filteractive_tracknumber" value="true"<?php if (isset($collection->data["filteractive_tracknumber"])) { ?> checked="checked"<?php } ?>>
-								Track number
-							</label>
-						</dt>
-						<dd>
-							<dl>
-								<dt><label for="tracknumber_number">Track number</label></dt>
-								<dd><input type="text" size="4" name="tracknumber_number" id="tracknumber_number"<?php if (isset($collection->data["tracknumber_number"])) { ?> value="<?php echo htmlspecialchars($collection->data["tracknumber_number"]); ?>"<?php } ?>></dd>
-							</dl>
+							<select multiple="multiple" size="8" name="artistcountry_countrycode[]" id="artistcountry_countrycode">
+								<?php foreach ($countries as $cc => $name) { ?>
+									<option value="<?php echo htmlspecialchars($cc); ?>"<?php if (isset($collection->data["artistcountry_countrycode"]) && in_array($cc, $collection->data["artistcountry_countrycode"])) { ?> selected="selected"<?php } ?>><?php echo htmlspecialchars($name); ?></option>
+								<?php } ?>
+							</select>
 						</dd>
 					</dl>
 				</dd>
+				<dt>
+					<label>
+						<input type="checkbox" name="filteractive_recorddate" id="filteractive_recorddate" value="true"<?php if (isset($collection->data["filteractive_recorddate"])) { ?> checked="checked"<?php } ?>>
+						Record date (YYYY-MM-DD strings)
+					</label>
+				</dt>
+				<dd>
+					<dl>
+						<dt>
+							<input type="checkbox" name="recorddate_from_active" id="recorddate_from_active"<?php if (isset($collection->data["recorddate_from_active"])) { ?> checked="checked"<?php } ?>>
+							From
+						</dt>
+						<dd><input type="text" size="16" name="recorddate_from"<?php if (isset($collection->data["recorddate_from"])) { ?> value="<?php echo htmlspecialchars($collection->data["recorddate_from"]); ?>"<?php } ?>></dd>
+						<dt>
+							<input type="checkbox" name="recorddate_before_active" id="recorddate_before_active"<?php if (isset($collection->data["recorddate_before_active"])) { ?> checked="checked"<?php } ?>>
+							Before
+						</dt>
+						<dd><input type="text" size="16" name="recorddate_before"<?php if (isset($collection->data["recorddate_before"])) { ?> value="<?php echo htmlspecialchars($collection->data["recorddate_before"]); ?>"<?php } ?>></dd>
+					</dl>
+				</dd>
+				<dt>
+					<label>
+						<input type="checkbox" name="filteractive_recordname" id="filteractive_recordname" value="true"<?php if (isset($collection->data["filteractive_recordname"])) { ?> checked="checked"<?php } ?>>
+						Record name
+					</label>
+				</dt>
+				<dd>
+					<dl>
+						<dt><label for="recordname_regex">Regex</label></dt>
+						<dd><input type="text" size="64" name="recordname_regex" id="recordname_regex"<?php if (isset($collection->data["recordname_regex"])) { ?> value="<?php echo htmlspecialchars($collection->data["recordname_regex"]); ?>"<?php } ?>></dd>
 
-				<dt>Update collection with new filters</dt>
-				<dd><input type="submit" name="submit" value="Update"></dd>
+						<dt><label for="recordname_ci">Case insensitive</label></dt>
+						<dd><input type="checkbox" name="recordname_ci" id="recordname_ci" value="true"<?php if (isset($collection->data["recordname_ci"])) { ?> checked="checked"<?php } ?>></dd>
+					</dl>
+				</dd>
+				<dt>
+					<label>
+						<input type="checkbox" name="filteractive_recordtag" id="filteractive_recordtag" value="true"<?php if (isset($collection->data["filteractive_recordtag"])) { ?> checked="checked"<?php } ?>>
+						Record tag
+					</label>
+				</dt>
+				<dd>
+					<dl>
+						<dt><label for="recordtag_tag">Tag</label></dt>
+						<dd><input type="text" size="64" name="recordtag_tag" id="recordtag_tag"<?php if (isset($collection->data["recordtag_tag"])) { ?> value="<?php echo htmlspecialchars($collection->data["recordtag_tag"]); ?>"<?php } ?>></dd>
+					</dl>
+				</dd>
+				<dt>
+					<label>
+						<input type="checkbox" name="filteractive_trackname" id="filteractive_trackname" value="true"<?php if (isset($collection->data["filteractive_trackname"])) { ?> checked="checked"<?php } ?>>
+						Track name
+					</label>
+				</dt>
+				<dd>
+					<dl>
+						<dt><label for="trackname_regex">Regex</label></dt>
+						<dd><input type="text" size="64" name="trackname_regex" id="trackname_regex"<?php if (isset($collection->data["trackname_regex"])) { ?> value="<?php echo htmlspecialchars($collection->data["trackname_regex"]); ?>"<?php } ?>></dd>
+
+						<dt><label for="trackname_ci">Case insensitive</label></dt>
+						<dd><input type="checkbox" name="trackname_ci" id="trackname_ci" value="true"<?php if (isset($collection->data["trackname_ci"])) { ?> checked="checked"<?php } ?>></dd>
+					</dl>
+				</dd>
+				<dt>
+					<label>
+						<input type="checkbox" name="filteractive_tracknumber" id="filteractive_tracknumber" value="true"<?php if (isset($collection->data["filteractive_tracknumber"])) { ?> checked="checked"<?php } ?>>
+						Track number
+					</label>
+				</dt>
+				<dd>
+					<dl>
+						<dt><label for="tracknumber_number">Track number</label></dt>
+						<dd><input type="text" size="4" name="tracknumber_number" id="tracknumber_number"<?php if (isset($collection->data["tracknumber_number"])) { ?> value="<?php echo htmlspecialchars($collection->data["tracknumber_number"]); ?>"<?php } ?>></dd>
+					</dl>
+				</dd>
 			</dl>
-		</form>
-	</div>
+		</dd>
 
-	<?php if (count($collection->filters()) > 0) { ?>
-		<div class="cell" id="fullquery">
-			<h3>Full query</h3>
-			<pre id="query"><?php echo htmlspecialchars($collection->query()); ?></pre>
-		</div>
-	<?php } ?>
-</div>
+		<dt>Update collection with new filters</dt>
+		<dd><input type="submit" name="submit" value="Update"></dd>
+	</dl>
+</form>
 
 <?php if (count($collection->filters()) > 0) { ?>
 	<h3>Results</h3>
@@ -316,44 +308,56 @@ include "htmlheader.php";
 	$results_countries = array_unique($results_countries);
 	?>
 	<p>
-		Found <?php echo count($collection->results()); ?> track<?php echo count($collection->results()) == 1 ? "" : "s"; ?>
+		Found <strong><?php echo count($collection->results()); ?> track<?php echo count($collection->results()) == 1 ? "" : "s"; ?></strong>
 		from <?php echo count($results_records); ?> record<?php echo count($results_records) == 1 ? "" : "s"; ?>
 		by <?php echo count($results_artists); ?> artist<?php echo count($results_artists) == 1 ? "" : "s"; ?>
 		from <?php echo count($results_countries); ?> countr<?php echo count($results_countries) == 1 ? "y" : "ies"; ?>.
 	</p>
-	<p><a href="#" id="toggleresults">Toggle results table</a></p>
-	<table id="results" class="datatable">
-		<tr>
-			<th>Country</th>
-			<th>Artist</th>
-			<th>Record date</th>
-			<th>Record</th>
-			<th>Track number</th>
-			<th>Track</th>
-		</tr>
-		<?php foreach ($collection->results() as $result) { ?>
+	<ul>
+		<li><a id="showfullquery" href="#fullquery">Show the full current Sparql query</a></li>
+		<li><a href="#results" id="showresults">Show results table</a></li>
+	</ul>
+
+	<div id="results" class="hidden">
+		<h3>Table of results</h3>
+		<table class="datatable">
 			<tr>
-				<td><?php if (isset($result["country type"]) && $result["country type"] == "uri") { ?>
-					<a href="<?php echo htmlspecialchars($result["country"]); ?>"><?php echo htmlspecialchars(iso3166toname(substr($result["country"], -2))); ?></a>
-				<?php } ?></td>
-				<td><?php if (isset($result["artist type"]) && $result["artist type"] == "uri") { ?>
-					<a href="<?php echo htmlspecialchars($result["artist"]); ?>"><?php echo htmlspecialchars($result["artistname"]); ?></a>
-				<?php } ?></td>
-				<td><?php if (isset($result["recorddate type"]) && $result["recorddate type"] == "literal") { ?>
-					<?php echo htmlspecialchars(date("Y-m-d", strtotime($result["recorddate"]))); ?>
-				<?php } ?></td>
-				<td><?php if (isset($result["record type"]) && $result["record type"] == "uri") { ?>
-					<a href="<?php echo htmlspecialchars($result["record"]); ?>"><?php echo htmlspecialchars($result["recordname"]); ?></a>
-				<?php } ?></td>
-				<td><?php if (isset($result["tracknumber type"]) && $result["tracknumber type"] == "literal") { ?>
-					<?php echo htmlspecialchars($result["tracknumber"]); ?>
-				<?php } ?></td>
-				<td><?php if (isset($result["track type"]) && $result["track type"] == "uri") { ?>
-					<a href="<?php echo htmlspecialchars($result["track"]); ?>"><?php echo htmlspecialchars($result["trackname"]); ?></a>
-				<?php } ?></td>
+				<th>Country</th>
+				<th>Artist</th>
+				<th>Record date</th>
+				<th>Record</th>
+				<th>Track number</th>
+				<th>Track</th>
 			</tr>
-		<?php } ?>
-	</table>
+			<?php foreach ($collection->results() as $result) { ?>
+				<tr>
+					<td><?php if (isset($result["country type"]) && $result["country type"] == "uri") { ?>
+						<a href="<?php echo htmlspecialchars($result["country"]); ?>"><?php echo htmlspecialchars(iso3166toname(substr($result["country"], -2))); ?></a>
+					<?php } ?></td>
+					<td><?php if (isset($result["artist type"]) && $result["artist type"] == "uri") { ?>
+						<a href="<?php echo htmlspecialchars($result["artist"]); ?>"><?php echo htmlspecialchars($result["artistname"]); ?></a>
+					<?php } ?></td>
+					<td><?php if (isset($result["recorddate type"]) && $result["recorddate type"] == "literal") { ?>
+						<?php echo htmlspecialchars(date("Y-m-d", strtotime($result["recorddate"]))); ?>
+					<?php } ?></td>
+					<td><?php if (isset($result["record type"]) && $result["record type"] == "uri") { ?>
+						<a href="<?php echo htmlspecialchars($result["record"]); ?>"><?php echo htmlspecialchars($result["recordname"]); ?></a>
+					<?php } ?></td>
+					<td><?php if (isset($result["tracknumber type"]) && $result["tracknumber type"] == "literal") { ?>
+						<?php echo htmlspecialchars($result["tracknumber"]); ?>
+					<?php } ?></td>
+					<td><?php if (isset($result["track type"]) && $result["track type"] == "uri") { ?>
+						<a href="<?php echo htmlspecialchars($result["track"]); ?>"><?php echo htmlspecialchars($result["trackname"]); ?></a>
+					<?php } ?></td>
+				</tr>
+			<?php } ?>
+		</table>
+	</div>
+
+	<div class="hidden" id="fullquery">
+		<h3>Current Sparql query</h3>
+		<pre><?php echo htmlspecialchars($collection->query()); ?></pre>
+	</div>
 <?php } ?>
 
 <h3>Publish this collection</h3>
@@ -374,13 +378,17 @@ if (!$collection->author())
 		<?php } ?>
 	</ul>
 <?php } else { ?>
-	<p>The collection is ready to be published.</p>
-	<ul><li>
-		<a href="<?php echo SITEROOT_WEB; ?>publishcollection/<?php echo $collection->id(); ?>">Publish</a>
-	</li></ul>
+	<dl>
+		<dt>The collection is ready to be published.</dt>
+		<dd>
+			<form action="<?php echo SITEROOT_WEB; ?>publishcollection/<?php echo $collection->id(); ?>" method="post">
+				<input type="submit" name="publish" value="Publish">
+			</form>
+		</dd>
+	</dl>
 <?php } ?>
 
-<?php if (isset($_GET["demo"])) { ?>
+<div id="demoqueries" class="hidden">
 	<h3>Demo queries</h3>
 	<dl class="twocol">
 		<?php foreach (array(
@@ -413,7 +421,7 @@ if (!$collection->author())
 			</dd>
 		<?php } ?>
 	</dl>
-<?php } ?>
+</div>
 
 <?php
 include "htmlfooter.php";
