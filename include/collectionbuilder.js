@@ -18,6 +18,9 @@ $(document).ready(function() {
 	$(".deletebutton").click(function() {
 		return confirm("Are you sure you want to delete the collection '" + $(this).parents("tr:first").find("td:first").text() + "' and all its groundings?");
 	});
+
+	// stripe tables
+	$("table tr:odd").css("backgroundColor", "#eef");
 });
 function plotgraph(md5sum, plotto, xmax) {
 	//console.log("plotting graph " + md5sum + "!");
