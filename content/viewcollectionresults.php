@@ -126,7 +126,7 @@ include "htmlheader.php";
 <?php } ?>
 <?php foreach ($collections as $collectionuri => $collection) { ?>
 	<?php if (count($collections) > 1) { ?>
-		<div class="cell" style="min-width: 420px;">
+		<div class="cell" style="min-width: 410px;">
 	<?php } ?>
 	<h2><?php echo htmlspecialchars($collection["index"][$collection["aggregateuri"]][$ns["dc"] . "title"][0]); ?></h2>
 	<h3>Collection information and basic statistics</h3>
