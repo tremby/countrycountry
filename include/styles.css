@@ -187,6 +187,7 @@ table.datatable td {
 	top: 50%;
 	margin-top: -15px;
 	text-align: center;
+	z-index: 1;
 }
 #scrollleft {
 	left: 0;
