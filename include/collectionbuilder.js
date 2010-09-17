@@ -21,6 +21,9 @@ $(document).ready(function() {
 
 	// stripe tables
 	$("table tr:odd").css("backgroundColor", "#eef");
+
+	// set up fancyboxes
+	$("a.fancybox").fancybox();
 });
 function plotgraph(md5sum, plotto, xmax) {
 	//console.log("plotting graph " + md5sum + "!");

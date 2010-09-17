@@ -141,8 +141,6 @@ $(document).ready(function() {
 			$(this).parents("dt:first").next("dd").hide("fast");
 		$(this).parents("li:first").find("dl").show("fast");
 	});
-
-	$("#showresults, #showfullquery, #showdemoqueries").fancybox();
 });
 <?php
 $headerjs = ob_get_clean();
@@ -156,7 +154,7 @@ include "htmlheader.php";
 
 <div class="hint">
 	<ul>
-		<li><a id="showdemoqueries" href="#demoqueries">Show demo query shortcuts</a></li>
+		<li><a class="fancybox" id="showdemoqueries" href="#demoqueries">Show demo query shortcuts</a></li>
 	</ul>
 </div>
 
@@ -314,8 +312,8 @@ include "htmlheader.php";
 		from <?php echo count($results_countries); ?> countr<?php echo count($results_countries) == 1 ? "y" : "ies"; ?>.
 	</p>
 	<ul>
-		<li><a id="showfullquery" href="#fullquery">Show the full current Sparql query</a></li>
-		<li><a href="#results" id="showresults">Show results table</a></li>
+		<li><a class="fancybox" id="showfullquery" href="#fullquery">Show the full current Sparql query</a></li>
+		<li><a class="fancybox" id="showresults" href="#results">Show results table</a></li>
 	</ul>
 
 	<div id="results" class="hidden">
