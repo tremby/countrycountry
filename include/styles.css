@@ -33,21 +33,23 @@ a:hover {
 }
 
 #header {
-	border-top-style: none;
 	padding: 1em;
-	border-style: none none solid;
+	text-align: center;
 }
 #footer {
 	font-size: 80%;
 	text-align: center;
-	border-style: solid none none;
 }
 
 #body {
 	background-color: white;
 	color: #444;
 	border: 3px solid #aac;
-	border-style: solid none;
+	border-radius: 10px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	width: 95%;
+	margin: 0 auto;
 }
 #fancybox-outer {
 	color: #444;
