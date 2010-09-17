@@ -187,7 +187,7 @@ include "htmlheader.php";
 			<?php foreach ($collection["classifier_genre"] as $classifier => $genres) { ?>
 				<dt><?php echo htmlspecialchars(classifiermapping($classifier)); ?></dt>
 				<dd>
-					<div id="averagechart_<?php echo md5($collection["collectionuri"]); ?>_<?php echo md5($classifier); ?>" style="width: <?php echo count($collections) > 1 ? 500 : 370; ?>px; height: <?php echo count($collections) > 1 ? 300 : 200; ?>px;"></div>
+					<div id="averagechart_<?php echo md5($collection["collectionuri"]); ?>_<?php echo md5($classifier); ?>" style="width: <?php echo count($collections) == 1 ? 500 : 370; ?>px; height: <?php echo count($collections) == 1 ? 300 : 200; ?>px;"></div>
 					<?php
 					$data = array();
 					foreach ($genres as $genre) {
