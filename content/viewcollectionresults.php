@@ -149,15 +149,17 @@ include "htmlheader.php";
 		<dt>Number of classifiers which have been run on any of these signals</dt>
 		<dd><?php echo count($collection["classifier_genre"]); ?></dd>
 
-		<dt>Number of signals for which results are available, for each classifier</dt>
-		<dd>
-			<dl>
-				<?php foreach ($collection["classifier_genre"] as $classifier => $genres) { ?>
-					<dt><?php echo htmlspecialchars(classifiermapping($classifier)); ?></dt>
-					<dd><?php $count = 0; foreach ($collection["signals"] as $signal) if (isset($collection["assertions"][$signal][$classifier])) $count++; echo $count; ?></dd>
-				<?php } ?>
-			</dl>
-		</dd>
+		<?php if (count($collection["classifier_genre"]) > 0) { ?>
+			<dt>Number of signals for which results are available, for each classifier</dt>
+			<dd>
+				<dl>
+					<?php foreach ($collection["classifier_genre"] as $classifier => $genres) { ?>
+						<dt><?php echo htmlspecialchars(classifiermapping($classifier)); ?></dt>
+						<dd><?php $count = 0; foreach ($collection["signals"] as $signal) if (isset($collection["assertions"][$signal][$classifier])) $count++; echo $count; ?></dd>
+					<?php } ?>
+				</dl>
+			</dd>
+		<?php } ?>
 	</dl>
 
 	<?php if (empty($collection["classifier_genre"])) { ?>
