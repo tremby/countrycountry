@@ -7,10 +7,7 @@
 	<dt><a href="<?php echo SITEROOT_WEB; ?>existingcollections">Existing collections</a></dt>
 	<dd>View a table of existing collections with links to see their results and ground them against audio file repositories.</dd>
 
-	<dt><a href="<?php echo SITEROOT_WEB; ?>viewcollectionresults">View results from a single collection</a></dt>
-	<dd>Enter a signal collection's URI to view any analysis results stored for its signals.</dd>
-
-	<dt><a href="<?php echo SITEROOT_WEB; ?>viewmanycollectionresults">Compare results from multiple collections</a></dt>
-	<dd>Enter multiple signal collections' URIs to compare their analyses' results.</dd>
+	<dt><a href="<?php echo SITEROOT_WEB; ?>viewcollectionresults">View collection results</a></dt>
+	<dd>Enter a single collection's URI or multiple collections' URIs to see or compare the results.</dd>
 </dl>
 <?php include "htmlfooter.php"; ?>

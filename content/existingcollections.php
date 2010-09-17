@@ -38,7 +38,7 @@ $collections = array_reverse($collections);
 include "htmlheader.php";
 //echo "<pre>" . htmlspecialchars(print_r($collections, true)) . "</pre>";
 ?>
-<form action="<?php echo SITEROOT_WEB; ?>viewmanycollectionresults" method="get">
+<form action="<?php echo SITEROOT_WEB; ?>viewcollectionresults" method="get">
 	<table>
 		<tr>
 			<th>Title</th>
@@ -73,7 +73,7 @@ include "htmlheader.php";
 						<?php } ?>
 					</ul>
 				<?php } ?></td>
-				<td><a href="<?php echo SITEROOT_WEB; ?>viewcollectionresults?uri=<?php echo urlencode($collection["uri"]); ?>">View</a></td>
+				<td><a href="<?php echo SITEROOT_WEB; ?>viewcollectionresults?uri[]=<?php echo urlencode($collection["uri"]); ?>">View</a></td>
 				<td><input type="checkbox" name="uri[]" value="<?php echo htmlspecialchars($collection["uri"]); ?>"></td>
 				<td><ul>
 					<li><a class="deletebutton" href="<?php echo SITEROOT_WEB; ?>deletecollection?id=<?php echo urlencode($collection["hash"]); ?>">Delete</a></li>

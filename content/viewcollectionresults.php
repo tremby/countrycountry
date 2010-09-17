@@ -1,15 +1,17 @@
 <?php
 
-if (!isset($_REQUEST["uri"])) {
+if (!isset($_REQUEST["uri"]) || !is_array($_REQUEST["uri"])) {
 	include "htmlheader.php";
 	?>
 	<h2>View collection results</h2>
 	<form action="<?php echo SITEROOT_WEB; ?>viewcollectionresults" method="get">
 		<dl>
-			<dt><label for="uri">Collection URI</label></dt>
+			<dt>Collection URIs (ungrounded)</dt>
 			<dd>
-				<input type="text" size="64" name="uri" id="uri">
-				(ungrounded)
+				<ul>
+					<li><input type="text" size="64" name="uri[]"></li>
+				</ul>
+				<input type="button" id="addurifield" value="Add">
 			</dd>
 
 			<dt>View</dt>
@@ -23,114 +25,154 @@ if (!isset($_REQUEST["uri"])) {
 
 require_once SITEROOT_LOCAL . "include/arc/ARC2.php";
 
-// get collection triples
-$collectionuri = $_REQUEST["uri"];
-$parser = ARC2::getRDFParser();
-$parser->parse($_REQUEST["uri"]);
-if (!empty($parser->errors))
-	servererror("errors parsing collection RDF: " . print_r($parser->errors, true));
-$index = $parser->getSimpleIndex();
-
-// get signals in the collection
-$aggregateuri = $index[$collectionuri][$ns["ore"] . "describes"][0];
-$signals = $index[$aggregateuri][$ns["ore"] . "aggregates"];
-sort($signals);
-
 // set up results endpoint
 $config = array("remote_store_endpoint" => ENDPOINT_RESULTS);
 $store = ARC2::getRemoteStore($config);
 
-$assertions = array();
-$classifier_genre = array();
-$classifier_maxweight = array();
+// get collection triples
+$collections = array();
+foreach ($_REQUEST["uri"] as $collectionuri) {
+	$collection = array();
 
-// for each association
-foreach (getassociations($signals) as $row) {
-	$signal = $row["signal"];
+	$parser = ARC2::getRDFParser();
+	$parser->parse($collectionuri);
+	if (!empty($parser->errors))
+		servererror("errors parsing collection RDF: " . print_r($parser->errors, true));
+	$collection["index"] = $parser->getSimpleIndex();
 
-	// collect assertions about this track's genre
-	if (!isset($assertions[$signal]))
-		$assertions[$signal] = array();
+	// get signals in the collection
+	$collection["collectionuri"] = $collectionuri;
+	$collection["aggregateuri"] = $collection["index"][$collectionuri][$ns["ore"] . "describes"][0];
+	$collection["signals"] = $collection["index"][$collection["aggregateuri"]][$ns["ore"] . "aggregates"];
+	sort($collection["signals"]);
 
-	// if we haven't seen this classifier, note it
-	if (!in_array($row["classifier"], array_keys($classifier_genre)))
-		$classifier_genre[$row["classifier"]] = array();
-	// if we haven't seen this genre in this classifier, note it
-	if (!in_array($row["musicgenre"], $classifier_genre[$row["classifier"]]))
-		$classifier_genre[$row["classifier"]][] = $row["musicgenre"];
+	$collection["assertions"] = array();
+	$collection["classifier_genre"] = array();
+	$collection["classifier_maxweight"] = array();
 
-	if (!isset($assertions[$signal][$row["classifier"]]))
-		$assertions[$signal][$row["classifier"]] = array();
+	// for each association
+	foreach (getassociations($collection["signals"]) as $row) {
+		$signal = $row["signal"];
 
-	// skip if we already have a result for this track, classifier and genre
-	if (isset($assertions[$signal][$row["classifier"]][$row["musicgenre"]]))
-		continue;
+		// collect assertions about this track's genre
+		if (!isset($collection["assertions"][$signal]))
+			$collection["assertions"][$signal] = array();
 
-	// store this result
-	$assertions[$signal][$row["classifier"]][$row["musicgenre"]] = floatval($row["weight"]);
+		// if we haven't seen this classifier, note it
+		if (!in_array($row["classifier"], array_keys($collection["classifier_genre"])))
+			$collection["classifier_genre"][$row["classifier"]] = array();
+		// if we haven't seen this genre in this classifier, note it
+		if (!in_array($row["musicgenre"], $collection["classifier_genre"][$row["classifier"]]))
+			$collection["classifier_genre"][$row["classifier"]][] = $row["musicgenre"];
 
-	// update maximum weight for this classifier if appropriate
-	if (!isset($classifier_maxweight[$row["classifier"]]) || $classifier_maxweight[$row["classifier"]] < floatval($row["weight"]))
-		$classifier_maxweight[$row["classifier"]] = floatval($row["weight"]);
+		if (!isset($collection["assertions"][$signal][$row["classifier"]]))
+			$collection["assertions"][$signal][$row["classifier"]] = array();
+
+		// skip if we already have a result for this track, classifier and genre
+		if (isset($collection["assertions"][$signal][$row["classifier"]][$row["musicgenre"]]))
+			continue;
+
+		// store this result
+		$collection["assertions"][$signal][$row["classifier"]][$row["musicgenre"]] = floatval($row["weight"]);
+
+		// update maximum weight for this classifier if appropriate
+		if (!isset($collection["classifier_maxweight"][$row["classifier"]]) || $collection["classifier_maxweight"][$row["classifier"]] < floatval($row["weight"]))
+			$collection["classifier_maxweight"][$row["classifier"]] = floatval($row["weight"]);
+	}
+
+	// count up how many collections each signal appears in
+	if (!isset($signal_collectioncount))
+		$signal_collectioncount = array();
+	foreach ($collection["signals"] as $signal)
+		if (!isset($signal_collectioncount[$signal]))
+			$signal_collectioncount[$signal] = 1;
+		else
+			$signal_collectioncount[$signal]++;
+
+	$collections[$collectionuri] = $collection;
 }
+
+arsort($signal_collectioncount, SORT_NUMERIC);
+$collectioncount = array();
+foreach ($signal_collectioncount as $signal => $count) {
+	if (!isset($collectioncount[$count]))
+		$collectioncount[$count] = 1;
+	else
+		$collectioncount[$count]++;
+}
+krsort($collectioncount, SORT_NUMERIC);
 
 include "htmlheader.php";
 ?>
 
-<h2>Results for collection "<?php echo htmlspecialchars($index[$aggregateuri][$ns["dc"] . "title"][0]); ?>"</h2>
+<?php if (count($collections) == 1) { ?>
+	<h2>Collection results</h2>
+<?php } else { ?>
+	<h2>Comparing <?php echo count($_REQUEST["uri"]); ?> collections</h2>
+	<?php if (count($collectioncount) == 1) { ?>
+		<p>No signals are shared between these collections.</p>
+	<?php } else { ?>
+		<ul>
+			<?php foreach ($collectioncount as $numcollections => $numsignals) if ($numcollections > 1) { ?>
+				<li><?php echo $numsignals; ?> signal<?php echo $numsignals == 1 ? " is" : "s are"; ?> shared between <?php echo $numcollections; ?> collections</li>
+			<?php } ?>
+		</ul>
+	<?php } ?>
+<?php } ?>
 
-<div class="cols">
-	<div class="cell">
-		<h3>Collection information and basic statistics</h3>
-		<dl>
-			<dt>Collection</dt>
-			<dd>
-				<strong><?php echo htmlspecialchars($index[$aggregateuri][$ns["dc"] . "title"][0]); ?></strong>,
-				created by <?php $uri = $index[$aggregateuri][$ns["dc"] . "creator"][0]; echo strpos("http://", $uri) === 0 ? urilink($uri) : htmlspecialchars($uri); ?>
-				<?php if (isset($index[$aggregateuri][$ns["dc"]  . "description"])) { ?>
-					<br>
-					<small>
-						<?php echo htmlspecialchars($index[$aggregateuri][$ns["dc"]  . "description"][0]); ?>
-					</small>
+<?php if (count($collections) > 1) { ?>
+	<div class="cols">
+<?php } ?>
+<?php foreach ($collections as $collectionuri => $collection) { ?>
+	<?php if (count($collections) > 1) { ?>
+		<div class="cell" style="min-width: 420px;">
+	<?php } ?>
+	<h2><?php echo htmlspecialchars($collection["index"][$collection["aggregateuri"]][$ns["dc"] . "title"][0]); ?></h2>
+	<h3>Collection information and basic statistics</h3>
+	<dl>
+		<dt>Collection</dt>
+		<dd>
+			<strong><?php echo htmlspecialchars($collection["index"][$collection["aggregateuri"]][$ns["dc"] . "title"][0]); ?></strong>,
+			created by <?php $uri = $collection["index"][$collection["aggregateuri"]][$ns["dc"] . "creator"][0]; echo strpos("http://", $uri) === 0 ? urilink($uri) : htmlspecialchars($uri); ?>
+			<?php if (isset($collection["index"][$collection["aggregateuri"]][$ns["dc"]  . "description"])) { ?>
+				<br>
+				<small>
+					<?php echo htmlspecialchars($collection["index"][$collection["aggregateuri"]][$ns["dc"]  . "description"][0]); ?>
+				</small>
+			<?php } ?>
+		</dd>
+
+		<dt>Number of signals in collection</dt>
+		<dd><?php echo count($collection["signals"]); ?></dd>
+
+		<dt>Number of classifiers which have been run on any of these signals</dt>
+		<dd><?php echo count($collection["classifier_genre"]); ?></dd>
+
+		<dt>Number of signals for which results are available, for each classifier</dt>
+		<dd>
+			<dl>
+				<?php foreach ($collection["classifier_genre"] as $classifier => $genres) { ?>
+					<dt><?php echo htmlspecialchars(classifiermapping($classifier)); ?></dt>
+					<dd><?php $count = 0; foreach ($collection["signals"] as $signal) if (isset($collection["assertions"][$signal][$classifier])) $count++; echo $count; ?></dd>
 				<?php } ?>
-			</dd>
+			</dl>
+		</dd>
+	</dl>
 
-			<dt>Number of signals in collection</dt>
-			<dd><?php echo count($signals); ?></dd>
-
-			<dt>Number of classifiers which have been run on any of these signals</dt>
-			<dd><?php echo count($classifier_genre); ?></dd>
-
-			<dt>Number of signals for which results are available, for each classifier</dt>
-			<dd>
-				<dl>
-					<?php foreach ($classifier_genre as $classifier => $genres) { ?>
-						<dt><?php echo htmlspecialchars(classifiermapping($classifier)); ?></dt>
-						<dd><?php $count = 0; foreach ($signals as $signal) if (isset($assertions[$signal][$classifier])) $count++; echo $count; ?></dd>
-					<?php } ?>
-				</dl>
-			</dd>
-		</dl>
-	</div>
-
-	<div class="cell">
-		<?php if (empty($classifier_genre)) { ?>
-			<p>No data is yet available</p>
-			</div></div>
-			<?php include "htmlfooter.php"; exit; ?>
-		<?php } ?>
-
+	<?php if (empty($collection["classifier_genre"])) { ?>
+		<p>No data is yet available</p>
+	<?php } else { ?>
 		<h3>Average weightings of each genre over the whole collection</h3>
 		<?php
 		// for each classifier, get the average weight of each classification
 		$classifier_averageweight = array();
-		foreach ($classifier_genre as $classifier => $genres) {
+		foreach ($collection["classifier_genre"] as $classifier => $genres) {
 			$classifier_averageweight[$classifier] = array();
 			foreach ($genres as $genre) {
 				$weights = array();
-				foreach ($signals as $signal)
-					if (isset($assertions[$signal][$classifier][$genre]))
-						$weights[] = $assertions[$signal][$classifier][$genre];
+				foreach ($collection["signals"] as $signal)
+					if (isset($collection["assertions"][$signal][$classifier][$genre]))
+						$weights[] = $collection["assertions"][$signal][$classifier][$genre];
 				if (count($weights) == 0)
 					$classifier_averageweight[$classifier][$genre] = 0;
 				else
@@ -139,10 +181,10 @@ include "htmlheader.php";
 		}
 		?>
 		<dl class="single">
-			<?php foreach ($classifier_genre as $classifier => $genres) { ?>
+			<?php foreach ($collection["classifier_genre"] as $classifier => $genres) { ?>
 				<dt><?php echo htmlspecialchars(classifiermapping($classifier)); ?></dt>
 				<dd>
-					<div id="averagechart_<?php echo md5($classifier); ?>" style="width: 500px; height: 300px;"></div>
+					<div id="averagechart_<?php echo md5($collection["collectionuri"]); ?>_<?php echo md5($classifier); ?>" style="width: <?php echo count($collections) > 1 ? 500 : 370; ?>px; height: <?php echo count($collections) > 1 ? 300 : 200; ?>px;"></div>
 					<?php
 					$data = array();
 					foreach ($genres as $genre) {
@@ -150,232 +192,198 @@ include "htmlheader.php";
 					}
 					?>
 					<script type="text/javascript">
-						$.plot($("#averagechart_<?php echo md5($classifier); ?>"), <?php echo json_encode($data); ?>, {series:{pie:{show:true}}});
+						$.plot($("#averagechart_<?php echo md5($collection["collectionuri"]); ?>_<?php echo md5($classifier); ?>"), <?php echo json_encode($data); ?>, {series:{pie:{show:true}}});
 					</script>
 				</dd>
 			<?php } ?>
 		</dl>
-	</div>
-</div>
 
-<h3>External links for the heaviest weighted genre</h3>
-<dl class="single">
-	<?php foreach ($classifier_averageweight as $classifier => $genre_weight) {
-		arsort($genre_weight, SORT_NUMERIC);
-		$heavy = array_shift(array_keys($genre_weight));
-		?>
-		<dt><?php echo htmlspecialchars(classifiermapping($classifier)); ?></dt>
-		<dd>
-			<p>Most heavily weighted genre: <strong><?php echo htmlspecialchars(uriendpart($heavy)); ?></strong> <?php echo urilink($heavy); ?></p>
-			<h4>Some random artists from the same genre:</h4>
-			<p class="hint">Data from DBpedia</p>
-			<?php
-			$artists = dbpediaartists($heavy);
-			if (empty($artists)) { ?>
-				<p>No artists matching this genre were found in DBpedia.</p>
-			<?php } else { ?>
-				<ul>
-					<?php foreach (array_rand($artists, min(count($artists), 10)) as $k) { ?>
-						<li>
-							<a href="<?php echo htmlspecialchars($artists[$k]["artist"]); ?>">
-								<?php echo htmlspecialchars($artists[$k]["artistname"]); ?>
-							</a>
-							from
-							<a href="<?php echo htmlspecialchars($artists[$k]["place"]); ?>">
-								<?php echo htmlspecialchars($artists[$k]["placename"]); ?>
-							</a>
-							<?php if (($bbcuri = bbcuri($artists[$k]["artist"])) !== false) { ?>
-								<p class="hint">Further data from the BBC</p>
-								<ul>
-									<?php $bbcinfo = bbcinfo($bbcuri); ?>
-									<li><?php echo urilink($bbcuri, "BBC URI"); ?></li>
-									<?php if (isset($bbcinfo["comment"])) { ?>
-										<li><em><?php echo htmlspecialchars($bbcinfo["comment"]); ?></em></li>
-									<?php }
-									if (isset($bbcinfo["homepage"])) { ?>
-										<li><a href="<?php echo htmlspecialchars($bbcinfo["homepage"]); ?>">Homepage</a></li>
-									<?php }
-									if (isset($bbcinfo["wikipedia"])) { ?>
-										<li><a href="<?php echo htmlspecialchars($bbcinfo["wikipedia"]); ?>">Wikipedia article</a></li>
-									<?php }
-									if (isset($bbcinfo["musicbrainz"])) { ?>
-										<li><a href="<?php echo htmlspecialchars($bbcinfo["musicbrainz"]); ?>">Musicbrainz entry</a></li>
-									<?php }
-									if (isset($bbcinfo["myspace"])) { ?>
-										<li><a href="<?php echo htmlspecialchars($bbcinfo["myspace"]); ?>">Myspace page</a></li>
-									<?php }
-									if (isset($bbcinfo["imdb"])) { ?>
-										<li><a href="<?php echo htmlspecialchars($bbcinfo["imdb"]); ?>">IMDB entry</a></li>
-									<?php }
-									if (isset($bbcinfo["image"])) { ?>
-										<li><img src="<?php echo htmlspecialchars($bbcinfo["image"]); ?>"></li>
+		<h3>External links for the heaviest weighted genre</h3>
+		<dl class="single">
+			<?php foreach ($classifier_averageweight as $classifier => $genre_weight) {
+				arsort($genre_weight, SORT_NUMERIC);
+				$heavy = array_shift(array_keys($genre_weight));
+				?>
+				<dt><?php echo htmlspecialchars(classifiermapping($classifier)); ?></dt>
+				<dd>
+					<p>Most heavily weighted genre: <strong><?php echo htmlspecialchars(uriendpart($heavy)); ?></strong> <?php echo urilink($heavy); ?></p>
+					<h4>Some random artists from the same genre:</h4>
+					<p class="hint">Data from DBpedia</p>
+					<?php
+					$artists = dbpediaartists($heavy);
+					if (empty($artists)) { ?>
+						<p>No artists matching this genre were found in DBpedia.</p>
+					<?php } else { ?>
+						<ul>
+							<?php foreach (array_rand($artists, min(count($artists), 10)) as $k) { ?>
+								<li>
+									<a href="<?php echo htmlspecialchars($artists[$k]["artist"]); ?>">
+										<?php echo htmlspecialchars($artists[$k]["artistname"]); ?>
+									</a>
+									from
+									<a href="<?php echo htmlspecialchars($artists[$k]["place"]); ?>">
+										<?php echo htmlspecialchars($artists[$k]["placename"]); ?>
+									</a>
+									<?php if (($bbcuri = bbcuri($artists[$k]["artist"])) !== false) { ?>
+										<p class="hint">Further data from the BBC</p>
+										<ul>
+											<?php $bbcinfo = bbcinfo($bbcuri); ?>
+											<li><?php echo urilink($bbcuri, "BBC URI"); ?></li>
+											<?php if (isset($bbcinfo["comment"])) { ?>
+												<li><em><?php echo htmlspecialchars($bbcinfo["comment"]); ?></em></li>
+											<?php }
+											if (isset($bbcinfo["homepage"])) { ?>
+												<li><a href="<?php echo htmlspecialchars($bbcinfo["homepage"]); ?>">Homepage</a></li>
+											<?php }
+											if (isset($bbcinfo["wikipedia"])) { ?>
+												<li><a href="<?php echo htmlspecialchars($bbcinfo["wikipedia"]); ?>">Wikipedia article</a></li>
+											<?php }
+											if (isset($bbcinfo["musicbrainz"])) { ?>
+												<li><a href="<?php echo htmlspecialchars($bbcinfo["musicbrainz"]); ?>">Musicbrainz entry</a></li>
+											<?php }
+											if (isset($bbcinfo["myspace"])) { ?>
+												<li><a href="<?php echo htmlspecialchars($bbcinfo["myspace"]); ?>">Myspace page</a></li>
+											<?php }
+											if (isset($bbcinfo["imdb"])) { ?>
+												<li><a href="<?php echo htmlspecialchars($bbcinfo["imdb"]); ?>">IMDB entry</a></li>
+											<?php }
+											if (isset($bbcinfo["image"])) { ?>
+												<li><img src="<?php echo htmlspecialchars($bbcinfo["image"]); ?>"></li>
+											<?php } ?>
+										</ul>
 									<?php } ?>
-								</ul>
+								</li>
 							<?php } ?>
-						</li>
+						</ul>
 					<?php } ?>
-				</ul>
+				</dd>
 			<?php } ?>
-		</dd>
-	<?php } ?>
-</dl>
+		</dl>
 
-<h3>Most and least</h3>
-<?php
-$classifier_genre_mostleast = array();
-foreach ($classifier_genre as $classifier => $genres) {
-	$classifier_genre_mostleast[$classifier] = array();
-	foreach ($genres as $genre) {
-		$classifier_genre_mostleast[$classifier][$genre] = array(null, null);
-		$least = null;
-		$most = null;
-		foreach ($signals as $signal) {
-			if (isset($assertions[$signal][$classifier][$genre])) {
-				if (is_null($least) || $assertions[$signal][$classifier][$genre] < $least) {
-					$least = $assertions[$signal][$classifier][$genre];
-					$classifier_genre_mostleast[$classifier][$genre][0] = $signal;
-				}
-				if (is_null($most) || $assertions[$signal][$classifier][$genre] > $most) {
-					$most = $assertions[$signal][$classifier][$genre];
-					$classifier_genre_mostleast[$classifier][$genre][1] = $signal;
-				}
-			}
-		}
-	}
-}
-?>
-<dl class="single">
-	<?php foreach ($classifier_genre_mostleast as $classifier => $genres) { ?>
-		<dt><?php echo htmlspecialchars(classifiermapping($classifier)); ?></dt>
-		<dd>
-			<dl class="single">
-				<?php foreach ($genres as $genre => $leastmost) { ?>
-					<dt><?php echo htmlspecialchars(uriendpart($genre)); ?></dt>
-					<dd>
-						<dl>
-							<dt>Least</dt>
-							<dd>
-								<?php $info = signalinfo($leastmost[0]); ?>
-								<a href="<?php echo SITEROOT_WEB; ?>viewsignalresults?uri=<?php echo urlencode($leastmost[0]); ?>">
-									<em><?php echo htmlspecialchars($info["trackname"]); ?></em>
-									by <?php echo htmlspecialchars($info["artistname"]); ?>
-								</a>
-								(weight: <?php echo sprintf("%.2f", $assertions[$leastmost[0]][$classifier][$genre]); ?>)
-							</dd>
-							<dt>Most</dt>
-							<dd>
-								<a href="<?php echo SITEROOT_WEB; ?>viewsignalresults?uri=<?php echo urlencode($leastmost[1]); ?>">
-									<?php $info = signalinfo($leastmost[1]); ?>
-									<em><?php echo htmlspecialchars($info["trackname"]); ?></em>
-								by <?php echo htmlspecialchars($info["artistname"]); ?>
-								</a>
-								(weight: <?php echo sprintf("%.2f", $assertions[$leastmost[1]][$classifier][$genre]); ?>)
-							</dd>
-						</dl>
-					</dd>
-				<?php } ?>
-			</dl>
-		</dd>
-	<?php } ?>
-</dl>
-
-<!--
-<h3>Count of signals' heaviest weighted genres</h3>
-<?php
-// for each classifier, count the number of signals for which each 
-// classification has the heaviest weight
-$classifier_heaviestgenrecount = array();
-foreach ($classifier_genre as $classifier => $genres) {
-	$classifier_heaviestgenrecount[$classifier] = array();
-	foreach ($genres as $genre)
-		$classifier_heaviestgenrecount[$classifier][$genre] = 0;
-	foreach ($signals as $signal) {
-		$w = -1;
-		if (!isset($assertions[$signal][$classifier]))
-			continue;
-		foreach ($assertions[$signal][$classifier] as $genre => $weight) {
-			if ($weight > $w) {
-				$w = $weight;
-				$g = $genre;
-			}
-		}
-		$classifier_heaviestgenrecount[$classifier][$g]++;
-	}
-}
-?>
-<dl class="single">
-	<?php foreach ($classifier_genre as $classifier => $genres) { ?>
-		<dt><?php echo htmlspecialchars(classifiermapping($classifier)); ?></dt>
-		<dd>
-			<div id="heavychart_<?php echo md5($classifier); ?>" style="width: 768px; height: 300px;"></div>
-			<?php
-			$data = array();
-			foreach ($genres as $genre) {
-				$data[] = array("label" => uriendpart($genre), "data" => $classifier_heaviestgenrecount[$classifier][$genre]);
-			}
-			?>
-			<script type="text/javascript">
-				$.plot($("#heavychart_<?php echo md5($classifier); ?>"), <?php echo json_encode($data); ?>, {series:{pie:{show:true}}});
-			</script>
-		</dd>
-	<?php } ?>
-</dl>
--->
-
-<h3>Data table</h3>
-<?php if (count($signals) > 100) { ?>
-	<p>Not shown for collections with over 100 signals</p>
-<?php } else { ?>
-	<table width="100%" class="datatable">
-		<tr>
-			<th rowspan="2">Signal</th>
-			<?php foreach ($classifier_genre as $classifier => $genres) { ?>
-				<th colspan="<?php echo count($genres); ?>"><?php echo htmlspecialchars(classifiermapping($classifier)); ?></th>
-			<?php } ?>
-		</tr>
+		<h3>Most and least</h3>
 		<?php
-		$barcolumncount = 0;
-		foreach ($classifier_genre as $classifier => $genres)
-			$barcolumncount += count($genres);
-		$barcolumnwidth = 90 / $barcolumncount;
+		$classifier_genre_mostleast = array();
+		foreach ($collection["classifier_genre"] as $classifier => $genres) {
+			$classifier_genre_mostleast[$classifier] = array();
+			foreach ($genres as $genre) {
+				$classifier_genre_mostleast[$classifier][$genre] = array(null, null);
+				$least = null;
+				$most = null;
+				foreach ($collection["signals"] as $signal) {
+					if (isset($collection["assertions"][$signal][$classifier][$genre])) {
+						if (is_null($least) || $collection["assertions"][$signal][$classifier][$genre] < $least) {
+							$least = $collection["assertions"][$signal][$classifier][$genre];
+							$classifier_genre_mostleast[$classifier][$genre][0] = $signal;
+						}
+						if (is_null($most) || $collection["assertions"][$signal][$classifier][$genre] > $most) {
+							$most = $collection["assertions"][$signal][$classifier][$genre];
+							$classifier_genre_mostleast[$classifier][$genre][1] = $signal;
+						}
+					}
+				}
+			}
+		}
 		?>
-		<tr>
-			<?php foreach ($classifier_genre as $classifier => $genres) foreach ($genres as $index => $genre) { ?>
-				<th width="<?php echo 90 / $barcolumncount; ?>%" title="<?php echo htmlspecialchars(uriendpart($genre)); ?>"><?php echo htmlspecialchars(substr(uriendpart($genre), 0, 3)) . "&hellip;"; ?></th>
-			<?php } ?>
-		</tr>
-		<?php foreach ($signals as $signal) { $signalinfo = signalinfo($signal); ?>
-			<tr>
-				<td title="<?php echo htmlspecialchars($signalinfo["artistname"]); ?> &ndash; <?php echo htmlspecialchars($signalinfo["trackname"]); ?>">
-					<a href="<?php echo SITEROOT_WEB; ?>viewsignalresults?uri=<?php echo urlencode($signal); ?>">
-						<?php echo htmlspecialchars($signalinfo["trackname"]); ?>
-					</a>
-				</td>
-				<?php if (empty($assertions[$signal])) { ?>
-					<td class="nodata" colspan="<?php echo $barcolumncount; ?>">
-						No data
-					</td>
-				<?php } else foreach ($classifier_genre as $classifier => $genres) { ?>
-					<?php if (!isset($assertions[$signal][$classifier])) { ?>
-						<td colspan="<?php echo count($genres); ?>">No data</td>
-					<?php } else foreach ($genres as $genre) { ?>
-						<?php if (isset($assertions[$signal][$classifier][$genre])) { ?>
-							<td width="<?php echo 90 / $barcolumncount; ?>%" title="<?php echo $assertions[$signal][$classifier][$genre]; ?>">
-								<div class="barcontainer">
-									<div class="bar" style="width: <?php echo 100 * $assertions[$signal][$classifier][$genre] / $classifier_maxweight[$classifier]; ?>%;"></div>
-									<div class="weight"><?php echo sprintf("%.2f", $assertions[$signal][$classifier][$genre]); ?></div>
-								</div>
-							</td>
-						<?php } else { ?>
-							<td class="nodata" width="<?php echo 90 / $barcolumncount; ?>%">
-								-
-							</td>
+		<dl class="single">
+			<?php foreach ($classifier_genre_mostleast as $classifier => $genres) { ?>
+				<dt><?php echo htmlspecialchars(classifiermapping($classifier)); ?></dt>
+				<dd>
+					<dl class="single">
+						<?php foreach ($genres as $genre => $leastmost) { ?>
+							<dt><?php echo htmlspecialchars(uriendpart($genre)); ?></dt>
+							<dd>
+								<dl>
+									<dt>Least</dt>
+									<dd>
+										<?php $info = signalinfo($leastmost[0]); ?>
+										<a href="<?php echo SITEROOT_WEB; ?>viewsignalresults?uri=<?php echo urlencode($leastmost[0]); ?>">
+											<em><?php echo htmlspecialchars($info["trackname"]); ?></em>
+											by <?php echo htmlspecialchars($info["artistname"]); ?>
+										</a>
+										(weight: <?php echo sprintf("%.2f", $collection["assertions"][$leastmost[0]][$classifier][$genre]); ?>)
+									</dd>
+									<dt>Most</dt>
+									<dd>
+										<a href="<?php echo SITEROOT_WEB; ?>viewsignalresults?uri=<?php echo urlencode($leastmost[1]); ?>">
+											<?php $info = signalinfo($leastmost[1]); ?>
+											<em><?php echo htmlspecialchars($info["trackname"]); ?></em>
+										by <?php echo htmlspecialchars($info["artistname"]); ?>
+										</a>
+										(weight: <?php echo sprintf("%.2f", $collection["assertions"][$leastmost[1]][$classifier][$genre]); ?>)
+									</dd>
+								</dl>
+							</dd>
 						<?php } ?>
+					</dl>
+				</dd>
+			<?php } ?>
+		</dl>
+
+		<h3>Data table</h3>
+		<?php if (count($collection["signals"]) > 100) { ?>
+			<p>Not available for collections with over 100 signals</p>
+		<?php } else { ?>
+			<ul>
+				<li><a class="fancybox" href="#datatable_<?php echo md5($collection["collectionuri"]); ?>">Show data table</a></li>
+			</ul>
+			<table id="datatable_<?php echo md5($collection["collectionuri"]); ?>" class="hidden datatable">
+				<tr>
+					<th rowspan="2">Signal</th>
+					<?php foreach ($collection["classifier_genre"] as $classifier => $genres) { ?>
+						<th colspan="<?php echo count($genres); ?>"><?php echo htmlspecialchars(classifiermapping($classifier)); ?></th>
 					<?php } ?>
+				</tr>
+				<?php
+				$barcolumncount = 0;
+				foreach ($collection["classifier_genre"] as $classifier => $genres)
+					$barcolumncount += count($genres);
+				$barcolumnwidth = 90 / $barcolumncount;
+				?>
+				<tr>
+					<?php foreach ($collection["classifier_genre"] as $classifier => $genres) foreach ($genres as $index => $genre) { ?>
+						<th width="<?php echo 90 / $barcolumncount; ?>%" title="<?php echo htmlspecialchars(uriendpart($genre)); ?>"><?php echo htmlspecialchars(substr(uriendpart($genre), 0, 3)) . "&hellip;"; ?></th>
+					<?php } ?>
+				</tr>
+				<?php foreach ($collection["signals"] as $signal) { $signalinfo = signalinfo($signal); ?>
+					<tr>
+						<td title="<?php echo htmlspecialchars($signalinfo["artistname"]); ?> &ndash; <?php echo htmlspecialchars($signalinfo["trackname"]); ?>">
+							<a href="<?php echo SITEROOT_WEB; ?>viewsignalresults?uri=<?php echo urlencode($signal); ?>">
+								<?php echo htmlspecialchars($signalinfo["trackname"]); ?>
+							</a>
+						</td>
+						<?php if (empty($collection["assertions"][$signal])) { ?>
+							<td class="nodata" colspan="<?php echo $barcolumncount; ?>">
+								No data
+							</td>
+						<?php } else foreach ($collection["classifier_genre"] as $classifier => $genres) { ?>
+							<?php if (!isset($collection["assertions"][$signal][$classifier])) { ?>
+								<td colspan="<?php echo count($genres); ?>">No data</td>
+							<?php } else foreach ($genres as $genre) { ?>
+								<?php if (isset($collection["assertions"][$signal][$classifier][$genre])) { ?>
+									<td width="<?php echo 90 / $barcolumncount; ?>%" title="<?php echo $collection["assertions"][$signal][$classifier][$genre]; ?>">
+										<div class="barcontainer">
+											<div class="bar" style="width: <?php echo 100 * $collection["assertions"][$signal][$classifier][$genre] / $collection["classifier_maxweight"][$classifier]; ?>%;"></div>
+											<div class="weight"><?php echo sprintf("%.2f", $collection["assertions"][$signal][$classifier][$genre]); ?></div>
+										</div>
+									</td>
+								<?php } else { ?>
+									<td class="nodata" width="<?php echo 90 / $barcolumncount; ?>%">
+										-
+									</td>
+								<?php } ?>
+							<?php } ?>
+						<?php } ?>
+					</tr>
 				<?php } ?>
-			</tr>
+			</table>
 		<?php } ?>
-	</table>
+	<?php } //data available ?>
+	<?php if (count($collections) > 1) { ?>
+		</div><!--cell-->
+	<?php } ?>
+<?php } // foreach collection ?>
+<?php if (count($collections) > 1) { ?>
+	</div><!--cols-->
 <?php } ?>
 
 <?php
