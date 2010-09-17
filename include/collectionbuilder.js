@@ -24,7 +24,26 @@ $(document).ready(function() {
 
 	// set up fancyboxes
 	$("a.fancybox").fancybox();
+
+	// scroll left and right buttons
+	$("#scrollleft").click(function() {
+		$(this).parents(".scroll:first").scrollTo({"top": "+=0", "left": "-=410"}, 800);
+	});
+	$("#scrollright").click(function() {
+		$(this).parents(".scroll:first").scrollTo({"top": "+=0", "left": "+=410"}, 800);
+	});
+
+	showhidescrollbuttons();
+	$(window).resize(showhidescrollbuttons);
 });
+function showhidescrollbuttons() {
+	$(".scroll").each(function() {
+		if ($(this).children().first().width() > $(this).width() && $(this).height() > $(window).height() / 2)
+			$(this).find("#scrollleft, #scrollright").show();
+		else
+			$(this).find("#scrollleft, #scrollright").hide();
+	});
+}
 function plotgraph(md5sum, plotto, xmax) {
 	//console.log("plotting graph " + md5sum + "!");
 	var data = [];

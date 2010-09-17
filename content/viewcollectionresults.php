@@ -121,7 +121,8 @@ include "htmlheader.php";
 <?php } ?>
 
 <?php if (count($collections) > 1) { ?>
-	<div class="cols">
+	<div class="scroll"><div class="cols">
+	<div id="scrollleft"></div><div id="scrollright"></div>
 <?php } ?>
 <?php foreach ($collections as $collectionuri => $collection) { ?>
 	<?php if (count($collections) > 1) { ?>
@@ -383,7 +384,7 @@ include "htmlheader.php";
 	<?php } ?>
 <?php } // foreach collection ?>
 <?php if (count($collections) > 1) { ?>
-	</div><!--cols-->
+	</div></div><!--cols, scroll-->
 <?php } ?>
 
 <?php

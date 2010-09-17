@@ -175,3 +175,24 @@ table.datatable td {
 #body .hidden {
 	display: none;
 }
+
+.scroll {
+	width: 100%;
+	overflow: auto;
+}
+#scrollleft, #scrollright {
+	width: 30px;
+	height: 30px;
+	position: fixed;
+	top: 50%;
+	margin-top: -15px;
+	text-align: center;
+}
+#scrollleft {
+	left: 0;
+	background-image: url("fancybox/fancy_nav_left.png");
+}
+#scrollright {
+	right: 0;
+	background-image: url("fancybox/fancy_nav_right.png");
+}
