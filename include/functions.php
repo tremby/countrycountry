@@ -1,5 +1,11 @@
 <?php
 
+// fake email to output
+function fakemail($to, $subject, $message, $headers = "") {
+	echo "To: $to\r\nSubject: $subject\r\n$headers\r\n\r\n$message";
+	return true;
+}
+
 // exit with various statuses
 function badrequest($message = "bad request", $mimetype = "text/plain") {
 	header("Content-Type: $mimetype", true, 400);
@@ -30,6 +36,15 @@ function multiplechoices($location = null, $message = "multiple choices -- be sp
 	if (!is_null($location))
 		header("Location: $location");
 	echo $message . "\n";
+	exit;
+}
+function ok($message = null, $mimetype = "text/plain") {
+	if (is_null($message))
+		header("Content-Type: text/plain", true, 204);
+	else {
+		header("Content-Type: $mimetype", true, 200);
+		echo $message;
+	}
 	exit;
 }
 
@@ -599,6 +614,35 @@ function rmrecursive($obj) {
 		rmdir($obj);
 	} else
 		unlink($obj);
+}
+
+// check an email address
+function isemail($email) { //from http://www.ilovejackdaniels.com/php/email-address-validation/
+	// First, we check that there's one @ symbol, and that the lengths are right
+	if(!preg_match("%^[^@]{1,64}@[^@]{1,255}$%", $email)) {
+		// Email invalid because wrong number of characters in one section, or wrong number of @ symbols.
+		return false;
+	}
+	// Split it into sections to make life easier
+	$email_array = explode("@", $email);
+	$local_array = explode(".", $email_array[0]);
+	for($i = 0; $i < sizeof($local_array); $i++) {
+		 if(!preg_match("%^(([A-Za-z0-9!#$\%&'*+/=?^_`{|}~-][A-Za-z0-9!#$\%&'*+/=?^_`{|}~\.-]{0,63})|(\"[^(\\|\")]{0,62}\"))$%", $local_array[$i])) {
+			return false;
+		}
+	}
+	if(!preg_match("%^\[?[0-9\.]+\]?$%", $email_array[1])) { // Check if domain is IP. If not, it should be valid domain name
+		$domain_array = explode(".", $email_array[1]);
+		if(sizeof($domain_array) < 2) {
+			return false; // Not enough parts to domain
+		}
+		for($i = 0; $i < sizeof($domain_array); $i++) {
+			if(!preg_match("%^(([A-Za-z0-9][A-Za-z0-9-]{0,61}[A-Za-z0-9])|([A-Za-z0-9]+))$%", $domain_array[$i])) {
+				return false;
+			}
+		}
+	}
+	return true;
 }
 
 ?>

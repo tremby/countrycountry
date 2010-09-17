@@ -25,7 +25,7 @@ header("Content-Script-Type: text/javascript");
 	<script type="text/javascript" src="<?php echo SITEROOT_WEB; ?>include/jquery.jplayer/jquery.jplayer.js"></script>
 	<link rel="stylesheet" href="<?php echo SITEROOT_WEB; ?>include/jquery.jplayer/jplayer.blue.monday.css" type="text/css">
 
-	<script type="text/javascript" src="<?php echo SITEROOT_WEB; ?>include/collectionbuilder.js"></script>
+	<script type="text/javascript" src="<?php echo SITEROOT_WEB; ?>include/countrycountry.js.php"></script>
 	<?php if (isset($GLOBALS["headerjs"])) { ?>
 		<script type="text/javascript">
 			<?php echo $GLOBALS["headerjs"]; ?>
@@ -46,3 +46,4 @@ header("Content-Script-Type: text/javascript");
 	</h1>
 </div>
 <div id="body">
+	<a class="fancybox" id="showfeedbackform" href="#feedbackform">Send feedback</a>

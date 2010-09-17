@@ -6,7 +6,7 @@ define("SITEROOT_LOCAL", dirname(dirname(__FILE__)) . "/");
 
 // query path to the site root directory ending in a trailing slash -- makes an 
 // absolute URL to the main page
-define("SITEROOT_WEB", str_replace("//", "/", dirname($_SERVER["SCRIPT_NAME"]) . "/"));
+define("SITEROOT_WEB", str_replace("//", "/", str_replace("/include", "", dirname($_SERVER["SCRIPT_NAME"]) . "/")));
 
 // useful namespaces
 $ns = array(

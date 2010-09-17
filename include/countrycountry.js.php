@@ -1,3 +1,8 @@
+<?php
+// vim: ft=javascript
+require "constants.php";
+?>
+
 $(document).ready(function() {
 	// slidey definition lists
 	$("dl.single > dd").hide();
@@ -32,9 +37,23 @@ $(document).ready(function() {
 	$("#scrollright").click(function() {
 		$(this).parents(".scroll:first").scrollTo({"top": "+=0", "left": "+=410"}, 800);
 	});
-
 	showhidescrollbuttons();
 	$(window).resize(showhidescrollbuttons);
+
+	// ajax error handler
+	$(document).ajaxError(function(e, xhr, options, er) {
+		alert("Error " + xhr.status + " (" + xhr.statusText + "): " + xhr.responseText);
+	});
+
+	// feedback form
+	$("#feedbackform form").submit(function() {
+		$.post("<?php echo SITEROOT_WEB; ?>submitfeedback", $(this).serialize(), function() {
+			$("#feedback_subject, #feedback_feedback").val("");
+			$.fancybox.close();
+			successalert("Feedback has been sent");
+		});
+		return false;
+	});
 });
 function showhidescrollbuttons() {
 	$(".scroll").each(function() {
@@ -63,4 +82,10 @@ function plotgraph(md5sum, plotto, xmax) {
 			data.push({label:graphs[md5sum].series[k].label,data:[]});
 	});
 	return $.plot($("#framedatachart_" + md5sum), data, {xaxis:{min:0,max:xmax},legend:{show:false}});
+}
+function successalert(message) {
+	$("body").prepend("<div id=\"successalert\">" + message + "</div>");
+	$("#successalert").hide().fadeIn("fast").delay(2000).fadeOut("slow", function() {
+		$(this).remove();
+	});
 }

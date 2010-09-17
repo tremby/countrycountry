@@ -206,3 +206,34 @@ table.datatable td {
 	right: 0;
 	background-image: url("fancybox/fancy_nav_right.png");
 }
+
+#showfeedbackform {
+	position: fixed;
+	top: 0;
+	right: 5px;
+	padding: 0.5em;
+	border: 2px solid #aac;
+	border-style: none solid solid;
+	-webkit-left-radius: 0 0 10px 10px;
+	-moz-border-radius: 0 0 10px 10px;
+	border-radius: 0 0 10px 10px;
+	background-color: #ccf;
+	font-size: 90%;
+}
+
+#successalert {
+	border: 2px solid #ada;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border-radius: 10px;
+	background-color: #cfc;
+	padding: 1em;
+	width: 50%;
+	position: fixed;
+	z-index: 5000;
+	left: 25%;
+	top: 15%;
+	text-align: center;
+	font-weight: bold;
+	color: black;
+}
