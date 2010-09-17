@@ -88,6 +88,11 @@ dl dt {
 	margin-top: 0.3em;
 }
 
+dl dt:first-child {
+	border-top: none;
+	margin-top: 0;
+}
+
 dl dl dt {
 	font-weight: normal;
 	font-size: inherit;
@@ -137,11 +142,12 @@ table.datatable td {
 }
 
 .expandlink {
-	height: 1em;
-	width: 1em;
+	height: 22px;
+	width: 22px;
 	float: left;
-	margin-right: 0.5em;
-	border: 1px solid #ccc;
+	position: relative;
+	top: -2px;
+	background-image: url("../images/expand.png");
 }
 
 .serieslist {
