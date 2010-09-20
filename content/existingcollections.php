@@ -59,14 +59,15 @@ include "htmlheader.php";
 				<td><?php echo date("Y-m-d H:i:s O", $collection["modified"]); ?></td>
 				<td><?php if (isset($aggregate[$ns["dc"] . "description"])) echo htmlspecialchars($aggregate[$ns["dc"] . "description"][0]); ?></td>
 				<td><?php echo count($aggregate[$ns["ore"] . "aggregates"]); ?></td>
-				<td><?php echo urilink($collection["uri"]); ?></td>
+				<td><?php echo urilink($collection["uri"], "Collection URI and RDF representation"); ?></td>
 				<td><?php if (empty($collection["groundings"])) { ?>
 					None
 				<?php } else { ?>
 					<ul>
 						<?php foreach ($collection["groundings"] as $grounding) { ?>
 							<li>
-								<?php echo urilink($grounding["uri"], count($grounding["index"][$grounding["uri"] . "#aggregate"][$ns["ore"] . "aggregates"]) . " files"); ?>
+								<?php echo urilink($grounding["uri"], "Grounded collection URI and RDF representation"); ?>
+								(<?php echo count($grounding["index"][$grounding["uri"] . "#aggregate"][$ns["ore"] . "aggregates"]); ?> files)
 								&ndash;
 								<a href="http://myexperiment.nema.ecs.soton.ac.uk/workflows/all?collection=<?php echo urlencode($grounding["uri"]); ?>">Run in MyExperiment</a>
 							</li>

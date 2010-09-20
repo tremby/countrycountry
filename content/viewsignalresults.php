@@ -293,7 +293,7 @@ if ($bbcuri === false) { ?>
 		<p>None of the information seeked was found on BBC Music.</p>
 	<? } else { ?>
 		<ul>
-			<li><?php echo urilink($bbcuri, "BBC URI"); ?></li>
+			<li><a href="<?php echo htmlspecialchars($bbcuri); ?>">BBC Music page</a> <?php echo urilink($bbcuri, "URI of this artist at BBC Music"); ?></li>
 			<?php if (isset($bbcinfo["comment"])) { ?>
 				<li><em><?php echo htmlspecialchars($bbcinfo["comment"]); ?></em></li>
 			<?php }
@@ -356,7 +356,7 @@ if ($bbcuri === false) { ?>
 								<p class="hint">Further data from the BBC</p>
 								<ul>
 									<?php $bbcinfo = bbcinfo($bbcuri); ?>
-									<li><?php echo urilink($bbcuri, "BBC URI"); ?></li>
+									<li><a href="<?php echo htmlspecialchars($bbcuri); ?>">BBC Music page</a> <?php echo urilink($bbcuri, "URI of this artist at BBC Music"); ?></li>
 									<?php if (isset($bbcinfo["comment"])) { ?>
 										<li><em><?php echo htmlspecialchars($bbcinfo["comment"]); ?></em></li>
 									<?php }

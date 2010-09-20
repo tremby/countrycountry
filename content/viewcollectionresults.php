@@ -231,7 +231,7 @@ include "htmlheader.php";
 										<p class="hint">Further data from the BBC</p>
 										<ul>
 											<?php $bbcinfo = bbcinfo($bbcuri); ?>
-											<li><?php echo urilink($bbcuri, "BBC URI"); ?></li>
+											<li><a href="<?php echo htmlspecialchars($bbcuri); ?>">BBC Music page</a> <?php echo urilink($bbcuri, "URI of this artist at BBC Music"); ?></li>
 											<?php if (isset($bbcinfo["comment"])) { ?>
 												<li><em><?php echo htmlspecialchars($bbcinfo["comment"]); ?></em></li>
 											<?php }

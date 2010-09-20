@@ -237,3 +237,12 @@ table.datatable td {
 	font-weight: bold;
 	color: black;
 }
+
+img {
+	border: none;
+}
+
+ul, ol {
+	margin: 0;
+	padding: 0 1.5em;
+}

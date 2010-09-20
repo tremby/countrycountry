@@ -421,7 +421,7 @@ function uriendpart($string) {
 }
 
 function urilink($uri, $text = "URI") {
-	return "[<a href=\"" . htmlspecialchars($uri) . "\">" . htmlspecialchars($text) . "</a>]";
+	return "<a href=\"" . htmlspecialchars($uri) . "\" title=\"" . htmlspecialchars($text) . "\"><img src=\"" . SITEROOT_WEB . "images/uri.png\" alt=\"URI\"></a>";
 }
 
 // return a nicer name for a classifier URI if we have one, otherwise the URI
