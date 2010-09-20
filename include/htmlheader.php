@@ -60,3 +60,6 @@ header("Content-Script-Type: text/javascript");
 </div>
 <div id="body">
 	<a class="fancybox" id="showfeedbackform" href="#feedbackform">Send feedback</a>
+	<!--[if IE]>
+		<div id="iewarning"><img src="<?php echo SITEROOT_WEB; ?>images/exclamation.png" alt="!"> This demo isn't fully functional in Internet Explorer. Please try in a Gecko or Webkit based browser.</div>
+	<![endif]-->
