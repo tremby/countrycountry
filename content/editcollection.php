@@ -33,6 +33,11 @@ if (isset($_REQUEST["submit"])) {
 	$collection->description(trim($_POST["description"]));
 	$collection->author(trim($_POST["author"]));
 
+	// set cookie so we remember the author name
+	$author = $collection->author();
+	if (!empty($author))
+		setcookie("cc_author", $author, strtotime("+1 month"), SITEROOT_WEB);
+
 	$collection->clearfilters();
 
 	// artist name
@@ -167,7 +172,7 @@ include "htmlheader.php";
 		<dd><textarea cols="64" rows="4" name="description" id="description"><?php if ($collection->description()) echo htmlspecialchars($collection->description()); ?></textarea></dd>
 
 		<dt><label for="author">Author</label></dt>
-		<dd><input type="text" size="64" name="author" id="author"<?php if ($collection->author()) { ?> value="<?php echo htmlspecialchars($collection->author()); ?>"<?php } ?>></dd>
+		<dd><input type="text" size="64" name="author" id="author"<?php if ($collection->author()) { ?> value="<?php echo htmlspecialchars($collection->author()); ?>"<?php } else if (isset($_COOKIE["cc_author"])) { ?> value="<?php echo htmlspecialchars($_COOKIE["cc_author"]); ?>"<?php } ?>></dd>
 
 		<dt>Filters</dt>
 		<dd>
