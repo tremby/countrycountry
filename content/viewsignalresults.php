@@ -255,7 +255,6 @@ include "htmlheader.php";
 	<script type="text/javascript">
 		$(document).ready(function() {
 			$("#audiochooser input").click(function(e) {
-				e.preventDefault();
 				$("#audioplayer").jPlayer("setFile", $(this).attr("value"));
 			});
 			$("#audioplayer").jPlayer({
