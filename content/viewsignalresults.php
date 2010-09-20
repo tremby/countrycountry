@@ -221,11 +221,10 @@ include "htmlheader.php";
 	<h4>Choose audio source</h4>
 	<p>These audio sources were found from the "availableas" links</p>
 	<ul id="audiochooser">
-		<?php foreach ($audiosources as $source) { ?>
+		<?php $first = true; foreach ($audiosources as $source) { ?>
 			<li>
-				<a href="<?php echo htmlspecialchars($source); ?>">
-					<?php echo htmlspecialchars($source); ?>
-				</a>
+				<input type="radio" name="audiosource" value="<?php echo htmlspecialchars($source); ?>"<?php if ($first) { $first = false; ?> checked="checked"<?php } ?>>
+				<?php echo htmlspecialchars($source); ?>
 			</li>
 		<?php } ?>
 	</ul>
@@ -255,9 +254,9 @@ include "htmlheader.php";
 	</div>
 	<script type="text/javascript">
 		$(document).ready(function() {
-			$("#audiochooser a").click(function(e) {
+			$("#audiochooser input").click(function(e) {
 				e.preventDefault();
-				$("#audioplayer").jPlayer("setFile", $(this).attr("href"));
+				$("#audioplayer").jPlayer("setFile", $(this).attr("value"));
 			});
 			$("#audioplayer").jPlayer({
 				swfPath: "<?php echo SITEROOT_WEB; ?>include/jquery.jplayer",
