@@ -222,10 +222,10 @@ include "htmlheader.php";
 	<p>These audio sources were found from the "availableas" links</p>
 	<ul id="audiochooser">
 		<?php $first = true; foreach ($audiosources as $source) { ?>
-			<li>
+			<li><label>
 				<input type="radio" name="audiosource" value="<?php echo htmlspecialchars($source); ?>"<?php if ($first) { $first = false; ?> checked="checked"<?php } ?>>
 				<?php echo htmlspecialchars($source); ?>
-			</li>
+			</label></li>
 		<?php } ?>
 	</ul>
 
