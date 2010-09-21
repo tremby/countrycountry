@@ -323,37 +323,41 @@ include "htmlheader.php";
 
 	<div id="results" class="hidden">
 		<h3>Table of results</h3>
-		<table class="datatable">
-			<tr>
-				<th>Country</th>
-				<th>Artist</th>
-				<th>Record date</th>
-				<th>Record</th>
-				<th>Track number</th>
-				<th>Track</th>
-			</tr>
-			<?php foreach ($collection->results() as $result) { ?>
+		<table class="datatable tablesorter">
+			<thead>
 				<tr>
-					<td><?php if (isset($result["country type"]) && $result["country type"] == "uri") { ?>
-						<a href="<?php echo htmlspecialchars($result["country"]); ?>"><?php echo htmlspecialchars(iso3166toname(substr($result["country"], -2))); ?></a>
-					<?php } ?></td>
-					<td><?php if (isset($result["artist type"]) && $result["artist type"] == "uri") { ?>
-						<a href="<?php echo htmlspecialchars($result["artist"]); ?>"><?php echo htmlspecialchars($result["artistname"]); ?></a>
-					<?php } ?></td>
-					<td><?php if (isset($result["recorddate type"]) && $result["recorddate type"] == "literal") { ?>
-						<?php echo htmlspecialchars(date("Y-m-d", strtotime($result["recorddate"]))); ?>
-					<?php } ?></td>
-					<td><?php if (isset($result["record type"]) && $result["record type"] == "uri") { ?>
-						<a href="<?php echo htmlspecialchars($result["record"]); ?>"><?php echo htmlspecialchars($result["recordname"]); ?></a>
-					<?php } ?></td>
-					<td><?php if (isset($result["tracknumber type"]) && $result["tracknumber type"] == "literal") { ?>
-						<?php echo htmlspecialchars($result["tracknumber"]); ?>
-					<?php } ?></td>
-					<td><?php if (isset($result["track type"]) && $result["track type"] == "uri") { ?>
-						<a href="<?php echo htmlspecialchars($result["track"]); ?>"><?php echo htmlspecialchars($result["trackname"]); ?></a>
-					<?php } ?></td>
+					<th>Country</th>
+					<th>Artist</th>
+					<th>Record date</th>
+					<th>Record</th>
+					<th>Track number</th>
+					<th>Track</th>
 				</tr>
-			<?php } ?>
+			</thead>
+			<tbody>
+				<?php foreach ($collection->results() as $result) { ?>
+					<tr>
+						<td><?php if (isset($result["country type"]) && $result["country type"] == "uri") { ?>
+							<a href="<?php echo htmlspecialchars($result["country"]); ?>"><?php echo htmlspecialchars(iso3166toname(substr($result["country"], -2))); ?></a>
+						<?php } ?></td>
+						<td><?php if (isset($result["artist type"]) && $result["artist type"] == "uri") { ?>
+							<a href="<?php echo htmlspecialchars($result["artist"]); ?>"><?php echo htmlspecialchars($result["artistname"]); ?></a>
+						<?php } ?></td>
+						<td><?php if (isset($result["recorddate type"]) && $result["recorddate type"] == "literal") { ?>
+							<?php echo htmlspecialchars(date("Y-m-d", strtotime($result["recorddate"]))); ?>
+						<?php } ?></td>
+						<td><?php if (isset($result["record type"]) && $result["record type"] == "uri") { ?>
+							<a href="<?php echo htmlspecialchars($result["record"]); ?>"><?php echo htmlspecialchars($result["recordname"]); ?></a>
+						<?php } ?></td>
+						<td><?php if (isset($result["tracknumber type"]) && $result["tracknumber type"] == "literal") { ?>
+							<?php echo htmlspecialchars($result["tracknumber"]); ?>
+						<?php } ?></td>
+						<td><?php if (isset($result["track type"]) && $result["track type"] == "uri") { ?>
+							<a href="<?php echo htmlspecialchars($result["track"]); ?>"><?php echo htmlspecialchars($result["trackname"]); ?></a>
+						<?php } ?></td>
+					</tr>
+				<?php } ?>
+			</tbody>
 		</table>
 	</div>
 

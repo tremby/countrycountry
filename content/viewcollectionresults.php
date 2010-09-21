@@ -329,55 +329,59 @@ include "htmlheader.php";
 			<ul>
 				<li><a class="fancybox" href="#datatable_<?php echo md5($collection["collectionuri"]); ?>">Show data table</a></li>
 			</ul>
-			<table id="datatable_<?php echo md5($collection["collectionuri"]); ?>" class="hidden datatable">
-				<tr>
-					<th rowspan="2">Signal</th>
-					<?php foreach ($collection["classifier_genre"] as $classifier => $genres) { ?>
-						<th colspan="<?php echo count($genres); ?>"><?php echo htmlspecialchars(classifiermapping($classifier)); ?></th>
-					<?php } ?>
-				</tr>
-				<?php
-				$barcolumncount = 0;
-				foreach ($collection["classifier_genre"] as $classifier => $genres)
-					$barcolumncount += count($genres);
-				$barcolumnwidth = 90 / $barcolumncount;
-				?>
-				<tr>
-					<?php foreach ($collection["classifier_genre"] as $classifier => $genres) foreach ($genres as $index => $genre) { ?>
-						<th width="<?php echo 90 / $barcolumncount; ?>%" title="<?php echo htmlspecialchars(uriendpart($genre)); ?>"><?php echo htmlspecialchars(substr(uriendpart($genre), 0, 3)) . "&hellip;"; ?></th>
-					<?php } ?>
-				</tr>
-				<?php foreach ($collection["signals"] as $signal) { $signalinfo = signalinfo($signal); ?>
+			<table id="datatable_<?php echo md5($collection["collectionuri"]); ?>" class="hidden datatable tablesorter">
+				<thead>
 					<tr>
-						<td title="<?php echo htmlspecialchars($signalinfo["artistname"]); ?> &ndash; <?php echo htmlspecialchars($signalinfo["trackname"]); ?>">
-							<a href="<?php echo SITEROOT_WEB; ?>viewsignalresults?uri=<?php echo urlencode($signal); ?>">
-								<?php echo htmlspecialchars($signalinfo["trackname"]); ?>
-							</a>
-						</td>
-						<?php if (empty($collection["assertions"][$signal])) { ?>
-							<td class="nodata" colspan="<?php echo $barcolumncount; ?>">
-								No data
-							</td>
-						<?php } else foreach ($collection["classifier_genre"] as $classifier => $genres) { ?>
-							<?php if (!isset($collection["assertions"][$signal][$classifier])) { ?>
-								<td colspan="<?php echo count($genres); ?>">No data</td>
-							<?php } else foreach ($genres as $genre) { ?>
-								<?php if (isset($collection["assertions"][$signal][$classifier][$genre])) { ?>
-									<td width="<?php echo 90 / $barcolumncount; ?>%" title="<?php echo $collection["assertions"][$signal][$classifier][$genre]; ?>">
-										<div class="barcontainer">
-											<div class="bar" style="width: <?php echo 100 * $collection["assertions"][$signal][$classifier][$genre] / $collection["classifier_maxweight"][$classifier]; ?>%;"></div>
-											<div class="weight"><?php echo sprintf("%.2f", $collection["assertions"][$signal][$classifier][$genre]); ?></div>
-										</div>
-									</td>
-								<?php } else { ?>
-									<td class="nodata" width="<?php echo 90 / $barcolumncount; ?>%">
-										-
-									</td>
-								<?php } ?>
-							<?php } ?>
+						<th rowspan="2">Signal</th>
+						<?php foreach ($collection["classifier_genre"] as $classifier => $genres) { ?>
+							<th colspan="<?php echo count($genres); ?>"><?php echo htmlspecialchars(classifiermapping($classifier)); ?></th>
 						<?php } ?>
 					</tr>
-				<?php } ?>
+				</thead>
+				<tbody>
+					<?php
+					$barcolumncount = 0;
+					foreach ($collection["classifier_genre"] as $classifier => $genres)
+						$barcolumncount += count($genres);
+					$barcolumnwidth = 90 / $barcolumncount;
+					?>
+					<tr>
+						<?php foreach ($collection["classifier_genre"] as $classifier => $genres) foreach ($genres as $index => $genre) { ?>
+							<th width="<?php echo 90 / $barcolumncount; ?>%" title="<?php echo htmlspecialchars(uriendpart($genre)); ?>"><?php echo htmlspecialchars(substr(uriendpart($genre), 0, 3)) . "&hellip;"; ?></th>
+						<?php } ?>
+					</tr>
+					<?php foreach ($collection["signals"] as $signal) { $signalinfo = signalinfo($signal); ?>
+						<tr>
+							<td title="<?php echo htmlspecialchars($signalinfo["artistname"]); ?> &ndash; <?php echo htmlspecialchars($signalinfo["trackname"]); ?>">
+								<a href="<?php echo SITEROOT_WEB; ?>viewsignalresults?uri=<?php echo urlencode($signal); ?>">
+									<?php echo htmlspecialchars($signalinfo["trackname"]); ?>
+								</a>
+							</td>
+							<?php if (empty($collection["assertions"][$signal])) { ?>
+								<td class="nodata" colspan="<?php echo $barcolumncount; ?>">
+									No data
+								</td>
+							<?php } else foreach ($collection["classifier_genre"] as $classifier => $genres) { ?>
+								<?php if (!isset($collection["assertions"][$signal][$classifier])) { ?>
+									<td colspan="<?php echo count($genres); ?>">No data</td>
+								<?php } else foreach ($genres as $genre) { ?>
+									<?php if (isset($collection["assertions"][$signal][$classifier][$genre])) { ?>
+										<td width="<?php echo 90 / $barcolumncount; ?>%" title="<?php echo $collection["assertions"][$signal][$classifier][$genre]; ?>">
+											<div class="barcontainer">
+												<div class="bar" style="width: <?php echo 100 * $collection["assertions"][$signal][$classifier][$genre] / $collection["classifier_maxweight"][$classifier]; ?>%;"></div>
+												<div class="weight"><?php echo sprintf("%.2f", $collection["assertions"][$signal][$classifier][$genre]); ?></div>
+											</div>
+										</td>
+									<?php } else { ?>
+										<td class="nodata" width="<?php echo 90 / $barcolumncount; ?>%">
+											-
+										</td>
+									<?php } ?>
+								<?php } ?>
+							<?php } ?>
+						</tr>
+					<?php } ?>
+				</tbody>
 			</table>
 		<?php } ?>
 	<?php } //data available ?>

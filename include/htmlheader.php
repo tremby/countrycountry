@@ -20,6 +20,9 @@ header("Content-Script-Type: text/javascript");
 	<script type="text/javascript" src="<?php echo SITEROOT_WEB; ?>include/flot/jquery.flot.pie.js"></script>
 	<script type="text/javascript" src="<?php echo SITEROOT_WEB; ?>include/flot/jquery.flot.orderBars.js"></script>
 
+	<script type="text/javascript" src="<?php echo SITEROOT_WEB; ?>include/jquery.metadata.js"></script>
+	<script type="text/javascript" src="<?php echo SITEROOT_WEB; ?>include/jquery.tablesorter.min.js"></script>
+
 	<script type="text/javascript" src="<?php echo SITEROOT_WEB; ?>include/jquery.scrollTo.js"></script>
 
 	<script type="text/javascript" src="<?php echo SITEROOT_WEB; ?>include/jquery.jplayer/jquery.jplayer.js"></script>

@@ -25,7 +25,10 @@ $(document).ready(function() {
 	});
 
 	// stripe tables
-	$("table tr:odd").css("backgroundColor", "#eef");
+	$("table tbody tr").filter(":even").addClass("even").end().filter(":odd").addClass("odd");
+
+	// make tables sortable
+	$("table.tablesorter").tablesorter({widgets: ["zebra"], textExtraction: "complex"});
 
 	// set up fancyboxes
 	$("a.fancybox").fancybox();

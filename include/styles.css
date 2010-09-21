@@ -142,6 +142,31 @@ table.datatable td {
 	border-style: none solid;
 }
 
+table.tablesorter thead tr th, table.tablesorter tfoot tr th {
+}
+table.tablesorter thead tr .header {
+	background-image: url(../images/thead-sortable.gif);
+	background-repeat: no-repeat;
+	background-position: center right;
+	cursor: pointer;
+	padding-right: 11px;
+}
+table.tablesorter tbody td {
+	vertical-align: top;
+}
+table.tablesorter tbody tr.even td {
+	background-color: #eef;
+}
+table.tablesorter thead tr .headerSortUp {
+	background-image: url(../images/thead-asc.gif);
+}
+table.tablesorter thead tr .headerSortDown {
+	background-image: url(../images/thead-desc.gif);
+}
+table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSortUp {
+	background-color: #dde;
+}
+
 .expandlink {
 	height: 22px;
 	width: 22px;
