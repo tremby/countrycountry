@@ -38,6 +38,8 @@ $collections = array_reverse($collections);
 include "htmlheader.php";
 ?>
 
+<h2>Table of existing collections</h2>
+
 <?php if (isset($_REQUEST["author"])) { ?>
 	<ul>
 		<li><a href="<?php echo SITEROOT_WEB; ?>existingcollections">View all collections</a></li>
@@ -50,6 +52,12 @@ include "htmlheader.php";
 	</ul>
 <?php } ?>
 
+<h3>
+	All existing collections
+	<?php if (isset($_REQUEST["author"])) { ?>
+		by <?php echo $_REQUEST["author"]; ?>
+	<?php } ?>
+</h3>
 <form action="<?php echo SITEROOT_WEB; ?>viewcollectionresults" method="get">
 	<table class="tablesorter {sortlist: [[2,1]]}">
 		<thead>
