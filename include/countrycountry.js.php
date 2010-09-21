@@ -20,6 +20,7 @@ $(document).ready(function() {
 		$("input[name=uri[]]:last").val("").focus();
 	});
 
+	// delete collection button
 	$(".deletebutton").click(function() {
 		return confirm("Are you sure you want to delete the collection '" + $(this).parents("tr:first").find("td:first").text() + "' and all its groundings?");
 	});
