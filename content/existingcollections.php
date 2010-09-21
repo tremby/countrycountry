@@ -1,39 +1,6 @@
 <?php
 
-$uristem = "http://collections.nema.ecs.soton.ac.uk/";
-
-require_once "include/arc/ARC2.php";
-$collections = array();
-foreach (glob(SITEROOT_LOCAL . "signalcollections/*.xml") as $filename) {
-	$parser = ARC2::getRDFParser();
-	$parser->parse($filename);
-	$collection = array();
-	$collection["index"] = $parser->getSimpleIndex();
-	$collection["modified"] = filemtime($filename);
-	$collection["hash"] = preg_replace('%.*/([0-9a-f]+)\.xml$%', '\1', $filename);
-	$collection["uri"] = $uristem . "signalcollection/" . $collection["hash"];
-
-	// get groundings
-	$collection["groundings"] = array();
-	foreach (glob(SITEROOT_LOCAL . "filecollections/" . $collection["hash"] . "/*.xml") as $gfile) {
-		$parser = ARC2::getRDFParser();
-		$parser->parse($gfile);
-		$grounding = array();
-		$grounding["index"] = $parser->getSimpleIndex();
-		$grounding["modified"] = filemtime($gfile);
-		$grounding["hash"] = preg_replace('%.*/([0-9a-f]+)\.xml$%', '\1', $gfile);
-		$grounding["uri"] = $uristem . "filecollection/" . $collection["hash"] . "/" . $grounding["hash"];
-		$collection["groundings"][] = $grounding;
-	}
-
-	$collections[] = $collection;
-}
-
-function sortbydate($a, $b) {
-	return $a["modified"] - $b["modified"];
-}
-usort($collections, "sortbydate");
-$collections = array_reverse($collections);
+$collections = getcollections();
 
 include "htmlheader.php";
 ?>

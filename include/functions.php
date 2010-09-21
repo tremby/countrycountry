@@ -645,4 +645,44 @@ function isemail($email) { //from http://www.ilovejackdaniels.com/php/email-addr
 	return true;
 }
 
+function getcollections() {
+	require_once "include/arc/ARC2.php";
+	$uristem = "http://collections.nema.ecs.soton.ac.uk/";
+
+	$collections = array();
+	foreach (glob(SITEROOT_LOCAL . "signalcollections/*.xml") as $filename) {
+		$parser = ARC2::getRDFParser();
+		$parser->parse($filename);
+		$collection = array();
+		$collection["index"] = $parser->getSimpleIndex();
+		$collection["modified"] = filemtime($filename);
+		$collection["hash"] = preg_replace('%.*/([0-9a-f]+)\.xml$%', '\1', $filename);
+		$collection["uri"] = $uristem . "signalcollection/" . $collection["hash"];
+
+		// get groundings
+		$collection["groundings"] = array();
+		foreach (glob(SITEROOT_LOCAL . "filecollections/" . $collection["hash"] . "/*.xml") as $gfile) {
+			$parser = ARC2::getRDFParser();
+			$parser->parse($gfile);
+			$grounding = array();
+			$grounding["index"] = $parser->getSimpleIndex();
+			$grounding["modified"] = filemtime($gfile);
+			$grounding["hash"] = preg_replace('%.*/([0-9a-f]+)\.xml$%', '\1', $gfile);
+			$grounding["uri"] = $uristem . "filecollection/" . $collection["hash"] . "/" . $grounding["hash"];
+			$collection["groundings"][] = $grounding;
+		}
+
+		$collections[] = $collection;
+	}
+
+	usort($collections, "sortcollectionbydate");
+	$collections = array_reverse($collections);
+
+	return $collections;
+}
+
+function sortcollectionbydate($a, $b) {
+	return $a["modified"] - $b["modified"];
+}
+
 ?>
