@@ -31,7 +31,12 @@ $store = ARC2::getRemoteStore($config);
 
 // get collection triples
 $collections = array();
-foreach ($_REQUEST["uri"] as $collectionuri) {
+foreach ($_REQUEST["uri"] as $key => $collectionuri) {
+	if (empty($collectionuri)) {
+		unset($_REQUEST["uri"][$key]);
+		continue;
+	}
+
 	$collection = array();
 
 	$parser = ARC2::getRDFParser();
