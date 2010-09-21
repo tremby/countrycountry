@@ -14,10 +14,43 @@ $(document).ready(function() {
 		$(this).parents("dt:first").next("dd:first").slideDown("fast");
 	});
 
-	// add input box to URI chooser for multiple collection results comparison
-	$("#addurifield").click(function() {
-		$("input[name=uri[]]:last").parents("li:first").clone().appendTo($("input[name=uri[]]:first").parents("ul:first"));
-		$("input[name=uri[]]:last").val("").focus();
+	// logic for list of collection URIs for results comparison
+	removecollectionuri = function() {
+		$(this).parents("li:first").remove();
+		if ($("#uris li").length == 0)
+			$("#noneyet").show();
+	};
+	adduri = function(uri) {
+		var found = false;
+		$("#uris input").each(function() {
+			if ($(this).val() == uri) {
+				alert("This URI is already in the list");
+				found = true;
+				return false; // jquery.each break
+			}
+		});
+		if (found)
+			return;
+		$.get("<?php echo SITEROOT_WEB; ?>collectioninfo", {"uri": uri}, function(data, textstatus, xhr) {
+			$("#uris").append("<li><input type=\"hidden\" name=\"uri[]\" value=\"" + data.uri + "\"><em>" + data.title + "</em> by " + data.creator + " (" + data.signalcount + " signals)" + " <a href=\"" + uri + "\" title=\"URI\"><img src=\"<?php echo SITEROOT_WEB; ?>images/uri.png\" alt=\"URI\"></a> <a class=\"deletecollectionuributton\" href=\"#\"><img src=\"<?php echo SITEROOT_WEB; ?>images/delete.png\" alt=\"Delete\" title=\"Remove this collection from the list\"></a></li>");
+			$("#uris .deletecollectionuributton").unbind("click").click(removecollectionuri);
+			$("#addcollectionuri").val("");
+			$("#noneyet").hide();
+		});
+	};
+	$("#uris .deletecollectionuributton").click(removecollectionuri);
+	$("#addcollectionuributton").click(function() {
+		adduri($("#addcollectionuri").val());
+	});
+	$("#addcollectionuridropdownbutton").click(function() {
+		adduri($("#addcollectionuridropdown").val());
+	});
+	$("#viewcollectionresultsbutton").click(function() {
+		if ($("#uris li").length == 0) {
+			alert("You haven't added any collections to the list yet");
+			return false;
+		}
+		return true;
 	});
 
 	// delete collection button

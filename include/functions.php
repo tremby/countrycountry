@@ -649,6 +649,47 @@ function isemail($email) { //from http://www.ilovejackdaniels.com/php/email-addr
 	return true;
 }
 
+// get modified time of remote file
+function remote_filemtime($url) {
+	$fp = fopen($url, "r");
+	if (!$fp)
+		return false;
+	$md = stream_get_meta_data($fp);
+	foreach ($md["wrapper_data"] as $data) {
+		// handle redirection
+		if (substr(strtolower($data), 0, 10) == "location: ") {
+			$newurl = substr($data, 10);
+			fclose($fp);
+			return remote_filemtime($newurl);
+		}
+		if (substr(strtolower($data), 0, 15) == "last-modified: ") {
+			fclose($fp);
+			return strtotime(substr($data, 15));
+		}
+	}
+	return false;
+}
+
+// fetch collection RDF and parse its info
+function getcollectioninfo($uri, &$errors) {
+	require_once "include/arc/ARC2.php";
+	$parser = ARC2::getRDFParser();
+	$parser->parse($uri);
+	if (!empty($parser->errors)) {
+		$errors = $parser->errors;
+		return false;
+	}
+
+	$collection = array();
+	$collection["index"] = $parser->getSimpleIndex();
+	$collection["modified"] = remote_filemtime($uri);
+	$collection["hash"] = null;
+	$collection["uri"] = $uri;
+	$collection["groundings"] = null;
+
+	return $collection;
+}
+
 function getcollections() {
 	require_once "include/arc/ARC2.php";
 	$uristem = "http://collections.nema.ecs.soton.ac.uk/";
