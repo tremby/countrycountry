@@ -10,8 +10,8 @@ function fakemail($to, $subject, $message, $headers = "") {
 function badrequest($message = "bad request", $mimetype = "text/plain") {
 	header("Content-Type: $mimetype", true, 400);
 	if (is_array($message))
-		foreach($message as $m)
-			echo "- " . $m . "\n";
+		foreach ($message as $m)
+			echo "- $m\n";
 	else
 		echo $message . "\n";
 	exit;
@@ -23,7 +23,11 @@ function notfound($message = "not found", $mimetype = "text/plain") {
 }
 function servererror($message = "internal server error", $mimetype = "text/plain") {
 	header("Content-Type: $mimetype", true, 500);
-	echo $message . "\n";
+	if (is_array($message))
+		foreach ($message as $m)
+			echo "- $m\n";
+	else
+		echo $message . "\n";
 	exit;
 }
 function notacceptable($message = "not acceptable", $mimetype = "text/plain") {
