@@ -361,7 +361,7 @@ include "htmlheader.php";
 			<ul>
 				<li><a class="fancybox" href="#datatable_<?php echo md5($collection["collectionuri"]); ?>">Show data table</a></li>
 			</ul>
-			<table id="datatable_<?php echo md5($collection["collectionuri"]); ?>" class="hidden datatable tablesorter">
+			<table id="datatable_<?php echo md5($collection["collectionuri"]); ?>" class="hidden datatable">
 				<thead>
 					<tr>
 						<th rowspan="2">Signal</th>
