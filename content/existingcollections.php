@@ -34,11 +34,11 @@ include "htmlheader.php";
 				<th>Published</th>
 				<th>Description</th>
 				<th>Size</th>
-				<th>RDF</th>
-				<th>Groundings</th>
-				<th>Results</th>
-				<th>Compare results</th>
-				<th>Actions</th>
+				<th class="{sorter: false}">RDF</th>
+				<th class="{sorter: false}">Groundings</th>
+				<th class="{sorter: false}">Results</th>
+				<th class="{sorter: false}">Compare results</th>
+				<th class="{sorter: false}">Actions</th>
 			</tr>
 		</thead>
 		<tbody>
