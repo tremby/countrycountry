@@ -9,6 +9,9 @@ include "htmlheader.php";
 <h2><?php echo htmlspecialchars($title); ?></h2>
 
 <?php if (isset($_REQUEST["author"])) { ?>
+	<?php if (isset($_COOKIE["cc_author"]) && $_COOKIE["cc_author"] == $_REQUEST["author"]) { ?>
+	<p class="hint">Currently viewing collections by <?php echo htmlspecialchars($_REQUEST["author"]); ?>, which was found as a cookie. <a href="<?php echo SITEROOT_WEB; ?>clearcookie">Click here to clear the cookie</a> (for instance if you're not <?php echo htmlspecialchars($_REQUEST["author"]); ?>).</p>
+	<?php } ?>
 	<ul>
 		<li><a href="<?php echo SITEROOT_WEB; ?>existingcollections">View all collections</a></li>
 	</ul>
