@@ -11,6 +11,10 @@ body {
 	color: white;
 }
 
+p {
+	margin: 0.5em 0;
+}
+
 a {
 	text-decoration: underline;
 	color: #bbf;
