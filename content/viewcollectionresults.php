@@ -268,13 +268,16 @@ include "htmlheader.php";
 									</a>
 									<?php if (($bbcuri = bbcuri($artists[$k]["artist"])) !== false) { ?>
 										<p class="hint">Further data from the BBC</p>
+										<?php if (isset($bbcinfo["image"])) { ?>
+											<img class="bbcimage" src="<?php echo htmlspecialchars($bbcinfo["image"]); ?>">
+										<?php } ?>
 										<ul>
 											<?php $bbcinfo = bbcinfo($bbcuri); ?>
 											<li><a href="<?php echo htmlspecialchars($bbcuri); ?>">BBC Music page</a> <?php echo urilink($bbcuri, "URI of this artist at BBC Music"); ?></li>
 											<?php if (isset($bbcinfo["comment"])) { ?>
 												<li><em><?php echo htmlspecialchars($bbcinfo["comment"]); ?></em></li>
-											<?php }
-											if (isset($bbcinfo["homepage"])) { ?>
+											<?php } ?>
+											<?php if (isset($bbcinfo["homepage"])) { ?>
 												<li><a href="<?php echo htmlspecialchars($bbcinfo["homepage"]); ?>">Homepage</a></li>
 											<?php }
 											if (isset($bbcinfo["wikipedia"])) { ?>
@@ -288,13 +291,11 @@ include "htmlheader.php";
 											<?php }
 											if (isset($bbcinfo["imdb"])) { ?>
 												<li><a href="<?php echo htmlspecialchars($bbcinfo["imdb"]); ?>">IMDB entry</a></li>
-											<?php }
-											if (isset($bbcinfo["image"])) { ?>
-												<li><img src="<?php echo htmlspecialchars($bbcinfo["image"]); ?>"></li>
 											<?php } ?>
 										</ul>
 									<?php } ?>
 								</li>
+								<div class="clearer"></div>
 							<?php } ?>
 						</ul>
 					<?php } ?>

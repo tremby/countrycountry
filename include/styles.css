@@ -339,3 +339,8 @@ ol {
 ol ol {
 	list-style-type: lower-alpha;
 }
+
+.bbcimage {
+	float: right;
+	margin: 0 0 1em 1em;
+}

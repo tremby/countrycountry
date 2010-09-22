@@ -291,6 +291,9 @@ if ($bbcuri === false) { ?>
 	if (empty($bbcinfo)) { ?>
 		<p>None of the information seeked was found on BBC Music.</p>
 	<? } else { ?>
+		<?php if (isset($bbcinfo["image"])) { ?>
+			<img class="bbcimage" src="<?php echo htmlspecialchars($bbcinfo["image"]); ?>">
+		<?php } ?>
 		<ul>
 			<li><a href="<?php echo htmlspecialchars($bbcuri); ?>">BBC Music page</a> <?php echo urilink($bbcuri, "URI of this artist at BBC Music"); ?></li>
 			<?php if (isset($bbcinfo["comment"])) { ?>
@@ -310,11 +313,9 @@ if ($bbcuri === false) { ?>
 			<?php }
 			if (isset($bbcinfo["imdb"])) { ?>
 				<li><a href="<?php echo htmlspecialchars($bbcinfo["imdb"]); ?>">IMDB entry</a></li>
-			<?php }
-			if (isset($bbcinfo["image"])) { ?>
-				<li><img src="<?php echo htmlspecialchars($bbcinfo["image"]); ?>"></li>
 			<?php } ?>
 		</ul>
+		<div class="clearer"></div>
 	<?php }
 }
 ?>
@@ -353,6 +354,9 @@ if ($bbcuri === false) { ?>
 							</a>
 							<?php if (($bbcuri = bbcuri($artists[$k]["artist"])) !== false) { ?>
 								<p class="hint">Further data from the BBC</p>
+								<?php if (isset($bbcinfo["image"])) { ?>
+									<img class="bbcimage" src="<?php echo htmlspecialchars($bbcinfo["image"]); ?>">
+								<?php } ?>
 								<ul>
 									<?php $bbcinfo = bbcinfo($bbcuri); ?>
 									<li><a href="<?php echo htmlspecialchars($bbcuri); ?>">BBC Music page</a> <?php echo urilink($bbcuri, "URI of this artist at BBC Music"); ?></li>
@@ -373,13 +377,11 @@ if ($bbcuri === false) { ?>
 									<?php }
 									if (isset($bbcinfo["imdb"])) { ?>
 										<li><a href="<?php echo htmlspecialchars($bbcinfo["imdb"]); ?>">IMDB entry</a></li>
-									<?php }
-									if (isset($bbcinfo["image"])) { ?>
-										<li><img src="<?php echo htmlspecialchars($bbcinfo["image"]); ?>"></li>
 									<?php } ?>
 								</ul>
 							<?php } ?>
 						</li>
+						<div class="clearer"></div>
 					<?php } ?>
 				</ul>
 			<?php } ?>
