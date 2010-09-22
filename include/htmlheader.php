@@ -65,6 +65,7 @@ header("Content-Script-Type: text/javascript");
 	<ul id="menu">
 		<?php foreach (array(
 			"mainmenu" => "Main menu",
+			"about" => "About country/country",
 			"newcollection" => "New collection",
 			"existingcollections" => "Existing collections",
 			"viewcollectionresults" => "View collection results",
