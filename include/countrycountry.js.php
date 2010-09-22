@@ -5,14 +5,22 @@ require "constants.php";
 
 $(document).ready(function() {
 	// slidey definition lists
+	expandcollapsedl = function(e) {
+		e.preventDefault();
+		if ($(this).parents("dt:first").next("dd:first").is(":visible")) {
+			$(this).removeClass("collapselink").addClass("expandlink");
+			$(this).parents("dt:first").next("dd:first").slideUp("fast");
+		} else {
+			$(this).parents("dl:first").find(".collapselink").removeClass("collapselink").addClass("expandlink");
+			$(this).removeClass("expandlink").addClass("collapselink");
+			$(this).parents("dl:first").children("dd").not($(this).parents("dt:first").next("dd:first")).slideUp("fast");
+			$(this).parents("dt:first").next("dd:first").slideDown("fast");
+		}
+	};
 	$("dl.single > dd").hide();
 	$("dl.single > dt:first-child + dd").show();
-	$("dl.single > dt").prepend("<a class=\"expandlink\" href=\"#\"></a>");
-	$("dl.single > dt a.expandlink").click(function(e) {
-		e.preventDefault();
-		$(this).parents("dl:first").children("dd").not($(this).parents("dt:first").next("dd:first")).slideUp("fast");
-		$(this).parents("dt:first").next("dd:first").slideDown("fast");
-	});
+	$("dl.single > dt").prepend("<a class=\"expandlink\" href=\"#\"></a>").filter(":first-child").find("a.expandlink").removeClass("expandlink").addClass("collapselink");
+	$("dl.single > dt a.expandlink, dl.single > dt a.collapselink").click(expandcollapsedl);
 
 	// logic for list of collection URIs for results comparison
 	removecollectionuri = function() {

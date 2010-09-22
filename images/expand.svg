@@ -29,18 +29,6 @@
        id="perspective10" />
     <filter
        inkscape:collect="always"
-       id="filter3860"
-       x="-0.3972"
-       width="1.7944"
-       y="-0.3972"
-       height="1.7944">
-      <feGaussianBlur
-         inkscape:collect="always"
-         stdDeviation="1.986"
-         id="feGaussianBlur3862" />
-    </filter>
-    <filter
-       inkscape:collect="always"
        id="filter3968"
        x="-0.3372"
        width="1.6744"
@@ -51,6 +39,30 @@
          stdDeviation="1.686"
          id="feGaussianBlur3970" />
     </filter>
+    <filter
+       inkscape:collect="always"
+       id="filter3613"
+       x="-0.32200043"
+       width="1.6440009"
+       y="-0.32200043"
+       height="1.6440009">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="1.6100021"
+         id="feGaussianBlur3615" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       id="filter3617"
+       x="-0.32200043"
+       width="1.6440009"
+       y="-0.32200043"
+       height="1.6440009">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="1.6100021"
+         id="feGaussianBlur3619" />
+    </filter>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -60,8 +72,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="16"
-     inkscape:cx="13.206899"
-     inkscape:cy="10.650938"
+     inkscape:cx="13.331899"
+     inkscape:cy="15.400938"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -78,7 +90,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -92,7 +104,7 @@
        height="12"
        width="12"
        id="rect3590"
-       style="opacity:0.84862389999999999;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter3968)"
+       style="opacity:0.84862389999999999;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter3617)"
        inkscape:export-filename="/home/bjn/nema/countrycountry/images/expand.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
@@ -114,5 +126,29 @@
        d="m 9.1731,1046.3622 -6.3462,0"
        style="fill:none;stroke:#ffffff;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        id="path3871" />
+    <rect
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="/home/bjn/nema/countrycountry/images/expand.png"
+       style="opacity:0.84862389999999999;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;filter:url(#filter3613)"
+       id="rect2823"
+       width="12"
+       height="12"
+       x="0.70040005"
+       y="1019.7618" />
+    <rect
+       inkscape:export-ydpi="90"
+       inkscape:export-xdpi="90"
+       inkscape:export-filename="/home/bjn/nema/countrycountry/images/expand.png"
+       y="1018.3622"
+       x="0"
+       height="12"
+       width="12"
+       id="rect2825"
+       style="fill:#000000;fill-opacity:1;stroke:#ffffff;stroke-width:1.5;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none" />
+    <path
+       id="path2829"
+       style="fill:none;stroke:#ffffff;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 9.1731,1024.3622 -6.3462,0" />
   </g>
 </svg>

@@ -168,13 +168,19 @@ table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSo
 	background-color: #dde;
 }
 
-.expandlink {
+.expandlink, .collapselink {
 	height: 22px;
 	width: 22px;
 	float: left;
 	position: relative;
 	top: -2px;
 	background-image: url("../images/expand.png");
+}
+.expandlink {
+	background-position: bottom center;
+}
+.collapselink {
+	background-position: top center;
 }
 
 .serieslist {
