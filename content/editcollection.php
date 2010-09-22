@@ -38,6 +38,12 @@ if (isset($_REQUEST["submit"])) {
 	if (!empty($author))
 		setcookie("cc_author", $author, strtotime("+1 month"), SITEROOT_WEB);
 
+	// limit
+	if (isset($_POST["limited"]))
+		$collection->limited(true);
+	else
+		$collection->limited(false);
+
 	$collection->clearfilters();
 
 	// artist name
@@ -129,6 +135,7 @@ if (isset($_REQUEST["submit"])) {
 			?signal
 				mo:published_as ?track .
 		}
+		" . ($collection->limited() ? "LIMIT 500" : "") . "
 	");
 }
 
@@ -290,6 +297,13 @@ include "htmlheader.php";
 					</dl>
 				</dd>
 			</dl>
+		</dd>
+
+		<dt>Limit collection</dt>
+		<dd>
+			<input type="checkbox" name="limited" value="true"<?php if ($collection->limited()) { ?> checked="checked"<?php } ?>>
+			Limit the number of results to 500
+			<p class="hint">It's a good idea to leave this switched on since large collections can take a long time to process</p>
 		</dd>
 
 		<dt>Update collection with new filters</dt>

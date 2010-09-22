@@ -12,6 +12,7 @@ class Collection {
 	private $groundhash = null;
 	private $groundendpoint = null;
 	private $groundedresults = array();
+	private $limited = true;
 
 	public function __construct() {
 		$this->id = md5(microtime());
@@ -101,6 +102,14 @@ class Collection {
 
 		$this->query = $query;
 		$this->results = queryjamendo($query);
+	}
+
+	// get or set whether the collection is limited in the number of results it 
+	// can receive
+	public function limited($limit = null) {
+		if (is_null($limit))
+			return $this->limited;
+		$this->limited = $limit;
 	}
 
 	// get results
