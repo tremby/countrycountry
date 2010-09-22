@@ -73,9 +73,11 @@ include "htmlheader.php";
 						<?php } ?></td>
 						<td><a href="<?php echo SITEROOT_WEB; ?>viewcollectionresults?uri[]=<?php echo urlencode($collection["uri"]); ?>">View</a></td>
 						<td><input type="checkbox" name="uri[]" value="<?php echo htmlspecialchars($collection["uri"]); ?>"></td>
-						<td><ul>
-							<li><a class="deletebutton" href="<?php echo SITEROOT_WEB; ?>deletecollection?id=<?php echo urlencode($collection["hash"]); ?>">Delete</a></li>
-						</ul></td>
+						<td><?php if ($aggregate[$ns["dc"] . "creator"][0] != "bjn") { ?>
+							<ul>
+								<li><a class="deletebutton" href="<?php echo SITEROOT_WEB; ?>deletecollection?id=<?php echo urlencode($collection["hash"]); ?>">Delete</a></li>
+							</ul>
+						<?php } ?></td>
 					</tr>
 				<?php }
 			} ?>
