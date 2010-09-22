@@ -62,6 +62,16 @@ header("Content-Script-Type: text/javascript");
 	</h1>
 </div>
 <div id="body">
+	<ul id="menu">
+		<?php foreach (array(
+			"mainmenu" => "Main menu",
+			"newcollection" => "New collection",
+			"existingcollections" => "Existing collections",
+			"viewcollectionresults" => "View collection results",
+		) as $k => $v) { ?>
+			<li<?php if ($GLOBALS["page"] == $k) { ?> class="active"<?php } ?>><a href="<?php echo SITEROOT_WEB; ?><?php echo $k; ?>"><?php echo $v; ?></a></li>
+		<?php } ?>
+	</ul>
 	<a class="fancybox" id="showfeedbackform" href="#feedbackform">Send feedback</a>
 	<!--[if IE]>
 		<div id="iewarning"><img src="<?php echo SITEROOT_WEB; ?>images/exclamation.png" alt="!"> This demo isn't fully functional in Internet Explorer. Please try in a Gecko or Webkit based browser.</div>

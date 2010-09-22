@@ -49,7 +49,8 @@ a:hover {
 	-moz-border-radius: 10px;
 	-webkit-border-radius: 10px;
 	width: 95%;
-	margin: 0 auto;
+	margin: 20px auto 0;
+	position: relative;
 }
 #fancybox-outer {
 	color: #444;
@@ -280,4 +281,44 @@ ul, ol {
 	border-radius: 10px;
 	-webkit-border-radius: 10px;
 	-moz-border-radius: 10px;
+}
+
+#menu {
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
+	display: block;
+	position: absolute;
+	top: -22px;
+	left: 1em;
+	font-weight: bold;
+	font-size: 90%;
+}
+#menu li {
+	display: inline-block;
+	border-radius: 8px 8px 0 0;
+	-moz-border-radius: 8px 8px 0 0;
+	-webkit-border-radius: 8px 8px 0 0;
+	height: 14px; /* 22 - padding-top - padding-bottom - border-top - border-bottom */
+	padding: 2px 5px 0;
+	border: 2px solid #aac;
+	border-style: solid;
+	background-color: #cce;
+	position: relative;
+}
+#menu li:hover {
+	background-color: #ddf;
+}
+#menu li.active {
+	background-color: white;
+	border-bottom-color: white;
+	border-width: 3px;
+	padding-bottom: 2px;
+	bottom: 2px;
+}
+#menu li.active:hover {
+	background-color: white;
+}
+#menu a {
+	text-decoration: none;
 }
