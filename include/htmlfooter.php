@@ -1,4 +1,5 @@
 	<div class="hidden" id="feedbackform">
+		<h3>Send feedback</h3>
 		<form action="<?php echo SITEROOT_WEB; ?>submitfeedback" method="post">
 			<dl>
 				<dt>Name (optional)</dt>
@@ -15,6 +16,9 @@
 
 				<dt>Submit</dt>
 				<dd><input id="feedback_sendfeedback" type="submit" name="sendfeedback" value="Submit feedback"></dd>
+
+				<dt>Alternatively</dt>
+				<dd>You can <a href="mailto:krp@ecs.soton.ac.uk,bjn@ecs.soton.ac.uk?subject=Country/country%20feedback">email Kevin Page and Bart Nagel</a> with your thoughts</dd>
 			</dl>
 		</form>
 	</div>
