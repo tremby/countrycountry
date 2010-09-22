@@ -16,6 +16,7 @@ if (!isset($_REQUEST["uri"]) || !is_array($_REQUEST["uri"])) {
 				<dl>
 					<dt>From the list of existing collections</dt>
 					<dd>
+						<a id="addcollectionuridropdownbutton" href="#"><img src="<?php echo SITEROOT_WEB; ?>images/add.png" alt="Add" title="Add this collection to the list"></a>
 						<select id="addcollectionuridropdown">
 							<?php foreach ($collections as $collection) {
 								$aggregate = $collection["index"][$collection["uri"] . "#aggregate"];
@@ -23,17 +24,16 @@ if (!isset($_REQUEST["uri"]) || !is_array($_REQUEST["uri"])) {
 								<option value="<?php echo htmlspecialchars($collection["uri"]); ?>">
 									<?php echo htmlspecialchars($aggregate[$ns["dc"] . "title"][0]); ?>
 									by <?php echo htmlspecialchars($aggregate[$ns["dc"] . "creator"][0]); ?>
-									(<?php echo count($aggregate[$ns["ore"] . "aggregates"]); ?> signals)
+									(<?php echo count($aggregate[$ns["ore"] . "aggregates"]); ?> tracks)
 								</option>
 							<?php } ?>
 						</select>
-						<a id="addcollectionuridropdownbutton" href="#"><img src="<?php echo SITEROOT_WEB; ?>images/add.png" alt="Add" title="Add this collection to the list"></a>
 					</dd>
 
 					<dt>By URI</dt>
 					<dd>
-						<input id="addcollectionuri" type="text" size="64">
 						<a id="addcollectionuributton" href="#"><img src="<?php echo SITEROOT_WEB; ?>images/add.png" alt="Add" title="Add this URI to the list"></a>
+						<input id="addcollectionuri" type="text" size="64">
 					</dd>
 				</dl>
 			</dd>

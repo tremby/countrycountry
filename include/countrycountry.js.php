@@ -32,7 +32,7 @@ $(document).ready(function() {
 		if (found)
 			return;
 		$.get("<?php echo SITEROOT_WEB; ?>collectioninfo", {"uri": uri}, function(data, textstatus, xhr) {
-			$("#uris").append("<li><input type=\"hidden\" name=\"uri[]\" value=\"" + data.uri + "\"><em>" + data.title + "</em> by " + data.creator + " (" + data.signalcount + " signals)" + " <a href=\"" + uri + "\" title=\"URI\"><img src=\"<?php echo SITEROOT_WEB; ?>images/uri.png\" alt=\"URI\"></a> <a class=\"deletecollectionuributton\" href=\"#\"><img src=\"<?php echo SITEROOT_WEB; ?>images/delete.png\" alt=\"Delete\" title=\"Remove this collection from the list\"></a></li>");
+			$("#uris").append("<li><a class=\"deletecollectionuributton\" href=\"#\"><img src=\"<?php echo SITEROOT_WEB; ?>images/delete.png\" alt=\"Delete\" title=\"Remove this collection from the list\"></a> <input type=\"hidden\" name=\"uri[]\" value=\"" + data.uri + "\"><em>" + data.title + "</em> by " + data.creator + " (" + data.signalcount + " tracks)" + " <a href=\"" + uri + "\" title=\"URI\"><img src=\"<?php echo SITEROOT_WEB; ?>images/uri.png\" alt=\"URI\"></a></li>");
 			$("#uris .deletecollectionuributton").unbind("click").click(removecollectionuri);
 			$("#addcollectionuri").val("");
 			$("#noneyet").hide();
