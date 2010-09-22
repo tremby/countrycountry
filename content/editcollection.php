@@ -404,7 +404,7 @@ if (!$collection->author())
 	<h3>Demo queries</h3>
 	<dl class="twocol">
 		<?php foreach (array(
-			array("Spain", 3000, "ES", "Spanish"),
+			//array("Spain", 3000, "ES", "Spanish"),
 			array("Poland", 1100, "PL", "Polish"),
 			array("Turkey", 15, "TR", "Turkish"),
 			array("Ireland", 15, "IE", "Irish"),
