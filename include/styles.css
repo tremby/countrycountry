@@ -322,3 +322,10 @@ ul, ol {
 #menu a {
 	text-decoration: none;
 }
+
+ol {
+	list-style-type: decimal;
+}
+ol ol {
+	list-style-type: lower-alpha;
+}
