@@ -340,7 +340,18 @@ ol ol {
 	list-style-type: lower-alpha;
 }
 
+.bbcdata > li:first-child {
+	border-top-style: none;
+}
+.bbcdata > li {
+	border-top: 1px solid #ddd;
+	clear: right;
+	padding: 0.5em 0;
+}
 .bbcimage {
 	float: right;
 	margin: 0 0 1em 1em;
+	border-radius: 10px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
 }

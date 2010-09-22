@@ -256,8 +256,8 @@ include "htmlheader.php";
 					if (empty($artists)) { ?>
 						<p>No artists matching this genre were found in DBpedia.</p>
 					<?php } else { ?>
-						<ul>
-							<?php foreach (array_rand($artists, min(count($artists), 10)) as $k) { ?>
+						<ul class="bbcdata">
+							<?php $a = array_rand($artists, min(count($artists), 10)); if (!is_array($a)) $a = array($a); foreach ($a as $k) { ?>
 								<li>
 									<a href="<?php echo htmlspecialchars($artists[$k]["artist"]); ?>">
 										<?php echo htmlspecialchars($artists[$k]["artistname"]); ?>
@@ -276,8 +276,8 @@ include "htmlheader.php";
 											<li><a href="<?php echo htmlspecialchars($bbcuri); ?>">BBC Music page</a> <?php echo urilink($bbcuri, "URI of this artist at BBC Music"); ?></li>
 											<?php if (isset($bbcinfo["comment"])) { ?>
 												<li><em><?php echo htmlspecialchars($bbcinfo["comment"]); ?></em></li>
-											<?php } ?>
-											<?php if (isset($bbcinfo["homepage"])) { ?>
+											<?php }
+											if (isset($bbcinfo["homepage"])) { ?>
 												<li><a href="<?php echo htmlspecialchars($bbcinfo["homepage"]); ?>">Homepage</a></li>
 											<?php }
 											if (isset($bbcinfo["wikipedia"])) { ?>
@@ -295,9 +295,9 @@ include "htmlheader.php";
 										</ul>
 									<?php } ?>
 								</li>
-								<div class="clearer"></div>
 							<?php } ?>
 						</ul>
+						<div class="clearer"></div>
 					<?php } ?>
 				</dd>
 			<?php } ?>
