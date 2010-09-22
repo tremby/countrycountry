@@ -12,16 +12,21 @@ if (!file_exists($dir))
 
 $collection->ground(ENDPOINT_REPOSITORY);
 
+if (count($collection->groundedresults()) > 0)
+	$title = "Collection grounded";
+else
+	$title = "No audiofiles found";
 include "htmlheader.php";
+
 if (count($collection->groundedresults()) > 0) {
 	file_put_contents($dir . "/" . $collection->groundhash() . ".xml", $collection->groundedrdf());
 	?>
-	<h2>Collection grounded</h2>
+	<h2><?php echo htmlspecialchars($title); ?></h2>
 	<p>The signal collection "<?php echo htmlspecialchars($collection->title()); ?>" has been grounded to the audiofile repository and published with the following URI.
 	<br><code><?php echo htmlspecialchars($collection->groundeduri()); ?></code></p>
 	<p>Of the signal collection's <?php echo count($collection->results()); ?> tracks, audiofiles for <?php echo count($collection->groundedresults()); ?> were found.</p>
 <?php } else { ?>
-	<h2>No audiofiles found</h2>
+	<h2><?php echo htmlspecialchars($title); ?></h2>
 	<p>Audiofiles for none of the <?php echo count($collection->results()); ?> signals in the collection "<?php echo htmlspecialchars($collection->title()); ?>" were found when querying the signal repository endpoint.</p>
 <?php } ?>
 

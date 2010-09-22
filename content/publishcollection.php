@@ -11,11 +11,12 @@ if (file_exists($filename))
 	badrequest("A signal collection with this ID has already been published at\nhttp://collections.nema.ecs.soton.ac.uk/signalcollection/" . $collection->id());
 file_put_contents($filename, $collection->rdf());
 
+$title = "Collection published";
 include "htmlheader.php";
 
 ?>
 
-<h2>Collection published</h2>
+<h2><?php echo htmlspecialchars($title); ?></h2>
 <p>The signal collection "<?php echo htmlspecialchars($collection->title()); ?>" has been published with the following URI.
 <br><code><?php echo htmlspecialchars($collection->uri()); ?></code></p>
 

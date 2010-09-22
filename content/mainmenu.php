@@ -1,5 +1,8 @@
-<?php include "htmlheader.php"; ?>
-<h2>Main menu</h2>
+<?php
+$title = "Main menu";
+include "htmlheader.php";
+?>
+<h2><?php echo htmlspecialchars($title); ?></h2>
 <dl>
 	<dt><a href="<?php echo SITEROOT_WEB; ?>newcollection">New collection</a></dt>
 	<dd>Build a new collection of signals by filtering <a href="http://dbtune.org/">DBTune</a>'s linked data representation of music from <a href="http://www.jamendo.com/">Jamendo</a>.</dd>

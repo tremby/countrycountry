@@ -1,10 +1,14 @@
 <?php
 
 if (!isset($_REQUEST["uri"]) || !is_array($_REQUEST["uri"])) {
-	include "htmlheader.php";
 	$collections = getcollections();
+
+	$title = "Choose collections to view results";
+	include "htmlheader.php";
 	?>
-	<h2>View collection results</h2>
+
+	<h2><?php echo htmlspecialchars($title); ?></h2>
+
 	<form action="<?php echo SITEROOT_WEB; ?>viewcollectionresults" method="get">
 		<dl>
 			<dt>Add collection</dt>
@@ -134,13 +138,16 @@ foreach ($signal_collectioncount as $signal => $count) {
 }
 krsort($collectioncount, SORT_NUMERIC);
 
+if (count($collections) == 1)
+	$title = "Collection results";
+else
+	$title = "Comparing " . count($_REQUEST["uri"]) . " collections";
 include "htmlheader.php";
 ?>
 
-<?php if (count($collections) == 1) { ?>
-	<h2>Collection results</h2>
-<?php } else { ?>
-	<h2>Comparing <?php echo count($_REQUEST["uri"]); ?> collections</h2>
+<h2><?php echo htmlspecialchars($title); ?></h2>
+
+<?php if (count($collections) != 1) { ?>
 	<?php if (count($collectioncount) == 1) { ?>
 		<p>No signals are shared between these collections.</p>
 	<?php } else { ?>

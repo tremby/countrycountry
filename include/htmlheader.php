@@ -10,7 +10,7 @@ header("Content-Script-Type: text/javascript");
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<title>NEMA: Country/country<?php if (isset($GLOBALS["title"])) { ?> &ndash; <?php echo $GLOBALS["title"]; ?><?php } ?></title>
+	<title>NEMA: Country/country<?php if (isset($GLOBALS["title"])) { ?> &ndash; <?php echo htmlspecialchars($GLOBALS["title"]); ?><?php } ?></title>
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 
 	<script type="text/javascript" src="<?php echo SITEROOT_WEB; ?>include/fancybox/jquery.fancybox-1.3.1.pack.js"></script>

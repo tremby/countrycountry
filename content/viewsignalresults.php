@@ -62,6 +62,7 @@ if (empty($data))
 
 $signalinfo = signalinfo($_REQUEST["uri"]);
 
+$title = "Results for " . $signalinfo["trackname"] . " by " . $signalinfo["artistname"];
 include "htmlheader.php";
 ?>
 <h2>Results for <em><?php echo htmlspecialchars($signalinfo["trackname"]); ?></em> by <?php echo htmlspecialchars($signalinfo["artistname"]); ?></h2>

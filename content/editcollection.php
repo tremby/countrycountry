@@ -149,11 +149,16 @@ $(document).ready(function() {
 });
 <?php
 $headerjs = ob_get_clean();
+
+$title = "New collection";
+if ($collection->title())
+	$title .= " \"" . $collection->title() . "\"";
+
 include "htmlheader.php";
 
 ?>
 
-<h2>New collection<?php if ($collection->title()) { ?> "<?php echo htmlspecialchars($collection->title()); ?>"<?php } ?></h2>
+<h2><?php echo htmlspecialchars($title); ?></h2>
 
 <h3>Build collection</h3>
 

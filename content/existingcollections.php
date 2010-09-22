@@ -2,10 +2,11 @@
 
 $collections = getcollections();
 
+$title = "Table of existing collections";
 include "htmlheader.php";
 ?>
 
-<h2>Table of existing collections</h2>
+<h2><?php echo htmlspecialchars($title); ?></h2>
 
 <?php if (isset($_REQUEST["author"])) { ?>
 	<ul>
