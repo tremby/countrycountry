@@ -25,7 +25,7 @@ include "htmlheader.php";
 </p>
 
 <div style="float: right; width: 320px; margin: 0 0 1em 1em;">
-	<a href="http://www.nema.ecs.soton.ac.uk/CountryCountry-poster.pdf"><img src="<?php echo SITEROOT_WEB; ?>images/CountryCountry-poster.png" alt="Country/country poster"></a>
+	<a href="http://www.nema.ecs.soton.ac.uk/CountryCountry-poster.pdf"><img src="<?php echo SITEROOT_WEB; ?>images/CountryCountry-poster.jpg" alt="Country/country poster"></a>
 </div>
 
 <h2>Scope and motivation</h2>
