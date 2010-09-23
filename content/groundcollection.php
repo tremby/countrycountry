@@ -23,7 +23,7 @@ if (count($collection->groundedresults()) > 0) {
 	?>
 	<h2><?php echo htmlspecialchars($title); ?></h2>
 
-	<div class="trythis">
+	<div class="trythis collapsed">
 		<div class="content">
 			<p>You've grounded this collection. You'll see a count below of the audiofiles which were found matching the signals and you have the option to view any results which may already exist or to run a new analysis in MyExperiment.</p>
 		</div>

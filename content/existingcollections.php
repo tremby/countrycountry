@@ -8,7 +8,7 @@ include "htmlheader.php";
 
 <h2><?php echo htmlspecialchars($title); ?></h2>
 
-<div class="trythis">
+<div class="trythis collapsed">
 	<div class="content">
 		<p>This is a table of existing collections. If you've already made a new collection you can filter it to see just your own collections.</p>
 		<p>The table is sortable – click the column headings.</p>

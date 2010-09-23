@@ -9,7 +9,7 @@ if (!isset($_REQUEST["uri"]) || !is_array($_REQUEST["uri"])) {
 
 	<h2><?php echo htmlspecialchars($title); ?></h2>
 
-	<div class="trythis">
+	<div class="trythis collapsed">
 		<div class="content">
 			<p>This page lets you choose a set of collection URIs for which to compare results.</p>
 			<p>You can choose from the set of collections visible over on the <a href="<?php echo SITEROOT_WEB; ?>existingcollections">existing collections page</a> from the dropdown menu or enter the URI of a collection which could be anywhere on the internet in the box.</p>
@@ -156,7 +156,7 @@ include "htmlheader.php";
 
 <h2><?php echo htmlspecialchars($title); ?></h2>
 
-<div class="trythis">
+<div class="trythis collapsed">
 	<div class="content">
 		<p>You're now viewing all the results in the results repository for one or more signal collections.</p>
 		<p>There are some basic statistics in the first section.</p>

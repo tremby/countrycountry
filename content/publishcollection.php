@@ -18,7 +18,7 @@ include "htmlheader.php";
 
 <h2><?php echo htmlspecialchars($title); ?></h2>
 
-<div class="trythis">
+<div class="trythis collapsed">
 	<div class="content">
 		<p>You've published your collection and it has had a new URI minted for it. The collection can't be analysed until it has been <strong>grounded</strong> – that is, its descriptions of signals linked to actual audio files by comparing against an audiofile respository.</p>
 		<p>You can ground the collection by clicking the button below.</p>

@@ -167,7 +167,7 @@ include "htmlheader.php";
 
 <h2><?php echo htmlspecialchars($title); ?></h2>
 
-<div class="trythis">
+<div class="trythis collapsed">
 	<div class="content">
 		<p>From this page you can build a new collection of songs from Jamendo.</p>
 		<p>You can build up a custom collection by switching filters on and off and customizing them or you can choose from some demo queries by clicking the "show demo query shortcuts" link below.</p>

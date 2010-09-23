@@ -67,7 +67,7 @@ include "htmlheader.php";
 ?>
 <h2>Results for <em><?php echo htmlspecialchars($signalinfo["trackname"]); ?></em> by <?php echo htmlspecialchars($signalinfo["artistname"]); ?></h2>
 
-<div class="trythis">
+<div class="trythis collapsed">
 	<div class="content">
 		<p>You're now viewing any results which are available for a particular signal.</p>
 		<p>Below is basic information about the track such as its name and artist, and information about how each classifier categorized it.</p>
