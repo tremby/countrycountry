@@ -99,6 +99,21 @@ $(document).ready(function() {
 		});
 		return false;
 	});
+
+	// try this boxes
+	expandcollapsetrythis = function(e) {
+		e.preventDefault();
+		if ($(this).parents(".trythis:first").find(".content").is(":visible")) {
+			$(this).removeClass("collapselink").addClass("expandlink");
+			$(this).parents(".trythis:first").find(".content").slideUp("fast");
+		} else {
+			$(this).removeClass("expandlink").addClass("collapselink");
+			$(this).parents(".trythis:first").find(".content").slideDown("fast");
+		}
+	}
+	$(".trythis").not(".collapsed").prepend("<h2><a href=\"#\" class=\"collapselink\"></a>Try this</h2>").end().filter(".collapsed").prepend("<h2><a href=\"#\" class=\"expandlink\"></a>Try this</h2>");
+	$(".trythis.collapsed .content").hide();
+	$(".trythis .collapselink, .trythis .expandlink").click(expandcollapsetrythis);
 });
 function showhidescrollbuttons() {
 	$(".scroll").each(function() {

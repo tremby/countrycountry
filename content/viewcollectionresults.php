@@ -9,6 +9,15 @@ if (!isset($_REQUEST["uri"]) || !is_array($_REQUEST["uri"])) {
 
 	<h2><?php echo htmlspecialchars($title); ?></h2>
 
+	<div class="trythis">
+		<div class="content">
+			<p>This page lets you choose a set of collection URIs for which to compare results.</p>
+			<p>You can choose from the set of collections visible over on the <a href="<?php echo SITEROOT_WEB; ?>existingcollections">existing collections page</a> from the dropdown menu or enter the URI of a collection which could be anywhere on the internet in the box.</p>
+			<p>When you click a green "add" icon the URI is defererenced and some data such as its title, author and number of tracks are collected.</p>
+			<p>When you're happy with the list click "view or compare results".</p>
+		</div>
+	</div>
+
 	<form action="<?php echo SITEROOT_WEB; ?>viewcollectionresults" method="get">
 		<dl>
 			<dt>Add collection</dt>
@@ -146,6 +155,17 @@ include "htmlheader.php";
 ?>
 
 <h2><?php echo htmlspecialchars($title); ?></h2>
+
+<div class="trythis">
+	<div class="content">
+		<p>You're now viewing all the results in the results repository for one or more signal collections.</p>
+		<p>There are some basic statistics in the first section.</p>
+		<p>If any results are available you'll then see some charts showing how each classifier categorized the music.</p>
+		<p>Further down the page are links to external data about the most heavily weighted genres according to the classifiers, found by following the genres' DBpedia URIs. If any artists are found in DBpedia to match that genre, the BBC's endpoint is then queried for information about those artists.</p>
+		<p>In the "most and least" section you can click track names to view detailed statistics for each particular track.</p>
+		<p>Finally, a verbose table of data is available so you can see exactly how each classifier categorized each track.</p>
+	</div>
+</div>
 
 <?php if (count($collections) != 1) { ?>
 	<?php if (count($collectioncount) == 1) { ?>

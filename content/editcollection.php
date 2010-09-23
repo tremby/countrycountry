@@ -167,6 +167,20 @@ include "htmlheader.php";
 
 <h2><?php echo htmlspecialchars($title); ?></h2>
 
+<div class="trythis">
+	<div class="content">
+		<p>From this page you can build a new collection of songs from Jamendo.</p>
+		<p>You can build up a custom collection by switching filters on and off and customizing them or you can choose from some demo queries by clicking the "show demo query shortcuts" link below.</p>
+		<p>You might like to try</p>
+		<ul>
+			<li>something practical like "<em>music from Germany tagged as punk</em> (choose Germany from the countries list and enter "punk" in the record tag box)</li>
+			<li>or something more frivolous like "<em>songs whose names begin with the letter F by artists whose names also begin with F from countries which also begin with F</em>" (use control+click to select the France and Finland, enter "^f" in the artist name and track name boxes and check "case insensitive" for each)</li>
+		</ul>
+		<p>Click "update" to perform the Sparql query on Jamendo, then you can see how many results were returned and view the query and results by clicking the corresponding links.</p>
+		<p>Once the collection is ready to publish, click "publish".</p>
+	</div>
+</div>
+
 <h3>Build collection</h3>
 
 <div class="hint">

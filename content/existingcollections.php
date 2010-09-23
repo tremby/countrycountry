@@ -8,6 +8,18 @@ include "htmlheader.php";
 
 <h2><?php echo htmlspecialchars($title); ?></h2>
 
+<div class="trythis">
+	<div class="content">
+		<p>This is a table of existing collections. If you've already made a new collection you can filter it to see just your own collections.</p>
+		<p>The table is sortable – click the column headings.</p>
+		<p>You can click "view" to see any results which are available for that collection's signals. Not all collections will have results yet, but if the collection has been grounded (that is, its signal descriptions linked to actual audiofiles) you can run the collection through the analysis flow in MyExperiment and results will begin to appear.</p>
+		<p>Alternatively you can check boxes on two or more collections and then click "compare selected collections" at the bottom to see the results side by side.</p>
+		<ul>
+			<li>Try comparing "German dance" to "Finnish metal".</li>
+		</ul>
+	</div>
+</div>
+
 <?php if (isset($_REQUEST["author"])) { ?>
 	<?php if (isset($_COOKIE["cc_author"]) && $_COOKIE["cc_author"] == $_REQUEST["author"]) { ?>
 	<p class="hint">Currently viewing collections by <?php echo htmlspecialchars($_REQUEST["author"]); ?>, which was found as a cookie. <a href="<?php echo SITEROOT_WEB; ?>clearcookie">Click here to clear the cookie</a> (for instance if you're not <?php echo htmlspecialchars($_REQUEST["author"]); ?>).</p>

@@ -22,6 +22,13 @@ if (count($collection->groundedresults()) > 0) {
 	file_put_contents($dir . "/" . $collection->groundhash() . ".xml", $collection->groundedrdf());
 	?>
 	<h2><?php echo htmlspecialchars($title); ?></h2>
+
+	<div class="trythis">
+		<div class="content">
+			<p>You've grounded this collection. You'll see a count below of the audiofiles which were found matching the signals and you have the option to view any results which may already exist or to run a new analysis in MyExperiment.</p>
+		</div>
+	</div>
+
 	<p>The signal collection "<?php echo htmlspecialchars($collection->title()); ?>" has been grounded to the audiofile repository and published with the following URI.
 	<br><code><?php echo htmlspecialchars($collection->groundeduri()); ?></code></p>
 	<p>Of the signal collection's <?php echo count($collection->results()); ?> tracks, audiofiles for <?php echo count($collection->groundedresults()); ?> were found.</p>

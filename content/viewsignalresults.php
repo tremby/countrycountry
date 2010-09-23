@@ -67,6 +67,17 @@ include "htmlheader.php";
 ?>
 <h2>Results for <em><?php echo htmlspecialchars($signalinfo["trackname"]); ?></em> by <?php echo htmlspecialchars($signalinfo["artistname"]); ?></h2>
 
+<div class="trythis">
+	<div class="content">
+		<p>You're now viewing any results which are available for a particular signal.</p>
+		<p>Below is basic information about the track such as its name and artist, and information about how each classifier categorized it.</p>
+		<p>Also availiable are links to each source of audiofiles which could be found through its linked data.</p>
+		<p>If you scroll down you'll see some graphs showing how each classifier categorized the signal over time. Scroll down a little further to choose one of the available sources and listen to the song, seeing the graphs updated as the song plays.</p>
+		<p>If you're lucky you'll see any external information which could be found on DBpedia and BBC music about this artist.</p>
+		<p>Finally external data from DBpedia and BBC Music for artists of the same genre as this song (according to the classifiers) is shown.</p>
+	</div>
+</div>
+
 <div class="cols">
 	<div class="cell">
 		<h3>Signal information</h3>
