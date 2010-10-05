@@ -366,12 +366,12 @@ if ($bbcuri === false) { ?>
 								<?php echo htmlspecialchars($artists[$k]["placename"]); ?>
 							</a>
 							<?php if (($bbcuri = bbcuri($artists[$k]["artist"])) !== false) { ?>
+								<?php $bbcinfo = bbcinfo($bbcuri); ?>
 								<p class="hint">Further data from the BBC</p>
 								<?php if (isset($bbcinfo["image"])) { ?>
 									<img class="bbcimage" src="<?php echo htmlspecialchars($bbcinfo["image"]); ?>">
 								<?php } ?>
 								<ul>
-									<?php $bbcinfo = bbcinfo($bbcuri); ?>
 									<li><a href="<?php echo htmlspecialchars($bbcuri); ?>">BBC Music page</a> <?php echo urilink($bbcuri, "URI of this artist at BBC Music"); ?></li>
 									<?php if (isset($bbcinfo["comment"])) { ?>
 										<li><em><?php echo htmlspecialchars($bbcinfo["comment"]); ?></em></li>
