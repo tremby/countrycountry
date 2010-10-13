@@ -41,6 +41,8 @@ a:hover {
 	text-align: center;
 }
 #footer {
+	width: 90%;
+	margin: 0 auto;
 	font-size: 80%;
 	text-align: center;
 }
