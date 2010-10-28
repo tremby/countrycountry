@@ -171,23 +171,28 @@ function prefix($n) {
 	return $ret;
 }
 
-// return results of a Sparql query to Jamendo
+// return results of a Sparql query
 // maxage is the number of seconds old an acceptable cached result can be 
 // (default one day, 0 means it must be collected newly. false means must be 
 // collected newly and the result will not be stored. true means use cached 
 // result however old it is)
 // type is passed straight through to Arc
-function queryjamendo($query, $maxage = 86400/*1 day*/, $type = "rows") {
-	$cachefile = SITEROOT_LOCAL . "cache/" . md5($query . $type);
+function sparqlquery($endpoint, $query, $maxage = 86400/*1 day*/, $type = "rows") {
+	$cachedir = SITEROOT_LOCAL . "cache/" . md5($endpoint);
+
+	if (!is_dir($cachedir))
+		mkdir($cachedir) or die("couldn't make cache directory");
+
+	$cachefile = $cachedir . "/" . md5($query . $type);
 
 	// collect from cache if available and recent enough
 	if ($maxage === true && file_exists($cachefile) || $maxage !== false && $maxage > 0 && file_exists($cachefile) && time() < filemtime($cachefile) + $maxage)
 		return unserialize(file_get_contents($cachefile));
 
-	// cache is not to be used or cached file is out of date. query database
+	// cache is not to be used or cached file is out of date. query endpoint
 	require_once SITEROOT_LOCAL . "include/arc/ARC2.php";
 	$config = array(
-		"remote_store_endpoint" => ENDPOINT_JAMENDO,
+		"remote_store_endpoint" => $endpoint,
 		"reader_timeout" => 120,
 	);
 	$result = ARC2::getRemoteStore($config)->query($query, $type);
@@ -217,7 +222,7 @@ function iso3166toname($cc) {
 
 // get information about a signal
 function signalinfo($signal) {
-	$result = queryjamendo(prefix(array_keys($GLOBALS["ns"])) . "
+	$result = sparqlquery(ENDPOINT_JAMENDO, prefix(array_keys($GLOBALS["ns"])) . "
 		SELECT * WHERE {
 			<$signal>
 				mo:published_as ?track .
@@ -241,7 +246,7 @@ function signalinfo($signal) {
 	if (empty($result))
 		return false;
 
-	$tags = queryjamendo(prefix(array_keys($GLOBALS["ns"])) . "
+	$tags = sparqlquery(ENDPOINT_JAMENDO, prefix(array_keys($GLOBALS["ns"])) . "
 		SELECT * WHERE {
 			<" . $result[0]["record"] . "> tags:taggedWithTag ?tag .
 		}
@@ -249,7 +254,7 @@ function signalinfo($signal) {
 	");
 	$result[0]["tags"] = $tags;
 
-	$javailableas = queryjamendo(prefix(array_keys($GLOBALS["ns"])) . "
+	$javailableas = sparqlquery(ENDPOINT_JAMENDO, prefix(array_keys($GLOBALS["ns"])) . "
 		SELECT * WHERE {
 			<" . $result[0]["track"] . "> mo:available_as ?availableas .
 		}

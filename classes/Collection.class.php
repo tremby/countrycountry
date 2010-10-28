@@ -101,7 +101,7 @@ class Collection {
 			return $this->query;
 
 		$this->query = $query;
-		$this->results = queryjamendo($query);
+		$this->results = sparqlquery(ENDPOINT_JAMENDO, $query);
 	}
 
 	// get or set whether the collection is limited in the number of results it 

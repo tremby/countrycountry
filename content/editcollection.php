@@ -1,7 +1,7 @@
 <?php
 
 //get all country codes associated with artists
-$jamcountries = queryjamendo("
+$jamcountries = sparqlquery(ENDPOINT_JAMENDO, "
 	" . prefix(array("geo", "mo", "foaf")) . "
 	SELECT DISTINCT ?country
 	WHERE {
