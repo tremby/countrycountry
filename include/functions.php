@@ -194,6 +194,7 @@ function sparqlquery($endpoint, $query, $maxage = 86400/*1 day*/, $type = "rows"
 	$config = array(
 		"remote_store_endpoint" => $endpoint,
 		"reader_timeout" => 120,
+		"ns" => $GLOBALS["ns"],
 	);
 	$result = ARC2::getRemoteStore($config)->query($query, $type);
 
@@ -260,13 +261,11 @@ function signalinfo($signal) {
 		}
 	");
 
-	require_once SITEROOT_LOCAL . "include/arc/ARC2.php";
-	$store = ARC2::getRemoteStore(array("remote_store_endpoint" => ENDPOINT_REPOSITORY));
-	$ravailableas = $store->query(prefix("mo") . "
+	$ravailableas = sparqlquery(ENDPOINT_REPOSITORY, prefix("mo") . "
 		SELECT * WHERE {
 			<" . $result[0]["track"] . "> mo:available_as ?availableas .
 		}
-	", "rows");
+	");
 	$result[0]["availableas"] = array_merge($javailableas, $ravailableas);
 
 	return $result[0];
@@ -449,8 +448,6 @@ function classifiermapping($uri) {
 // query dbpedia for artists and their locations given a genre and optionally a 
 // country URI
 function dbpediaartists($genreuri, $countryuri = null) {
-	require_once SITEROOT_LOCAL . "include/arc/ARC2.php";
-	$store_dbpedia = ARC2::getRemoteStore(array("remote_store_endpoint" => ENDPOINT_DBPEDIA));
 	$query = prefix(array("dbpedia-owl", "foaf")) . "
 		SELECT ?artist ?artistname ?place ?placename WHERE {
 			?artist
@@ -470,7 +467,7 @@ function dbpediaartists($genreuri, $countryuri = null) {
 				foaf:name ?placename .
 		}
 	";
-	$dbartists = $store_dbpedia->query($query, "rows");
+	$dbartists = sparqlquery(ENDPOINT_DBPEDIA, $query);
 	if (empty($dbartists))
 		return array();
 
@@ -509,8 +506,7 @@ function dbpediaartists($genreuri, $countryuri = null) {
 			" . implode(" UNION ", $subqueries) . "
 		}
 	";
-	$store_geonames = ARC2::getRemoteStore(array("remote_store_endpoint" => ENDPOINT_GEONAMES));
-	$result = $store_geonames->query($query, "rows");
+	$result = sparqlquery(ENDPOINT_GEONAMES, $query);
 
 	$places_in_country = array();
 	foreach ($result as $geoplace)
@@ -527,16 +523,13 @@ function dbpediaartists($genreuri, $countryuri = null) {
 // get BBC URI which is the sameAs the given DBpedia URI. return false if there 
 // is none
 function bbcuri($dbpediauri) {
-	require_once SITEROOT_LOCAL . "include/arc/ARC2.php";
-
 	$query = prefix("owl") . "
 		SELECT * WHERE {
 			?bbcuri owl:sameAs <" . $dbpediauri . "> .
 			FILTER regex(str(?bbcuri), \"^http://www.bbc.co.uk/\") .
 		}
 	";
-	$store = ARC2::getRemoteStore(array("remote_store_endpoint" => ENDPOINT_BBC));
-	$result = $store->query($query, "rows");
+	$result = sparqlquery(ENDPOINT_BBC, $query);
 
 	if (empty($result))
 		return false;
@@ -546,10 +539,6 @@ function bbcuri($dbpediauri) {
 
 // get info from the BBC, given a BBC URI
 function bbcinfo($bbcuri) {
-	require_once SITEROOT_LOCAL . "include/arc/ARC2.php";
-
-	$store = ARC2::getRemoteStore(array("remote_store_endpoint" => ENDPOINT_BBC));
-
 	$query = prefix(array_keys($GLOBALS["ns"])) . "
 		SELECT * WHERE {
 			OPTIONAL { <$bbcuri> rdfs:comment ?comment . }
@@ -561,7 +550,7 @@ function bbcinfo($bbcuri) {
 			OPTIONAL { <$bbcuri> mo:myspace ?myspace . }
 		}
 	";
-	$result = $store->query($query, "rows");
+	$result = sparqlquery(ENDPOINT_BBC, $query);
 
 	if (empty($result))
 		return array();
@@ -570,12 +559,6 @@ function bbcinfo($bbcuri) {
 
 // get all associations for given array of signals
 function getassociations($signals) {
-	require_once SITEROOT_LOCAL . "include/arc/ARC2.php";
-
-	// set up results endpoint
-	$config = array("remote_store_endpoint" => ENDPOINT_RESULTS);
-	$store = ARC2::getRemoteStore($config);
-
 	// array for results
 	$results = array();
 
@@ -607,7 +590,7 @@ function getassociations($signals) {
 			}
 			ORDER BY ?signal ?classifier ?musicgenre
 		";
-		$rows = $store->query($query, "rows");
+		$rows = sparqlquery(ENDPOINT_RESULTS, $query, 60); // cache for one minute -- results can update quickly
 		$results = array_merge($results, $rows);
 	}
 

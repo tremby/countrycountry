@@ -145,22 +145,15 @@ class Collection {
 		$this->groundhash = md5(microtime());
 		$this->groundendpoint = $endpoint;
 
-		require_once SITEROOT_LOCAL . "include/arc/ARC2.php";
-		$conf = array(
-			"ns" => $ns,
-			"remote_store_endpoint" => $endpoint,
-		);
-		$store = ARC2::getRemoteStore($conf);
-
 		$this->groundedresults = array();
 		foreach ($this->results as $result) {
-			$result = $store->query("
+			$result = sparqlquery($endpoint, "
 				" . prefix(array("rdf", "mo")) . "
 				SELECT ?audiofile WHERE {
 					<" . $result["track"] . "> mo:available_as ?audiofile .
 					?audiofile a mo:AudioFile .
 				}
-			", "row");
+			", 86400, "row");
 			if (!empty($result))
 				$this->groundedresults[] = $result["audiofile"];
 		}

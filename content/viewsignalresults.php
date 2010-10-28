@@ -3,14 +3,9 @@
 if (!isset($_REQUEST["uri"]))
 	badrequest("no signal id specified");
 
-// set up results endpoint
-require_once SITEROOT_LOCAL . "include/arc/ARC2.php";
-$config = array("remote_store_endpoint" => ENDPOINT_RESULTS);
-$store = ARC2::getRemoteStore($config);
-
 // get URI of frame data
 $query = prefix("off") . "SELECT * WHERE { ?framedata off:subject <" . $_REQUEST["uri"] . "> }";
-$row = $store->query($query, "row");
+$row = sparqlquery(ENDPOINT_RESULTS, $query, 60); // cache for 1 minute -- results can change quickly
 
 if (empty($row))
 	die("frame data not found");
@@ -144,7 +139,7 @@ include "htmlheader.php";
 		<h3>Overall classification</h3>
 		<?php
 		$classifier_genre_weight = array();
-		foreach ($store->query(prefix(array_keys($ns)) . "
+		foreach (sparqlquery(ENDPOINT_RESULTS, prefix(array_keys($ns)) . "
 			SELECT * WHERE {
 				?association
 					sim:subject <" . $_REQUEST["uri"] . "> ;
@@ -154,7 +149,7 @@ include "htmlheader.php";
 				?method pv:usedGuideline ?classifier
 			}
 			ORDER BY ?classifier ?musicgenre
-		", "rows") as $row) {
+		", 60) as $row) { // cache for 1 minute -- results can change quickly
 			if (!isset($classifier_genre_weight[$row["classifier"]]))
 				$classifier_genre_weight[$row["classifier"]] = array();
 			$classifier_genre_weight[$row["classifier"]][$row["musicgenre"]] = floatval($row["weight"]);

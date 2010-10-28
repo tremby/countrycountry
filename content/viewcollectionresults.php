@@ -65,10 +65,6 @@ if (!isset($_REQUEST["uri"]) || !is_array($_REQUEST["uri"])) {
 
 require_once SITEROOT_LOCAL . "include/arc/ARC2.php";
 
-// set up results endpoint
-$config = array("remote_store_endpoint" => ENDPOINT_RESULTS);
-$store = ARC2::getRemoteStore($config);
-
 // get collection triples
 $collections = array();
 foreach ($_REQUEST["uri"] as $key => $collectionuri) {
