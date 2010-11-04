@@ -5,7 +5,7 @@ if (!isset($_REQUEST["uri"]))
 
 // get URI of frame data
 $query = prefix("off") . "SELECT * WHERE { ?framedata off:subject <" . $_REQUEST["uri"] . "> }";
-$row = sparqlquery(ENDPOINT_RESULTS, $query, 60); // cache for 1 minute -- results can change quickly
+$row = sparqlquery(ENDPOINT_RESULTS, $query, 60, "row"); // cache for 1 minute -- results can change quickly
 
 if (empty($row))
 	die("frame data not found");
