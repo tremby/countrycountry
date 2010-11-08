@@ -67,7 +67,7 @@ $(document).ready(function() {
 	});
 
 	// stripe tables
-	$("table tbody tr").filter(":even").addClass("even").end().filter(":odd").addClass("odd");
+	stripetables();
 
 	// make tables sortable
 	$("table.tablesorter").tablesorter({widgets: ["zebra"], textExtraction: "complex"});
@@ -148,4 +148,7 @@ function successalert(message) {
 	$("#successalert").hide().fadeIn("fast").delay(2000).fadeOut("slow", function() {
 		$(this).remove();
 	});
+}
+function stripetables() {
+	$("table tbody tr").filter(":even").addClass("even").removeClass("odd").end().filter(":odd").addClass("odd").removeClass("even");
 }
