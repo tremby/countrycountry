@@ -62,7 +62,7 @@ include "htmlheader.php";
 				$aggregate = $collection["index"][$collection["uri"] . "#aggregate"];
 				if (!isset($_REQUEST["author"]) || isset($_REQUEST["author"]) && $aggregate[$ns["dc"] . "creator"][0] == $_REQUEST["author"]) {
 					?>
-					<tr>
+					<tr id="collection_<?php echo $collection["hash"]; ?>">
 						<td><?php echo htmlspecialchars($aggregate[$ns["dc"] . "title"][0]); ?></td>
 						<td><?php echo htmlspecialchars($aggregate[$ns["dc"] . "creator"][0]); ?></td>
 						<td><?php echo date("Y-m-d H:i:s O", $collection["modified"]); ?></td>
@@ -87,7 +87,7 @@ include "htmlheader.php";
 						<td><input type="checkbox" name="uri[]" value="<?php echo htmlspecialchars($collection["uri"]); ?>"></td>
 						<td><?php if ($aggregate[$ns["dc"] . "creator"][0] != "bjn") { ?>
 							<ul>
-								<li><a class="deletebutton" href="<?php echo SITEROOT_WEB; ?>deletecollection?id=<?php echo urlencode($collection["hash"]); ?>">Delete</a></li>
+								<li><input type="button" class="deletebutton" value="Delete" id="deletebutton_<?php echo $collection["hash"]; ?>"></li>
 							</ul>
 						<?php } ?></td>
 					</tr>

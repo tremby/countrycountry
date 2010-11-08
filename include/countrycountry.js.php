@@ -63,7 +63,13 @@ $(document).ready(function() {
 
 	// delete collection button
 	$(".deletebutton").click(function() {
-		return confirm("Are you sure you want to delete the collection '" + $(this).parents("tr:first").find("td:first").text() + "' and all its groundings?");
+		if (!confirm("Are you sure you want to delete the collection '" + $(this).parents("tr:first").find("td:first").text() + "' and all its groundings?"))
+			return false;
+		$.post("<?php echo SITEROOT_WEB; ?>deletecollection", {"id": $(this).parents("tr:first").attr("id").split("_")[1]}, function(data) {
+			successalert("Deleted collection '" + $("#collection_" + data.id).find("td:first").text() + "'");
+			$("#collection_" + data.id).remove();
+			stripetables();
+		}, "json");
 	});
 
 	// stripe tables
