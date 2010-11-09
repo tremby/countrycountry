@@ -5,7 +5,7 @@ if (!isset($_REQUEST["uri"]))
 
 // get URI of frame data
 $query = prefix("off") . "SELECT * WHERE { ?framedata off:subject <" . $_REQUEST["uri"] . "> }";
-$row = sparqlquery(ENDPOINT_RESULTS, $query, 60, "row"); // cache for 1 minute -- results can change quickly
+$row = sparqlquery(ENDPOINT_RESULTS, $query, "row", 60); // cache for 1 minute -- results can change quickly
 
 if (empty($row))
 	die("frame data not found");
@@ -149,7 +149,7 @@ include "htmlheader.php";
 				?method pv:usedGuideline ?classifier
 			}
 			ORDER BY ?classifier ?musicgenre
-		", 60) as $row) { // cache for 1 minute -- results can change quickly
+		", "rows", 60) as $row) { // cache for 1 minute -- results can change quickly
 			if (!isset($classifier_genre_weight[$row["classifier"]]))
 				$classifier_genre_weight[$row["classifier"]] = array();
 			$classifier_genre_weight[$row["classifier"]][$row["musicgenre"]] = floatval($row["weight"]);

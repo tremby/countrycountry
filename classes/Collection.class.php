@@ -153,7 +153,7 @@ class Collection {
 					<" . $result["track"] . "> mo:available_as ?audiofile .
 					?audiofile a mo:AudioFile .
 				}
-			", 86400, "row");
+			", "row");
 			if (!empty($result))
 				$this->groundedresults[] = $result["audiofile"];
 		}

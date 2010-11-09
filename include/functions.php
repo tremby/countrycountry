@@ -177,7 +177,7 @@ function prefix($n) {
 // collected newly and the result will not be stored. true means use cached 
 // result however old it is)
 // type is passed straight through to Arc
-function sparqlquery($endpoint, $query, $maxage = 86400/*1 day*/, $type = "rows") {
+function sparqlquery($endpoint, $query, $type = "rows", $maxage = 86400/*1 day*/) {
 	$cachedir = SITEROOT_LOCAL . "cache/" . md5($endpoint);
 
 	if (!is_dir($cachedir))
@@ -590,7 +590,7 @@ function getassociations($signals) {
 			}
 			ORDER BY ?signal ?classifier ?musicgenre
 		";
-		$rows = sparqlquery(ENDPOINT_RESULTS, $query, 60); // cache for one minute -- results can update quickly
+		$rows = sparqlquery(ENDPOINT_RESULTS, $query, "rows", 60); // cache for one minute -- results can update quickly
 		$results = array_merge($results, $rows);
 	}
 
