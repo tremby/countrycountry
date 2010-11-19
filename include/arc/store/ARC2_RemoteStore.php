@@ -14,10 +14,6 @@ class ARC2_RemoteStore extends ARC2_Class {
 
   function __construct($a = '', &$caller) {
     parent::__construct($a, $caller);
-  }
-  
-  function ARC2_RemoteStore($a = '', &$caller) {
-    $this->__construct($a, $caller);
     $this->is_remote = 1;
   }
 
@@ -32,6 +28,8 @@ class ARC2_RemoteStore extends ARC2_Class {
   }
   
   function setUp() {}
+  
+  function killDBProcesses() {}
   
   /*  */
   

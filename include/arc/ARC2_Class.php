@@ -6,33 +6,25 @@
  * @license <http://arc.semsol.org/license>
  * @homepage <http://arc.semsol.org/>
  * @package ARC2
- * @version 2010-06-25
-*/
+ * @version 2010-10-12
+ */
 
 class ARC2_Class {
   
-  function __construct($a = '', &$caller) {
-    $a = is_array($a) ? $a : array();
-    $this->a = $a;
-    $this->caller =$caller;
+  function __construct($a, &$caller) {
+    $this->a = is_array($a) ? $a : array();
+    $this->caller = $caller;
     $this->__init();
   }
   
-  function ARC2_Class($a = '', &$caller) {
-    $this->__construct($a, $caller);
-  }
-
-  function __destruct() {
-    //echo "\ndestructing " . get_class($this);
-  }
-
   function __init() {/* base, time_limit */
     if (!$_POST && isset($GLOBALS['HTTP_RAW_POST_DATA'])) parse_str($GLOBALS['HTTP_RAW_POST_DATA'], $_POST); /* php5 bug */
     $this->inc_path = ARC2::getIncPath();
     $this->ns_count = 0;
-    $this->nsp = array('http://www.w3.org/1999/02/22-rdf-syntax-ns#' => 'rdf');
-    $this->used_ns = array('http://www.w3.org/1999/02/22-rdf-syntax-ns#');
-    $this->ns = $this->v('ns', array(), $this->a);
+    $rdf = 'http://www.w3.org/1999/02/22-rdf-syntax-ns#';
+    $this->nsp = array($rdf => 'rdf');
+    $this->used_ns = array($rdf);
+    $this->ns = array_merge(array('rdf' => $rdf), $this->v('ns', array(), $this->a));
 
     $this->base = $this->v('base', ARC2::getRequestURI(), $this->a);
     $this->errors = array();
@@ -87,15 +79,35 @@ class ARC2_Class {
     return $uc_first ? ucfirst($r) : $r;
   }
 
+  /**
+   * Tries to extract a somewhat human-readable label from a URI.
+   */
+
   function extractTermLabel($uri, $loops = 0) {
     list($ns, $r) = $this->splitURI($uri);
     $r = $this->deCamelCase($this->camelCase($r, 1, 1));
+    /* typical RDF non-info URI */
     if (($loops < 1) && preg_match('/^(self|it|this|me)$/i', $r)) {
       return $this->extractTermLabel(preg_replace('/\#.+$/', '', $uri), $loops + 1);
     }
+    /* trailing hash or slash */
     if ($uri && !$r && ($loops < 2)) {
       return $this->extractTermLabel(preg_replace('/[\#\/]$/', '', $uri), $loops + 1);
     }
+    /* a de-camel-cased URL (will look like "www example com") */
+    if (preg_match('/^www (.+ [a-z]{2,4})$/', $r, $m)) {
+      return $this->getPrettyURL($uri);
+    }
+    return $r;
+  }
+
+  /**
+   * Generates a less ugly in-your-face URL.
+   */
+
+  function getPrettyURL($r) {
+    $r = rtrim($r, '/');
+    $r = preg_replace('/^https?\:\/\/(www\.)?/', '', $r);
     return $r;
   }
 
@@ -140,12 +152,14 @@ class ARC2_Class {
 
   function getPName($v, $connector = ':') {
     /* is already a pname */
-    if ($ns = $this->getPNameNamespace($v, $connector)) {
+    $ns = $this->getPNameNamespace($v, $connector);
+    if ($ns) {
       if (!in_array($ns, $this->used_ns)) $this->used_ns[] = $ns;
       return $v;
     }
     /* new pname */
-    if ($parts = $this->splitURI($v)) {
+    $parts = $this->splitURI($v);
+    if ($parts) {
       /* known prefix */
       foreach ($this->ns as $prefix => $ns) {
         if ($parts[0] == $ns) {

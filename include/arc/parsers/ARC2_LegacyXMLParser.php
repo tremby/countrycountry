@@ -16,10 +16,6 @@ class ARC2_LegacyXMLParser extends ARC2_Class {
     parent::__construct($a, $caller);
   }
   
-  function ARC2_LegacyXMLParser($a = '', &$caller) {
-    $this->__construct($a, $caller);
-  }
-
   function __init() {/* reader */
     parent::__init();
     $this->encoding = $this->v('encoding', false, $this->a);

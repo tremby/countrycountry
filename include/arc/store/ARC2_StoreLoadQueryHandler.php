@@ -17,10 +17,6 @@ class ARC2_StoreLoadQueryHandler extends ARC2_StoreQueryHandler {
     parent::__construct($a, $caller);
   }
   
-  function ARC2_StoreLoadQueryHandler($a = '', &$caller) {
-    $this->__construct($a, $caller);
-  }
-
   function __init() {/* db_con, store_log_inserts */
     parent::__init();
     $this->store = $this->caller;
@@ -117,15 +113,15 @@ class ARC2_StoreLoadQueryHandler extends ARC2_StoreQueryHandler {
   function addT($s, $p, $o, $s_type, $o_type, $o_dt = '', $o_lang = '') {
     if (!$this->has_lock) return 0;
     $type_ids = array ('uri' => '0', 'bnode' => '1' , 'literal' => '2');
-    $g = $this->getTermID($this->target_graph, '0', 'id');
+    $g = $this->getStoredTermID($this->target_graph, '0', 'id');
     $s = (($s_type == 'bnode') && !$this->keep_bnode_ids) ? '_:b' . abs(crc32($g . $s)) . '_' . (strlen($s) > 12 ? substr(substr($s, 2) , -10) : substr($s, 2)) : $s;
     $o = (($o_type == 'bnode') && !$this->keep_bnode_ids) ? '_:b' . abs(crc32($g . $o)) . '_' . (strlen($o) > 12 ? substr(substr($o, 2), -10) : substr($o, 2)) : $o;
     /* triple */
     $t = array(
-      's' => $this->getTermID($s, $type_ids[$s_type], 's'),
-      'p' => $this->getTermID($p, '0', 'id'),
-      'o' => $this->getTermID($o, $type_ids[$o_type], 'o'),
-      'o_lang_dt' => $this->getTermID($o_dt . $o_lang, $o_dt ? '0' : '2', 'id'),
+      's' => $this->getStoredTermID($s, $type_ids[$s_type], 's'),
+      'p' => $this->getStoredTermID($p, '0', 'id'),
+      'o' => $this->getStoredTermID($o, $type_ids[$o_type], 'o'),
+      'o_lang_dt' => $this->getStoredTermID($o_dt . $o_lang, $o_dt ? '0' : '2', 'id'),
       'o_comp' => $this->getOComp($o),
       's_type' => $type_ids[$s_type], 
       'o_type' => $type_ids[$o_type],
@@ -179,7 +175,7 @@ class ARC2_StoreLoadQueryHandler extends ARC2_StoreQueryHandler {
     return 1;
   }
 
-  function getTermID($val, $type_id, $tbl) {
+  function getStoredTermID($val, $type_id, $tbl) {
     $con = $this->store->getDBCon();
     /* buffered */
     if (isset($this->term_ids[$val])) {
@@ -379,7 +375,7 @@ class ARC2_StoreLoadQueryHandler extends ARC2_StoreQueryHandler {
 
   function checkSQLBuffers($force_write = 0, $reset_id_buffers = 0, $refresh_lock = 0, $split_tables = 0) {
     $con = $this->store->getDBCon();
-    if (!$this->keep_time_limit) @set_time_limit($this->v('time_limit', 240, $this->a));
+    if (!$this->keep_time_limit) @set_time_limit($this->v('time_limit', 60, $this->a));
     foreach (array('triple', 'g2t', 'id2val', 's2val', 'o2val') as $tbl) {
       $buffer_size = isset($this->sql_buffers[$tbl]) ? 1 : 0;
       if ($buffer_size && $force_write) {

@@ -17,10 +17,6 @@ class ARC2_StoreDeleteQueryHandler extends ARC2_StoreQueryHandler {
     parent::__construct($a, $caller);
   }
   
-  function ARC2_StoreDeleteQueryHandler($a = '', &$caller) {
-    $this->__construct($a, $caller);
-  }
-
   function __init() {/* db_con */
     parent::__init();
     $this->store = $this->caller;

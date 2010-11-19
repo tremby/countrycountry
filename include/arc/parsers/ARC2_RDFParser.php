@@ -17,10 +17,6 @@ class ARC2_RDFParser extends ARC2_Class {
     parent::__construct($a, $caller);
   }
   
-  function ARC2_RDFParser($a = '', &$caller) {
-    $this->__construct($a, $caller);
-  }
-
   function __init() {/* proxy_host, proxy_port, proxy_skip, http_accept_header, http_user_agent_header, max_redirects, reader, skip_dupes */
     parent::__init();
     $this->a['format'] = $this->v('format', false, $this->a);

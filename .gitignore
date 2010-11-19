@@ -1,5 +1,6 @@
 *.swp
 *.swo
+include/arc/.gitignore
 
 filecollections/*
 !filecollections/README

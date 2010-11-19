@@ -17,10 +17,6 @@ class ARC2_SPOGParser extends ARC2_RDFParser {
     parent::__construct($a, $caller);
   }
   
-  function ARC2_SPOGParser($a = '', &$caller) {
-    $this->__construct($a, $caller);
-  }
-
   function __init() {/* reader */
     parent::__init();
     $this->encoding = $this->v('encoding', false, $this->a);

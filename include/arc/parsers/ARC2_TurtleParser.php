@@ -17,10 +17,6 @@ class ARC2_TurtleParser extends ARC2_RDFParser {
     parent::__construct($a, $caller);
   }
   
-  function ARC2_TurtleParser($a = '', &$caller) {
-    $this->__construct($a, $caller);
-  }
-
   function __init() {/* reader */
     parent::__init();
     $this->state = 0;

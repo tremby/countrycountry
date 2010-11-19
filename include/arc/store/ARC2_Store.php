@@ -17,10 +17,6 @@ class ARC2_Store extends ARC2_Class {
     parent::__construct($a, $caller);
   }
   
-  function ARC2_Store($a = '', &$caller) {
-    $this->__construct($a, $caller);
-  }
-
   function __init() {/* db_con */
     parent::__init();
     $this->table_lock = 0;
@@ -152,6 +148,26 @@ class ARC2_Store extends ARC2_Class {
 
   function countDBProcesses() {
     return ($rs = $this->queryDB('SHOW PROCESSLIST', $this->getDBCon())) ? mysql_num_rows($rs) : 0;
+  }
+  
+  function killDBProcesses($needle = '', $runtime = 30) {
+    $dbcon = $this->getDBCon();
+    /* make sure needle is sql */
+    if (preg_match('/\?.+ WHERE/i', $needle, $m)) {
+      $needle = $this->query($needle, 'sql');
+    }
+    $rs = $this->queryDB('SHOW FULL PROCESSLIST', $dbcon);
+    $ref_tbl = $this->getTablePrefix() . 'triple';
+    while ($row = mysql_fetch_array($rs)) {
+      if ($row['Time'] < $runtime) continue;
+      if (!preg_match('/^\s*(INSERT|SELECT) /s', $row['Info'])) continue; /* only basic queries */
+      if (!strpos($row['Info'], $ref_tbl . ' ')) continue; /* only from this store */
+      $kill = 0;
+      if ($needle && (strpos($row['Info'], $needle) !== false)) $kill = 1;
+      if (!$needle) $kill = 1;
+      if (!$kill) continue;
+      $this->queryDB('KILL ' . $row['Id'], $dbcon);
+    }
   }
   
   /*  */
@@ -543,6 +559,7 @@ class ARC2_Store extends ARC2_Class {
   }
 
   function optimizeTables($level = 2) {
+    if ($this->v('ignore_optimization')) return 1;
     return $this->processTables($level, 'optimize');
   }
 

@@ -16,10 +16,6 @@ class ARC2_StoreDumpQueryHandler extends ARC2_StoreQueryHandler {
     parent::__construct($a, $caller);
   }
   
-  function ARC2_StoreDumpQueryHandler($a = '', &$caller) {
-    $this->__construct($a, $caller);
-  }
-
   function __init() {/* db_con */
     parent::__init();
     $this->store = $this->caller;

@@ -16,10 +16,6 @@ class ARC2_SPARQLScriptProcessor extends ARC2_Class {
     parent::__construct($a, $caller);
   }
   
-  function ARC2_SPARQLScriptProcessor ($a = '', &$caller) {
-    $this->__construct($a, $caller);
-  }
-
   function __init() {
     parent::__init();
     $this->max_operations = $this->v('sparqlscript_max_operations', 0, $this->a);

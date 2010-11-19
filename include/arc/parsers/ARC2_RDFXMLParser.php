@@ -17,10 +17,6 @@ class ARC2_RDFXMLParser extends ARC2_RDFParser {
     parent::__construct($a, $caller);
   }
   
-  function ARC2_RDFXMLParser($a = '', &$caller) {
-    $this->__construct($a, $caller);
-  }
-
   function __init() {/* reader */
     parent::__init();
     $this->encoding = $this->v('encoding', false, $this->a);
@@ -51,7 +47,7 @@ class ARC2_RDFXMLParser extends ARC2_RDFParser {
     /* parse */
     $first = true;
     while ($d = $this->reader->readStream()) {
-      if (!$this->keep_time_limit) @set_time_limit($this->v('time_limit', 240, $this->a));
+      if (!$this->keep_time_limit) @set_time_limit($this->v('time_limit', 60, $this->a));
       if ($iso_fallback && $first) {
         $d = '<?xml version="1.0" encoding="ISO-8859-1"?>' . "\n" . preg_replace('/^\<\?xml [^\>]+\?\>\s*/s', '', $d);
         $first = false;
@@ -483,7 +479,7 @@ class ARC2_RDFXMLParser extends ARC2_RDFParser {
       else {
         $ns_uri = $parts[0];
         $name = $parts[1];
-        $nsp = $this->nsp[$ns_uri];
+        $nsp = $this->v($ns_uri, '', $this->nsp);
         $data .= $nsp ? ' '.$nsp.':'.$name.'="'.$v.'"' : ' '.$name.'="'.$v.'"' ;
       }
     }
