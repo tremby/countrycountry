@@ -53,6 +53,15 @@ header("Content-Script-Type: text/javascript");
 			s.parentNode.insertBefore(ga, s);
 		})();
 	</script>
+
+	<?php if (isset($_SESSION["flash"]) && !empty($_SESSION["flash"])) { ?>
+		<script type="text/javascript">
+			$(document).ready(function() {
+				successalert("<ul><?php while ($message = array_pop($_SESSION["flash"])) { ?><li><?php echo htmlspecialchars($message); ?></li><?php } ?></ul>");
+			});
+		</script>
+	<?php } ?>
+
 </head>
 <body>
 <div id="header">

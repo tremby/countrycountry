@@ -718,4 +718,11 @@ function sortcollectionbydate($a, $b) {
 	return $a["modified"] - $b["modified"];
 }
 
+// flash -- store a success message to be displayed on the next page
+function flash($message = "Success") {
+	if (!isset($_SESSION["flash"]) || !is_array($_SESSION["flash"]))
+		$_SESSION["flash"] = array();
+	$_SESSION["flash"][] = $message;
+}
+
 ?>
