@@ -24,6 +24,16 @@ $ns = array(
 	"dbpedia-owl" => "http://dbpedia.org/ontology/",
 	"owl" => "http://www.w3.org/2002/07/owl#",
 	"rdfs" => "http://www.w3.org/2000/01/rdf-schema#",
+	"mebase" => "http://rdf.myexperiment.org/ontologies/base/",
+	"meac" => "http://rdf.myexperiment.org/ontologies/attrib_credit/",
+	"meannot" => "http://rdf.myexperiment.org/ontologies/annotations/",
+	"mepack" => "http://rdf.myexperiment.org/ontologies/packs/",
+	"meexp" => "http://rdf.myexperiment.org/ontologies/experiments/",
+	"mecontrib" => "http://rdf.myexperiment.org/ontologies/contributions/",
+	"mevd" => "http://rdf.myexperiment.org/ontologies/viewings_downloads/",
+	"mecomp" => "http://rdf.myexperiment.org/ontologies/components/",
+	"mespec" => "http://rdf.myexperiment.org/ontologies/specific/",
+	"sioc" => "http://rdfs.org/sioc/ns#",
 );
 
 // Jamendo Sparql endpoint address
