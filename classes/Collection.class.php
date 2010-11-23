@@ -216,7 +216,7 @@ class Collection {
 				"p" => $ns["dc"] . "creator",
 				"o" => $this->author(),
 				"s_type" => "uri",
-				"o_type" => strpos($this->author(), "http://") === 0 ? "uri" : "literal",
+				"o_type" => is_uri($this->author()) ? "uri" : "literal",
 			),
 			array(
 				"s" => $this->uri() . "#aggregate",
