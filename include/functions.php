@@ -435,10 +435,8 @@ function urilink($uri, $text = "URI") {
 // return a nicer name for a classifier URI if we have one, otherwise the URI
 function classifiermapping($uri) {
 	static $map = array(
-		"http://results.nema.ecs.soton.ac.uk/classifiers/BlinkieGenreSupportVectorVersion2.ser0.serial"
-			=> "Genre Support Vector version 2",
-		"http://results.nema.ecs.soton.ac.uk/classifiers/BlinkieGenreJ48DecisionTree.ser0.serial"
-		=> "Genre J48 Decision Tree",
+		"http://results.nema.ecs.soton.ac.uk/classifiers/BlinkieGenreSupportVectorVersion2.ser0.serial" => "Genre Support Vector version 2",
+		"http://results.nema.ecs.soton.ac.uk/classifiers/BlinkieGenreJ48DecisionTree.ser0.serial" => "Genre J48 Decision Tree",
 	);
 	if (array_key_exists($uri, $map))
 		return $map[$uri];
