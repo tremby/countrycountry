@@ -725,4 +725,9 @@ function flash($message = "Success") {
 	$_SESSION["flash"][] = $message;
 }
 
+// return true if a string looks like a URI
+function is_uri($string) {
+	return (boolean) preg_match('%^https?$%', parse_url($string, PHP_URL_SCHEME));
+}
+
 ?>
