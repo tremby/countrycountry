@@ -725,6 +725,72 @@ function flash($message = "Success") {
 	$_SESSION["flash"][] = $message;
 }
 
+// user functions -- administer myexperiment user info
+
+function user_logout() {
+	if (isset($_SESSION["cc_myexp_user"]))
+		unset($_SESSION["cc_myexp_user"]);
+	return true;
+}
+
+function user_login($username, $password, &$errors) {
+	require_once SITEROOT_LOCAL . "include/arc/ARC2.php";
+	require_once "Graphite.php";
+
+	user_logout();
+
+	// make a Reader object and set it to use our credentials with HTTP basic
+	$reader = ARC2::getComponent("Reader", array("arc_reader_credentials" => array(MYEXPERIMENT_DOMAIN => $username . ":" . $password)));
+
+	// make a Parser object and set it to use the Reader above
+	$parser = ARC2::getRDFParser();
+	$parser->setReader($reader);
+
+	// fetch the myexperiment whoami RDF
+	$parser->parse("http://" . MYEXPERIMENT_DOMAIN . "/whoami.rdf");
+
+	// abort if there are errors
+	$errors = $reader->getErrors();
+	if (!empty($errors))
+		return false;
+
+	// put the triples in a Graphite graph
+	$graph = new Graphite($GLOBALS["ns"]);
+	$graph->addTriples($parser->getTriples());
+
+	// store user info in session data
+	$user = $graph->allOfType("mebase:User")->current();
+
+	$_SESSION["cc_myexp_user"] = array(
+		"uri" => (string) $user->uri,
+		"homepage" => (string) $user->get("foaf:homepage"),
+		"name" => (string) $user->get("sioc:name"),
+		"avatar" => (string) $user->get("sioc:avatar"),
+	);
+
+	return true;
+}
+
+function user_loggedin() {
+	return isset($_SESSION["cc_myexp_user"]);
+}
+
+function user_name() {
+	if (!user_loggedin()) {
+		trigger_error("Tried to get username of a user who was not logged in", E_USER_WARNING);
+		return false;
+	}
+	return $_SESSION["cc_myexp_user"]["name"];
+}
+
+function user_uri() {
+	if (!user_loggedin()) {
+		trigger_error("Tried to get URI of a user who was not logged in", E_USER_WARNING);
+		return false;
+	}
+	return $_SESSION["cc_myexp_user"]["uri"];
+}
+
 // return true if a string looks like a URI
 function is_uri($string) {
 	return (boolean) preg_match('%^https?$%', parse_url($string, PHP_URL_SCHEME));

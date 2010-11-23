@@ -1,14 +1,12 @@
 <?php
 
-define("MYEXPERIMENT_DOMAIN", "sandbox.myexperiment.org");
-
 $title = "Log in";
 
-if (isset($_SESSION["cc_myexp_user"])) {
+if (user_loggedin()) {
 	include "htmlheader.php";
 	?>
 	<h1><?php echo htmlspecialchars($title); ?></h1>
-	<p>You're already logged in as <?php echo htmlspecialchars($_SESSION["cc_myexp_user"]["name"]); ?>.</p>
+	<p>You're already logged in as <?php echo htmlspecialchars(user_name()); ?>.</p>
 	<ul><li><a href="<?php echo SITEROOT_WEB; ?>logout">Log out</a></li></ul>
 	<?php
 	include "htmlfooter.php";
@@ -16,41 +14,12 @@ if (isset($_SESSION["cc_myexp_user"])) {
 }
 
 if (isset($_POST["username"])) {
-	require_once SITEROOT_LOCAL . "include/arc/ARC2.php";
-	require_once "Graphite.php";
-
-	// make a Reader object and set it to use our credentials with HTTP basic
-	$reader = ARC2::getComponent("Reader", array("arc_reader_credentials" => array(MYEXPERIMENT_DOMAIN => $_POST["username"] . ":" . $_POST["password"])));
-
-	// make a Parser object and set it to use the Reader above
-	$parser = ARC2::getRDFParser();
-	$parser->setReader($reader);
-
-	// fetch the myexperiment whoami RDF
-	$parser->parse("http://" . MYEXPERIMENT_DOMAIN . "/whoami.rdf");
-
-	// continue if there are no errors
-	$errors = $reader->getErrors();
-	if (empty($errors)) {
-		// put the triples in a Graphite graph
-		$graph = new Graphite($GLOBALS["ns"]);
-		$graph->addTriples($parser->getTriples());
-
-		// store user info in session data
-		$user = $graph->allOfType("mebase:User")->current();
-
-		$_SESSION["cc_myexp_user"] = array(
-			"uri" => (string) $user->uri,
-			"homepage" => (string) $user->get("foaf:homepage"),
-			"name" => (string) $user->get("sioc:name"),
-			"avatar" => (string) $user->get("sioc:avatar"),
-		);
-
-		flash("You have logged in as " . htmlspecialchars($user->get("sioc:name")));
+	$errors = array();
+	if (user_login($_POST["username"], $_POST["password"], $errors)) {
+		flash("You have logged in as " . htmlspecialchars(user_name()));
 		redirect(SITEROOT_WEB);
 		exit;
 	}
-
 	// there were errors -- show the login form again with error messages
 }
 
@@ -82,10 +51,6 @@ include "htmlheader.php";
 		<dd><input type="submit" name="login" value="Log in"></dd>
 	</dl>
 </form>
-
-<?php
-
-?>
 
 <?php
 include "htmlfooter.php";

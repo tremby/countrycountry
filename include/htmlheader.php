@@ -72,13 +72,19 @@ header("Content-Script-Type: text/javascript");
 </div>
 <div id="body">
 	<ul id="menu">
-		<?php foreach (array(
+		<?php
+		$menu = array(
 			"mainmenu" => "Main menu",
 			"about" => "About country/country",
 			"newcollection" => "New collection",
 			"existingcollections" => "Existing collections",
 			"viewcollectionresults" => "View collection results",
-		) as $k => $v) { ?>
+		);
+		if (user_loggedin())
+			$menu["logout"] = "Log out";
+		else
+			$menu["login"] = "Log in";
+		foreach ($menu as $k => $v) { ?>
 			<li<?php if ($GLOBALS["page"] == $k) { ?> class="active"<?php } ?>><a href="<?php echo SITEROOT_WEB; ?><?php echo $k; ?>"><?php echo $v; ?></a></li>
 		<?php } ?>
 	</ul>

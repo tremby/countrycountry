@@ -53,3 +53,6 @@ define("ENDPOINT_GEONAMES", "http://geonames.nema.ecs.soton.ac.uk:9000/sparql/")
 
 // BBC data endpoint (note no slash at the end of this one)
 define("ENDPOINT_BBC", "http://api.talis.com/stores/bbc-backstage/services/sparql");
+
+// myexperiment domain which we authenticate against
+define("MYEXPERIMENT_DOMAIN", "sandbox.myexperiment.org");
