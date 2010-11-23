@@ -31,7 +31,7 @@ if (isset($_REQUEST["submit"])) {
 
 	$collection->title(trim($_POST["title"]));
 	$collection->description(trim($_POST["description"]));
-	$collection->author(trim($_POST["author"]));
+	$collection->author(user_loggedin() ? user_uri() : trim($_POST["author"]));
 
 	// set cookie so we remember the author name
 	$author = $collection->author();
@@ -198,7 +198,13 @@ include "htmlheader.php";
 		<dd><textarea cols="64" rows="4" name="description" id="description"><?php if ($collection->description()) echo htmlspecialchars($collection->description()); ?></textarea></dd>
 
 		<dt><label for="author">Author</label></dt>
-		<dd><input type="text" size="64" name="author" id="author"<?php if ($collection->author()) { ?> value="<?php echo htmlspecialchars($collection->author()); ?>"<?php } else if (isset($_COOKIE["cc_author"])) { ?> value="<?php echo htmlspecialchars($_COOKIE["cc_author"]); ?>"<?php } ?>></dd>
+		<dd>
+			<?php if (!user_loggedin()) { ?>
+				<input type="text" size="64" name="author" id="author"<?php if ($collection->author()) { ?> value="<?php echo htmlspecialchars($collection->author()); ?>"<?php } else if (isset($_COOKIE["cc_author"])) { ?> value="<?php echo htmlspecialchars($_COOKIE["cc_author"]); ?>"<?php } ?>>
+			<?php } else { ?>
+				<?php echo prettycreator(user_uri()); ?>
+			<?php } ?>
+		</dd>
 
 		<dt>Filters</dt>
 		<dd>
@@ -407,7 +413,7 @@ if (count($collection->results()) == 0)
 	$problems[] = "Empty collection";
 if (!$collection->title())
 	$problems[] = "Title required";
-if (!$collection->author())
+if (!user_loggedin() && !$collection->author())
 	$problems[] = "Author required";
 ?>
 <?php if (!empty($problems)) { ?>

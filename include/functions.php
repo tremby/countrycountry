@@ -791,9 +791,35 @@ function user_uri() {
 	return $_SESSION["cc_myexp_user"]["uri"];
 }
 
+// return the name of a person represented by the given URI
+function person_uri_to_name($uri) {
+	static $person_uri_to_name = array();
+	if (isset($person_uri_to_name[$uri]))
+		return $person_uri_to_name[$uri];
+
+	require_once SITEROOT_LOCAL . "include/arc/ARC2.php";
+	require_once "Graphite.php";
+
+	$graph = new Graphite($GLOBALS["ns"]);
+	$graph->load($uri);
+	$name = $graph->resource($uri)->get("foaf:name", "sioc:name");
+	if (get_class($name) == "Graphite_Null")
+		return false;
+
+	$person_uri_to_name[$uri] = (string) $name;
+	return (string) $name;
+}
+
 // return true if a string looks like a URI
 function is_uri($string) {
 	return (boolean) preg_match('%^https?$%', parse_url($string, PHP_URL_SCHEME));
+}
+
+// return HTML for a creator, which could be a URI or an arbitrary string
+function prettycreator($creator) {
+	if (is_uri($creator))
+		return htmlspecialchars(person_uri_to_name($creator)) . "\n" . urilink($creator);
+	return htmlspecialchars($creator);
 }
 
 ?>

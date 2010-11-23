@@ -22,7 +22,7 @@ include "htmlheader.php";
 
 <?php if (isset($_REQUEST["author"])) { ?>
 	<?php if (isset($_COOKIE["cc_author"]) && $_COOKIE["cc_author"] == $_REQUEST["author"]) { ?>
-		<p class="hint">Currently viewing collections by <?php echo htmlspecialchars($_REQUEST["author"]); ?>, which was found as a cookie. <a href="<?php echo SITEROOT_WEB; ?>clearcookie">Click here to clear the cookie</a> (for instance if you're not <?php echo htmlspecialchars($_REQUEST["author"]); ?>).</p>
+		<p class="hint">Currently viewing collections by <?php echo prettycreator($_REQUEST["author"]); ?>, which was found as a cookie. <a href="<?php echo SITEROOT_WEB; ?>clearcookie">Click here to clear the cookie</a> (for instance if you're not <?php echo prettycreator($_REQUEST["author"]); ?>).</p>
 	<?php } ?>
 	<ul>
 		<li><a href="<?php echo SITEROOT_WEB; ?>existingcollections">View all collections</a></li>
@@ -30,7 +30,7 @@ include "htmlheader.php";
 <?php } else if (isset($_COOKIE["cc_author"])) { ?>
 	<ul>
 		<li><a href="<?php echo SITEROOT_WEB; ?>existingcollections?author=<?php echo htmlspecialchars($_COOKIE["cc_author"]); ?>">
-			View only collections by <?php echo htmlspecialchars($_COOKIE["cc_author"]); ?>
+			View only collections by <?php echo prettycreator($_COOKIE["cc_author"]); ?>
 		</a></li>
 	</ul>
 <?php } ?>
@@ -38,7 +38,7 @@ include "htmlheader.php";
 <h3>
 	All existing collections
 	<?php if (isset($_REQUEST["author"])) { ?>
-		by <?php echo $_REQUEST["author"]; ?>
+		by <?php echo prettycreator($_REQUEST["author"]); ?>
 	<?php } ?>
 </h3>
 <form action="<?php echo SITEROOT_WEB; ?>viewcollectionresults" method="get">
@@ -64,7 +64,7 @@ include "htmlheader.php";
 					?>
 					<tr id="collection_<?php echo $collection["hash"]; ?>">
 						<td><?php echo htmlspecialchars($aggregate[$ns["dc"] . "title"][0]); ?></td>
-						<td><?php echo htmlspecialchars($aggregate[$ns["dc"] . "creator"][0]); ?></td>
+						<td><?php echo prettycreator($aggregate[$ns["dc"] . "creator"][0]); ?></td>
 						<td><?php echo date("Y-m-d H:i:s O", $collection["modified"]); ?></td>
 						<td><?php if (isset($aggregate[$ns["dc"] . "description"])) echo htmlspecialchars($aggregate[$ns["dc"] . "description"][0]); ?></td>
 						<td><?php echo count($aggregate[$ns["ore"] . "aggregates"]); ?></td>
