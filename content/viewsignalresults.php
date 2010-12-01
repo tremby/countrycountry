@@ -110,7 +110,7 @@ include "htmlheader.php";
 					<ul>
 						<?php foreach ($signalinfo["tags"] as $tag) { ?>
 							<li>
-								<?php echo htmlspecialchars(uriendpart($tag["tag"])); ?>
+								<?php echo htmlspecialchars($tag["tagname"]); ?>
 								<?php echo urilink($tag["tag"]); ?>
 							</li>
 						<?php } ?>

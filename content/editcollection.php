@@ -90,7 +90,8 @@ if (isset($_REQUEST["submit"])) {
 	// record tag
 	if (isset($collection->data["filteractive_recordtag"]) && isset($collection->data["recordtag_tag"]) && !empty($collection->data["recordtag_tag"]))
 		$collection->addfilter("
-			?record tags:taggedWithTag <http://dbtune.org/jamendo/tag/" . strtolower($collection->data["recordtag_tag"]) . "> .
+			?record tags:taggedWithTag ?tag .
+			?tag tags:tagName \"" . strtolower($collection->data["recordtag_tag"]) . "\"^^xsd:string .
 		", true);
 	else
 		unset($collection->data["filteractive_recordtag"]);

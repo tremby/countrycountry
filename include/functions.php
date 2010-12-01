@@ -250,8 +250,9 @@ function signalinfo($signal) {
 	$tags = sparqlquery(ENDPOINT_JAMENDO, prefix(array_keys($GLOBALS["ns"])) . "
 		SELECT * WHERE {
 			<" . $result[0]["record"] . "> tags:taggedWithTag ?tag .
+			?tag tags:tagName ?tagname .
 		}
-		ORDER BY ?tag
+		ORDER BY ?tagname
 	");
 	$result[0]["tags"] = $tags;
 
