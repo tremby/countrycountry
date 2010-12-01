@@ -375,3 +375,11 @@ ol ol {
 .trythis h2 {
 	margin: 0;
 }
+
+div.errors {
+	margin: 0.5em auto;
+	width: 60%;
+	padding: 0.5em;
+	border: 1px solid red;
+	background-color: #ffcccc;
+}
