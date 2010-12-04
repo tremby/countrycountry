@@ -11,7 +11,7 @@ include "htmlheader.php";
 
 <h1 style="text-align: center;">Semantics for signal and result collections through Linked Data:<br>How country is my country?</h1>
 <p style="text-align: center;">
-	Kevin R. Page <sup>1</sup>,
+	Kevin R. Page <sup>1,3</sup>,
 	Benjamin Fields <sup>2</sup>,
 	Tim Crawford <sup>2</sup>,
 	David C. De Roure <sup>1,3</sup>,
@@ -123,7 +123,7 @@ Jewell for the inspiring title.
 </p>
 <p>
 This work was carried out through the Networked Environment for Musical Analysis (NEMA) project, funded by the
-Andrew W. Mellon Foundation.
+Andrew W. Mellon Foundation and by the SALAMI project, funded in the UK by the JISC.
 </p>
 
 <?php include "htmlfooter.php"; ?>
