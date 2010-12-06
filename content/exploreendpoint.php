@@ -17,10 +17,52 @@ function ismp3($url) {
 	return false;
 }
 
+// expand a shortened URI
+function expanduri($uri) {
+	if (strpos($uri, ":") === false)
+		return $uri;
+	list($prefix, $suffix) = explode(":", $uri);
+	if (!array_key_exists($prefix, $GLOBALS["ns"])) {
+		trigger_error("prefix $prefix (of $prefix:$suffix) doesn't exist in global ns array", E_USER_WARNING);
+		return $uri;
+	}
+	return $GLOBALS["ns"][$prefix] . $suffix;
+}
+
+// hack to make a triple array suitable for importing to Graphite from a Sparql 
+// result
+// if $s, $p or $o contain a : they are expanded with the global $ns variable to 
+// a URI, otherwise treated as array keys to find in $resultarray
+function sparqlresulttotriple($s, $p, $o, $resultarray = null) {
+	$triple = array();
+
+	foreach (array("s" => $s, "p" => $p, "o" => $o) as $letter => $value) {
+		if (strpos($value, ":") !== false) {
+			$triple[$letter] = expanduri($value);
+			continue;
+		}
+
+		if (!is_array($resultarray)) {
+			trigger_error("expected a fourth parameter if using identifiers for s, p or o", E_USER_ERROR);
+			exit;
+		}
+
+		$triple[$letter] = $resultarray[$value];
+		if (isset($resultarray["$value type"]))
+			$triple[$letter . "_type"] = $resultarray["$value type"];
+		if (isset($resultarray["$value datatype"]))
+			$triple[$letter . "_datatype"] = $resultarray["$value datatype"];
+		if (isset($resultarray["$value lang"]))
+			$triple[$letter . "_lang"] = $resultarray["$value lang"];
+	}
+
+	return $triple;
+}
+
 // given an endpoint URL, probe it to find out what comparisons we can do on its 
 // music data
 function exploreendpoint($endpointurl, &$errors) {
-	$capabilities = array();
+	$capabilitytriples = array();
 
 	// basic checks
 	if (empty($endpointurl)) {
@@ -54,8 +96,6 @@ function exploreendpoint($endpointurl, &$errors) {
 		return null;
 	}
 
-	// things we really need
-
 	// check that mo:MusicArtist, mo:Record, mo:Track and mo:Signal exist and 
 	// are joined with foaf:maker, mo:track and mo:published_as
 	$result = sparqlquery($endpointurl, prefix(array("mo", "foaf")) . "
@@ -74,8 +114,17 @@ function exploreendpoint($endpointurl, &$errors) {
 		}
 		LIMIT 1
 	");
-	if (!empty($result))
-		$capabilities[] = "relationships";
+	if (!empty($result)) {
+		$capabilitytriples["relationships"] = array(
+			sparqlresulttotriple("artist", "rdf:type", "mo:MusicArtist", $result[0]),
+			sparqlresulttotriple("record", "rdf:type", "mo:Record", $result[0]),
+			sparqlresulttotriple("record", "foaf:maker", "artist", $result[0]),
+			sparqlresulttotriple("record", "mo:track", "track", $result[0]),
+			sparqlresulttotriple("track", "rdf:type", "mo:Track", $result[0]),
+			sparqlresulttotriple("signal", "rdf:type", "mo:Signal", $result[0]),
+			sparqlresulttotriple("signal", "mo:published_as", "track", $result[0]),
+		);
+	}
 
 	// artist name
 	$result = sparqlquery($endpointurl, prefix(array("mo", "foaf")) . "
@@ -86,8 +135,12 @@ function exploreendpoint($endpointurl, &$errors) {
 		}
 		LIMIT 1
 	");
-	if (!empty($result))
-		$capabilities[] = "artistname";
+	if (!empty($result)) {
+		$capabilitytriples["artistname"] = array(
+			sparqlresulttotriple("artist", "rdf:type", "mo:MusicArtist", $result[0]),
+			sparqlresulttotriple("artist", "foaf:name", "artistname", $result[0]),
+		);
+	}
 
 	// record name
 	$result = sparqlquery($endpointurl, prefix(array("mo", "dc")) . "
@@ -99,7 +152,10 @@ function exploreendpoint($endpointurl, &$errors) {
 		LIMIT 1
 	");
 	if (!empty($result))
-		$capabilities[] = "recordname";
+		$capabilitytriples["recordname"] = array(
+			sparqlresulttotriple("record", "rdf:type", "mo:Record", $result[0]),
+			sparqlresulttotriple("record", "dc:title", "recordname", $result[0]),
+		);
 
 	// track name
 	$result = sparqlquery($endpointurl, prefix(array("mo", "dc")) . "
@@ -111,7 +167,10 @@ function exploreendpoint($endpointurl, &$errors) {
 		LIMIT 1
 	");
 	if (!empty($result))
-		$capabilities[] = "trackname";
+		$capabilitytriples["trackname"] = array(
+			sparqlresulttotriple("track", "rdf:type", "mo:Track", $result[0]),
+			sparqlresulttotriple("track", "dc:title", "trackname", $result[0]),
+		);
 
 	// artist country
 	$result = sparqlquery($endpointurl, prefix(array("mo", "foaf", "geo")) . "
@@ -124,23 +183,38 @@ function exploreendpoint($endpointurl, &$errors) {
 		LIMIT 1
 	");
 	if (!empty($result))
-		$capabilities[] = "artistcountry";
+		$capabilitytriples["artistcountry"] = array(
+			sparqlresulttotriple("artist", "rdf:type", "mo:MusicArtist", $result[0]),
+			sparqlresulttotriple("artist", "foaf:based_near", "basednear", $result[0]),
+			sparqlresulttotriple("basednear", "geo:inCountry", "country", $result[0]),
+		);
 
 	// date of some kind
 	$result = sparqlquery($endpointurl, prefix(array("mo", "dc")) . "
 		SELECT * WHERE {
 			{
 				?record a mo:Record .
-				{ ?record dc:date ?recorddate . } UNION { ?record dc:created ?recorddate }
+				{ ?record dc:date ?recorddate . } UNION { ?record dc:created ?recordcreated }
 			} UNION {
 				?track a mo:Track .
-				{ ?track dc:date ?trackdate . } UNION { ?track dc:created ?trackdate }
+				{ ?track dc:date ?trackdate . } UNION { ?track dc:created ?trackcreated }
 			}
 		}
 		LIMIT 1
 	");
-	if (!empty($result))
-		$capabilities[] = "recorddate";
+
+	if (!empty($result)) {
+		if (isset($result[0]["track"]))
+			$capabilitytriples["recorddate"] = array(
+				sparqlresulttotriple("track", "rdf:type", "mo:Track", $result[0]),
+				isset($result[0]["trackdate"]) ? sparqlresulttotriple("track", "dc:date", "trackdate", $result[0]) : sparqlresulttotriple("track", "dc:created", "trackcreated", $result[0]),
+			);
+		else
+			$capabilitytriples["recorddate"] = array(
+				sparqlresulttotriple("record", "rdf:type", "mo:Record", $result[0]),
+				isset($result[0]["recorddate"]) ? sparqlresulttotriple("record", "dc:date", "recorddate", $result[0]) : sparqlresulttotriple("record", "dc:created", "recordcreated", $result[0]),
+			);
+	}
 
 	// record tag
 	$result = sparqlquery($endpointurl, prefix(array("mo", "tags")) . "
@@ -152,7 +226,10 @@ function exploreendpoint($endpointurl, &$errors) {
 		LIMIT 1
 	");
 	if (!empty($result))
-		$capabilities[] = "recordtag";
+		$capabilitytriples["recordtag"] = array(
+			sparqlresulttotriple("record", "rdf:type", "mo:Record", $result[0]),
+			sparqlresulttotriple("record", "tags:taggedWithTag", "tag", $result[0]),
+		);
 
 	// track number
 	$result = sparqlquery($endpointurl, prefix(array("mo")) . "
@@ -164,10 +241,14 @@ function exploreendpoint($endpointurl, &$errors) {
 		LIMIT 1
 	");
 	if (!empty($result))
-		$capabilities[] = "tracknumber";
+		$capabilitytriples["tracknumber"] = array(
+			sparqlresulttotriple("track", "rdf:type", "mo:Track", $result[0]),
+			sparqlresulttotriple("track", "mo:track_number", "tracknumber", $result[0]),
+		);
 
 	// avaliable_as (could be MP3, could be something else)
-	$availableas = sparqlquery($endpointurl, prefix(array("mo")) . "
+	// if we get an MP3 let's say we can ground against it too
+	$result = sparqlquery($endpointurl, prefix(array("mo")) . "
 		SELECT * WHERE {
 			?track
 				a mo:Track ;
@@ -175,35 +256,56 @@ function exploreendpoint($endpointurl, &$errors) {
 		}
 		LIMIT 1
 	");
-	if (!empty($availableas))
-		$capabilities[] = "availableas";
+	if (!empty($result)) {
+		$capabilitytriples["availableas"] = array(
+			sparqlresulttotriple("track", "rdf:type", "mo:Track", $result[0]),
+			sparqlresulttotriple("track", "mo:available_as", "manifestation", $result[0]),
+		);
+		if (preg_match('%^https?://%', (string) $result[0]["manifestation"]) && ismp3((string) $result[0]["manifestation"]))
+			$capabilitytriples["grounding"] = array(); // manifestation gives an MP3 -- we can try to ground on this
+	}
 
-	// grounding
-	// this will be available if a mo:Track is mo:available_as a mo:AudioFile or 
-	// the first result for mo:Track mo:avaliable_as is a URL and resolves to an 
-	// MP3
+	// grounding (proper grounding)
 	$result = sparqlquery($endpointurl, prefix(array("mo")) . "
 		SELECT * WHERE {
 			?track
 				a mo:Track ;
-				mo:available_as ?audiofile .
-			?audiofile
+				mo:available_as ?manifestation .
+			?manifestation
 				a mo:AudioFile .
 		}
 		LIMIT 1
 	");
-	if (!empty($result) || !empty($availableas) && preg_match('%^https?://%', (string) $availableas[0]["manifestation"]) && ismp3((string) $availableas[0]["manifestation"]))
-		$capabilities[] = "audiofile";
+	if (!empty($result))
+		$capabilitytriples["grounding"] = array(
+			sparqlresulttotriple("track", "rdf:type", "mo:Track", $result[0]),
+			sparqlresulttotriple("track", "mo:available_as", "manifestation", $result[0]),
+			sparqlresulttotriple("manifestation", "rdf:type", "mo:AudioFile", $result[0]),
+		);
 
-	return $capabilities;
+	return $capabilitytriples;
 }
 
 if (isset($_REQUEST["endpointurl"])) {
 	$errors = array();
-	$capabilities = exploreendpoint($_REQUEST["endpointurl"], $errors);
+	$capabilitytriples = exploreendpoint($_REQUEST["endpointurl"], $errors);
 	if (empty($errors)) {
-		foreach ($capabilities as $cap)
-			echo "<li>$cap</li>";
+		$title = "Sparql endpoint results";
+		include "htmlheader.php";
+		?>
+		<h1><?php echo htmlspecialchars($title); ?></h1>
+		<?php foreach ($capabilitytriples as $cap => $triples) { ?>
+			<h2><?php echo htmlspecialchars($cap); ?></h2>
+			<h3>Example triples</h3>
+			<?php
+			$graph = new Graphite($GLOBALS["ns"]);
+			$graph->addTriples($triples);
+			echo $graph->dump();
+			?>
+		<?php } ?>
+		<?php
+		include "htmlfooter.php";
+		exit;
 	}
 }
 
