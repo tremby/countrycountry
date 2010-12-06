@@ -241,12 +241,12 @@ print "</pre>";
                                 if( isset($aliases[$t["o"]]) ) { $t["o"]=$aliases[$t["o"]]; }
 //                              if( $mod )
 //                              {
-                                        if( $t["o_type"]=="literal" )
+                                        if( @$t["o_type"]=="literal" )
                                         {
                                                 $this->t["sp"][$t["s"]][$t["p"]][] = array(
                                                         "v"=>$t["o"],
-                                                        "d"=>$t["o_datatype"],
-                                                        "l"=>$t["o_lang"] );
+                                                        "d"=>@$t["o_datatype"],
+                                                        "l"=>@$t["o_lang"] );
                                         }
                                         else
                                         {
