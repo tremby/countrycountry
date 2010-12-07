@@ -290,6 +290,11 @@ class Endpoint {
 	public function errors() {
 		return $this->errors;
 	}
+
+	// return true if this endpoint has a given capability
+	public function hascapability($capability) {
+		return array_key_exists($capability, $this->capabilities());
+	}
 }
 
 ?>
