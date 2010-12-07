@@ -5,7 +5,7 @@ $title = "Log in";
 if (user_loggedin()) {
 	include "htmlheader.php";
 	?>
-	<h1><?php echo htmlspecialchars($title); ?></h1>
+	<h2><?php echo htmlspecialchars($title); ?></h2>
 	<p>You're already logged in as <?php echo htmlspecialchars(user_name()); ?>.</p>
 	<ul><li><a href="<?php echo SITEROOT_WEB; ?>logout">Log out</a></li></ul>
 	<?php
@@ -25,11 +25,11 @@ if (isset($_POST["username"])) {
 
 include "htmlheader.php";
 ?>
-<h1><?php echo htmlspecialchars($title); ?></h1>
+<h2><?php echo htmlspecialchars($title); ?></h2>
 
 <?php if (isset($errors) && !empty($errors)) { ?>
 	<div class="error">
-		<h2>Errors</h2>
+		<h3>Errors</h3>
 		<ul>
 			<?php foreach ($errors as $error) { ?>
 				<li><?php echo htmlspecialchars($error); ?></li>
