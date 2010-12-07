@@ -17,6 +17,7 @@ class Endpoint {
 			return;
 		}
 
+		// set the endpoint URL and probe for capabilities
 		$this->url = $url;
 		$this->probe();
 	}
@@ -268,18 +269,24 @@ class Endpoint {
 		return !empty($this->errors);
 	}
 
+	// return an associative array of this endpoint's capabilities to the 
+	// example triples which support it
 	public function capabilitytriples() {
 		return $this->capabilitytriples;
 	}
 
+	// return an array of this endpoint's capabilities
 	public function capabilities() {
 		return array_keys($this->capabilitytriples());
 	}
 
+	// return an array of the Sparql queries which were used when probing the 
+	// endpoint
 	public function probequeries() {
 		return $this->probequeries;
 	}
 
+	// return the current array of error messages
 	public function errors() {
 		return $this->errors;
 	}
