@@ -822,4 +822,60 @@ function prettycreator($creator) {
 	return htmlspecialchars($creator);
 }
 
+// return true if the URL given definitely resolves to an MP3
+// (so if it's protected (401) return false)
+function ismp3($url) {
+	$fp = fopen($url, "r");
+	if (!$fp)
+		return false;
+	$md = stream_get_meta_data($fp);
+	fclose($fp);
+	foreach ($md["wrapper_data"] as $header)
+		if (preg_match('%^Content-Type: audio/mpeg%i', $header))
+			return true;
+	return false;
+}
+
+// expand a shortened URI
+function expanduri($uri) {
+	if (strpos($uri, ":") === false)
+		return $uri;
+	list($prefix, $suffix) = explode(":", $uri);
+	if (!array_key_exists($prefix, $GLOBALS["ns"])) {
+		trigger_error("prefix $prefix (of $prefix:$suffix) doesn't exist in global ns array", E_USER_WARNING);
+		return $uri;
+	}
+	return $GLOBALS["ns"][$prefix] . $suffix;
+}
+
+// hack to make a triple array suitable for importing to Graphite from a Sparql 
+// result
+// if $s, $p or $o contain a : they are expanded with the global $ns variable to 
+// a URI, otherwise treated as array keys to find in $resultarray
+function sparqlresulttotriple($s, $p, $o, $resultarray = null) {
+	$triple = array();
+
+	foreach (array("s" => $s, "p" => $p, "o" => $o) as $letter => $value) {
+		if (strpos($value, ":") !== false) {
+			$triple[$letter] = expanduri($value);
+			continue;
+		}
+
+		if (!is_array($resultarray)) {
+			trigger_error("expected a fourth parameter if using identifiers for s, p or o", E_USER_ERROR);
+			exit;
+		}
+
+		$triple[$letter] = $resultarray[$value];
+		if (isset($resultarray["$value type"]))
+			$triple[$letter . "_type"] = $resultarray["$value type"];
+		if (isset($resultarray["$value datatype"]))
+			$triple[$letter . "_datatype"] = $resultarray["$value datatype"];
+		if (isset($resultarray["$value lang"]))
+			$triple[$letter . "_lang"] = $resultarray["$value lang"];
+	}
+
+	return $triple;
+}
+
 ?>
