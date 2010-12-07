@@ -61,7 +61,7 @@ function sparqlresulttotriple($s, $p, $o, $resultarray = null) {
 
 // given an endpoint URL, probe it to find out what comparisons we can do on its 
 // music data
-function exploreendpoint($endpointurl, &$errors) {
+function exploreendpoint($endpointurl, &$errors, &$queries) {
 	$capabilitytriples = array();
 
 	// basic checks
@@ -98,7 +98,7 @@ function exploreendpoint($endpointurl, &$errors) {
 
 	// check that mo:MusicArtist, mo:Record, mo:Track and mo:Signal exist and 
 	// are joined with foaf:maker, mo:track and mo:published_as
-	$result = sparqlquery($endpointurl, prefix(array("mo", "foaf")) . "
+	$result = sparqlquery($endpointurl, $queries[] = prefix(array("mo", "foaf")) . "
 		SELECT * WHERE {
 			?artist
 				a mo:MusicArtist .
@@ -127,7 +127,7 @@ function exploreendpoint($endpointurl, &$errors) {
 	}
 
 	// artist name
-	$result = sparqlquery($endpointurl, prefix(array("mo", "foaf")) . "
+	$result = sparqlquery($endpointurl, $queries[] = prefix(array("mo", "foaf")) . "
 		SELECT * WHERE {
 			?artist
 				a mo:MusicArtist ;
@@ -143,7 +143,7 @@ function exploreendpoint($endpointurl, &$errors) {
 	}
 
 	// record name
-	$result = sparqlquery($endpointurl, prefix(array("mo", "dc")) . "
+	$result = sparqlquery($endpointurl, $queries[] = prefix(array("mo", "dc")) . "
 		SELECT * WHERE {
 			?record
 				a mo:Record ;
@@ -158,7 +158,7 @@ function exploreendpoint($endpointurl, &$errors) {
 		);
 
 	// track name
-	$result = sparqlquery($endpointurl, prefix(array("mo", "dc")) . "
+	$result = sparqlquery($endpointurl, $queries[] = prefix(array("mo", "dc")) . "
 		SELECT * WHERE {
 			?track
 				a mo:Track ;
@@ -173,7 +173,7 @@ function exploreendpoint($endpointurl, &$errors) {
 		);
 
 	// artist country
-	$result = sparqlquery($endpointurl, prefix(array("mo", "foaf", "geo")) . "
+	$result = sparqlquery($endpointurl, $queries[] = prefix(array("mo", "foaf", "geo")) . "
 		SELECT * WHERE {
 			?artist
 				a mo:MusicArtist ;
@@ -190,7 +190,7 @@ function exploreendpoint($endpointurl, &$errors) {
 		);
 
 	// date of some kind
-	$result = sparqlquery($endpointurl, prefix(array("mo", "dc")) . "
+	$result = sparqlquery($endpointurl, $queries[] = prefix(array("mo", "dc")) . "
 		SELECT * WHERE {
 			{
 				?record a mo:Record .
@@ -217,7 +217,7 @@ function exploreendpoint($endpointurl, &$errors) {
 	}
 
 	// record tag
-	$result = sparqlquery($endpointurl, prefix(array("mo", "tags")) . "
+	$result = sparqlquery($endpointurl, $queries[] = prefix(array("mo", "tags")) . "
 		SELECT * WHERE {
 			?record
 				a mo:Record ;
@@ -232,7 +232,7 @@ function exploreendpoint($endpointurl, &$errors) {
 		);
 
 	// track number
-	$result = sparqlquery($endpointurl, prefix(array("mo")) . "
+	$result = sparqlquery($endpointurl, $queries[] = prefix(array("mo")) . "
 		SELECT * WHERE {
 			?track
 				a mo:Track ;
@@ -248,7 +248,7 @@ function exploreendpoint($endpointurl, &$errors) {
 
 	// avaliable_as (could be MP3, could be something else)
 	// if we get an MP3 let's say we can ground against it too
-	$result = sparqlquery($endpointurl, prefix(array("mo")) . "
+	$result = sparqlquery($endpointurl, $queries[] = prefix(array("mo")) . "
 		SELECT * WHERE {
 			?track
 				a mo:Track ;
@@ -266,7 +266,7 @@ function exploreendpoint($endpointurl, &$errors) {
 	}
 
 	// grounding (proper grounding)
-	$result = sparqlquery($endpointurl, prefix(array("mo")) . "
+	$result = sparqlquery($endpointurl, $queries[] = prefix(array("mo")) . "
 		SELECT * WHERE {
 			?track
 				a mo:Track ;
@@ -286,23 +286,89 @@ function exploreendpoint($endpointurl, &$errors) {
 	return $capabilitytriples;
 }
 
+$capabilities = array(
+	"relationships" => array(
+		"title" => "Relationships between artists, records, tracks and signals are present",
+		"description" => "There exist objects of types mo:MusicArtist, mo:Record, mo:Track and mo:Signal linked in such a way that their relationships can be understood.",
+	),
+	"artistname" => array(
+		"title" => "Artist names are available",
+		"description" => "Objects of type mo:MusicArtist have names available via the foaf:name predicate.",
+	),
+	"recordname" => array(
+		"title" => "Record names are available",
+		"description" => "Objects of type mo:Record have names available via the dc:title predicate.",
+	),
+	"trackname" => array(
+		"title" => "Track names are available",
+		"description" => "Objects of type mo:Track have names available via the dc:title predicate.",
+	),
+	"artistcountry" => array(
+		"title" => "Artist country data available",
+		"description" => "Artists are declared to be foaf:based_near a place and the triples which are necessary to determine which country this place is in are also present.",
+	),
+	"recorddate" => array(
+		"title" => "Date information available",
+		"description" => "Either mo:Record or mo:Track objects have date information provided by either the dc:date or dc:created predicates.",
+	),
+	"recordtag" => array(
+		"title" => "Records are tagged",
+		"description" => "Objects of type mo:Record are tagged using the tags:taggedWithTag predicate.",
+	),
+	"tracknumber" => array(
+		"title" => "Track numbers available",
+		"description" => "Objects of type mo:Track in this endpoint are linked via mo:track_number to their track numbers.",
+	),
+	"availableas" => array(
+		"title" => "Samples available",
+		"description" => "The endpoint links mo:Track objects via mo:available_as statements to other resources. These could be anything but in practice tend to be playlist files, audio files or torrent files.",
+	),
+	"grounding" => array(
+		"title" => "Can be grounded against",
+		"description" => "The endpoint can be grounded against: mo:Track objects are linked via mo:available_as statements to either mo:AudioFile objects or URLs which when resolved give MP3 files.",
+	),
+);
+
 if (isset($_REQUEST["endpointurl"])) {
 	$errors = array();
-	$capabilitytriples = exploreendpoint($_REQUEST["endpointurl"], $errors);
+	$queries = array();
+	$capabilitytriples = exploreendpoint($_REQUEST["endpointurl"], $errors, $queries);
 	if (empty($errors)) {
 		$title = "Sparql endpoint results";
 		include "htmlheader.php";
 		?>
 		<h1><?php echo htmlspecialchars($title); ?></h1>
-		<?php foreach ($capabilitytriples as $cap => $triples) { ?>
-			<h2><?php echo htmlspecialchars($cap); ?></h2>
-			<h3>Example triples</h3>
+		<p>The endpoint <code><?php echo htmlspecialchars($_REQUEST["endpointurl"]); ?></code> could be connected to and queried.</p>
+		<?php if (empty($capabilitytriples)) { ?>
+			<p>Some probing found that the endpoint doesn't have any information this application can use.</p>
+			<p>We expected a row of response for at least one of the following queries.</p>
+			<ul>
+				<?php foreach ($queries as $query) { ?>
+					<li><pre><?php echo htmlspecialchars($query); ?></pre></li>
+				<?php } ?>
+			</ul>
 			<?php
-			$graph = new Graphite($GLOBALS["ns"]);
-			$graph->addTriples($triples);
-			echo $graph->dump();
+			include "htmlfooter.php";
+			exit;
 			?>
 		<?php } ?>
+		<p>Some probing of the endpoint found the following capabilities.</p>
+		<dl>
+			<?php foreach ($capabilitytriples as $cap => $triples) { ?>
+				<dt><?php echo htmlspecialchars($capabilities[$cap]["title"]); ?></dt>
+				<dd>
+					<p><?php echo htmlspecialchars($capabilities[$cap]["description"]); ?></p>
+					<?php if (!empty($triples)) { ?>
+						<p>This was determined by finding the following example triples.</p>
+						<?php
+						$graph = new Graphite($GLOBALS["ns"]);
+						$graph->addTriples($triples);
+						echo $graph->dump();
+						?>
+					<?php } ?>
+				</dd>
+			<?php } ?>
+		</dl>
 		<?php
 		include "htmlfooter.php";
 		exit;
