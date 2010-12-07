@@ -10,3 +10,6 @@ signalcollections/*
 
 cache/*
 !cache/README
+
+endpoints/*
+!endpoints/README

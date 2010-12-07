@@ -2,29 +2,63 @@
 
 class Endpoint {
 	private $url = null;
-	private $capabilitytriples = array();
 	private $errors = array();
-	private $probequeries = array();
+	private $capabilitytriples = null;
+	private $probequeries = null;
 
-	public function __construct($url) {
+	private $name = null;
+	private $description = null;
+
+	public function __construct($url, $name, $description = null, $fresh = false) {
 		// basic checks
-		if (empty($url)) {
+		if (empty($url))
 			$this->errors[] = "No endpoint URL given";
-			return;
-		}
-		if (!preg_match('%^https?://%', $url)) {
+		else if (!preg_match('%^https?://%', $url))
 			$this->errors[] = "Couldn't parse endpoint URL";
+		if (empty($name))
+			$this->errors[] = "No endpoint name given";
+
+		if (!empty($this->errors))
 			return;
+
+		// set the properties
+		$this->url = $url;
+		$this->name = $name;
+		$this->description = empty($description) ? null : $description;
+
+		// load any existing data about the endpoint
+		if (file_exists($this->serializedpath())) {
+			$serializedendpoint = Endpoint::load($this->url());
+			$this->capabilitytriples = $serializedendpoint->capabilitytriples();
+			$this->probequeries = $serializedendpoint->probequeries();
+			$this->errors = $serializedendpoint->errors();
+			$this->name = $serializedendpoint->name();
+			$this->description = $serializedendpoint->description();
+			unset($serializedendpoint);
 		}
 
-		// set the endpoint URL and probe for capabilities
-		$this->url = $url;
-		$this->probe();
+		// clear the cache if required
+		if ($fresh)
+			$this->clearcache();
+
+		// probe if needed
+		if (!file_exists($this->serializedpath()) || $fresh)
+			$this->probe();
 	}
 
 	// get the endpoint URL
 	public function url() {
 		return $this->url;
+	}
+
+	// get the endpoint name
+	public function name() {
+		return $this->name;
+	}
+
+	// get the endpoint description
+	public function description() {
+		return $this->description;
 	}
 
 	// get the hash of the endpoint's URL (used for its cache directory)
@@ -37,10 +71,17 @@ class Endpoint {
 		return SITEROOT_LOCAL . "cache/" . $this->hash();
 	}
 
-	// clear this endpoint's query cache
+	// get the serialized endpoint file's full path
+	public function serializedpath() {
+		return self::serializedpathbyid($this->url());
+	}
+
+	// clear this endpoint's query cache and forget what has been probed
 	public function clearcache() {
 		if (is_dir($this->cachedir()))
 			rmrecursive($this->cachedir());
+		$this->probequeries = null;
+		$this->pcapabilitytriples = null;
 	}
 
 	// query the endpoint
@@ -53,6 +94,7 @@ class Endpoint {
 	// its music data
 	private function probe() {
 		$this->capabilitytriples = array();
+		$this->probequeries = array();
 
 		// see if we can simply get back any triples at all. if a cache 
 		// directory already exists for this endpoint we can skip this
@@ -294,6 +336,31 @@ class Endpoint {
 	// return true if this endpoint has a given capability
 	public function hascapability($capability) {
 		return array_key_exists($capability, $this->capabilities());
+	}
+
+	// save this endpoint as a serialized object
+	public function save() {
+		if (!is_dir(dirname($this->serializedpath())))
+			if (!mkdir(dirname($this->serializedpath())))
+				return false;
+		return (boolean) file_put_contents($this->serializedpath(), serialize($this));
+	}
+
+	// return the serialization file's full path by URL
+	public static function serializedpathbyid($url, $hash = false) {
+		return SITEROOT_LOCAL . "endpoints/" . ($hash ? $url : md5($url));
+	}
+
+	// is an endpoint with the given URL already saved?
+	public static function exists($url, $hash = false) {
+		return file_exists(self::serializedpathbyid($url, $hash));
+	}
+
+	// load a serialized endpoint object by URL or hash
+	public static function load($url, $hash = false) {
+		if (!self::exists($url, $hash))
+			trigger_error("tried to load a non-existant endpoint " . ($hash ? "by hash " : "") . "'$url'", E_USER_ERROR);
+		return unserialize(file_get_contents(self::serializedpathbyid($url, $hash)));
 	}
 }
 
