@@ -4,7 +4,7 @@ include "htmlheader.php";
 ?>
 <div class="trythis">
 	<div class="content">
-		<p>Welcome to the country/country demo. Read about the project on the <a href="<?php echo SITEROOT_WEB; ?>about">about country/country page</a>.<p>
+		<p>Welcome to the country/country demo. Read about the project on the <a href="<?php echo SITEROOT_WEB; ?>about">about country/country page</a>.</p>
 		<p><strong>"Try this"</strong> boxes like this one appear on some pages to explain what you're seeing and a few things you can try.</p>
 		<p>You might want to have a look first at the new collection or existing collections pages.</p>
 		<p>On each page you'll see the <strong>"send feedback"</strong> button hanging around in the top right corner of the page. You can click this at any time to send us your thoughts. The form appears in an overlay and submits via Ajax so it won't break your flow.</p>
