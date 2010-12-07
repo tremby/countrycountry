@@ -29,7 +29,7 @@ class Endpoint {
 
 	// get the hash of the endpoint's URL (used for its cache directory)
 	public function hash() {
-		return md5($this->url);
+		return md5($this->url());
 	}
 
 	// get the cache directory's full path
