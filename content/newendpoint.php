@@ -76,7 +76,7 @@ if (isset($_REQUEST["endpointurl"])) {
 
 			<h3>Actions</h3>
 			<ul>
-				<li><a href="<?php echo SITEROOT_WEB; ?>exploreendpoint">Try another endpoint</a></li>
+				<li><a href="<?php echo SITEROOT_WEB; ?>newendpoint">Try another endpoint</a></li>
 			</ul>
 			<?php
 			include "htmlfooter.php";
@@ -110,7 +110,7 @@ if (isset($_REQUEST["endpointurl"])) {
 	}
 }
 
-$title = "Explore Sparql endpoint";
+$title = "New Sparql endpoint";
 include "htmlheader.php";
 ?>
 
@@ -130,7 +130,7 @@ include "htmlheader.php";
 <p>We expect to find objects from the <a href="http://musicontology.com/">Music Ontology</a> such as mo:Signal, mo:Track, mo:Record, mo:MusicArtist and, for grounding, mo:AudioFile.</p>
 <p>TODO: graph of the kind of stuff we expect</p>
 
-<form action="<?php echo SITEROOT_WEB; ?>exploreendpoint" method="get">
+<form action="<?php echo SITEROOT_WEB; ?>newendpoint" method="get">
 	<dl>
 		<dt><label for="endpointurl">Endpoint URL</label></dt>
 		<dd>

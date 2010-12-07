@@ -7,7 +7,7 @@ include "htmlheader.php";
 
 <h3>Actions</h3>
 <ul>
-	<li><a href="<?php echo SITEROOT_WEB; ?>exploreendpoint">Add a new endpoint</a></li>
+	<li><a href="<?php echo SITEROOT_WEB; ?>newendpoint">Add a new endpoint</a></li>
 </ul>
 
 <?php
