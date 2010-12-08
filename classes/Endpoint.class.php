@@ -3,7 +3,7 @@
 class Endpoint {
 	private $url = null;
 	private $errors = array();
-	private $capabilitytriples = null;
+	private $capabilities = null;
 	private $probequeries = null;
 
 	private $name = null;
@@ -29,7 +29,7 @@ class Endpoint {
 		// load any existing data about the endpoint
 		if (file_exists($this->serializedpath())) {
 			$serializedendpoint = Endpoint::load($this->url());
-			$this->capabilitytriples = $serializedendpoint->capabilitytriples();
+			$this->capabilities = $serializedendpoint->capabilities();
 			$this->probequeries = $serializedendpoint->probequeries();
 			$this->errors = $serializedendpoint->errors();
 			$this->name = $serializedendpoint->name();
@@ -81,7 +81,7 @@ class Endpoint {
 		if (is_dir($this->cachedir()))
 			rmrecursive($this->cachedir());
 		$this->probequeries = null;
-		$this->pcapabilitytriples = null;
+		$this->capabilities = null;
 	}
 
 	// query the endpoint
@@ -93,7 +93,7 @@ class Endpoint {
 	// given an endpoint URL, probe it to find out what comparisons we can do on 
 	// its music data
 	private function probe() {
-		$this->capabilitytriples = array();
+		$this->capabilities = array();
 		$this->probequeries = array();
 
 		// see if we can simply get back any triples at all. if a cache 
@@ -141,7 +141,7 @@ class Endpoint {
 			LIMIT 1
 		");
 		if (!empty($result)) {
-			$this->capabilitytriples["relationships"] = array(
+			$this->capabilities[] = new Capability("relationships", "Relationships between artists, records, tracks and signals are present", "There exist objects of types mo:MusicArtist, mo:Record, mo:Track and mo:Signal linked in such a way that their relationships can be understood.", array(
 				sparqlresulttotriple("artist", "rdf:type", "mo:MusicArtist", $result[0]),
 				sparqlresulttotriple("record", "rdf:type", "mo:Record", $result[0]),
 				sparqlresulttotriple("record", "foaf:maker", "artist", $result[0]),
@@ -149,7 +149,7 @@ class Endpoint {
 				sparqlresulttotriple("track", "rdf:type", "mo:Track", $result[0]),
 				sparqlresulttotriple("signal", "rdf:type", "mo:Signal", $result[0]),
 				sparqlresulttotriple("signal", "mo:published_as", "track", $result[0]),
-			);
+			));
 		}
 
 		// artist name
@@ -162,10 +162,10 @@ class Endpoint {
 			LIMIT 1
 		");
 		if (!empty($result)) {
-			$this->capabilitytriples["artistname"] = array(
+			$this->capabilities[] = new Capability("artistname", "Artist names are available", "Objects of type mo:MusicArtist have names available via the foaf:name predicate.", array(
 				sparqlresulttotriple("artist", "rdf:type", "mo:MusicArtist", $result[0]),
 				sparqlresulttotriple("artist", "foaf:name", "artistname", $result[0]),
-			);
+			));
 		}
 
 		// record name
@@ -178,10 +178,10 @@ class Endpoint {
 			LIMIT 1
 		");
 		if (!empty($result))
-			$this->capabilitytriples["recordname"] = array(
+			$this->capabilities[] = new Capability("recordname", "Record names are available", "Objects of type mo:Record have names available via the dc:title predicate.", array(
 				sparqlresulttotriple("record", "rdf:type", "mo:Record", $result[0]),
 				sparqlresulttotriple("record", "dc:title", "recordname", $result[0]),
-			);
+			));
 
 		// track name
 		$result = $this->query($this->probequeries[] = prefix(array("mo", "dc")) . "
@@ -193,10 +193,10 @@ class Endpoint {
 			LIMIT 1
 		");
 		if (!empty($result))
-			$this->capabilitytriples["trackname"] = array(
+			$this->capabilities[] = new Capability("trackname", "Track names are available", "Objects of type mo:Track have names available via the dc:title predicate.", array(
 				sparqlresulttotriple("track", "rdf:type", "mo:Track", $result[0]),
 				sparqlresulttotriple("track", "dc:title", "trackname", $result[0]),
-			);
+			));
 
 		// artist country
 		$result = $this->query($this->probequeries[] = prefix(array("mo", "foaf", "geo")) . "
@@ -209,11 +209,11 @@ class Endpoint {
 			LIMIT 1
 		");
 		if (!empty($result))
-			$this->capabilitytriples["artistcountry"] = array(
+			$this->capabilities[] = new Capability("artistcountry", "Artist country data available", "Artists are declared to be foaf:based_near a place and the triples which are necessary to determine which country this place is in are also present.", array(
 				sparqlresulttotriple("artist", "rdf:type", "mo:MusicArtist", $result[0]),
 				sparqlresulttotriple("artist", "foaf:based_near", "basednear", $result[0]),
 				sparqlresulttotriple("basednear", "geo:inCountry", "country", $result[0]),
-			);
+			));
 
 		// date of some kind
 		$result = $this->query($this->probequeries[] = prefix(array("mo", "dc")) . "
@@ -229,16 +229,13 @@ class Endpoint {
 			LIMIT 1
 		");
 		if (!empty($result)) {
-			if (isset($result[0]["track"]))
-				$this->capabilitytriples["recorddate"] = array(
-					sparqlresulttotriple("track", "rdf:type", "mo:Track", $result[0]),
-					isset($result[0]["trackdate"]) ? sparqlresulttotriple("track", "dc:date", "trackdate", $result[0]) : sparqlresulttotriple("track", "dc:created", "trackcreated", $result[0]),
-				);
-			else
-				$this->capabilitytriples["recorddate"] = array(
-					sparqlresulttotriple("record", "rdf:type", "mo:Record", $result[0]),
-					isset($result[0]["recorddate"]) ? sparqlresulttotriple("record", "dc:date", "recorddate", $result[0]) : sparqlresulttotriple("record", "dc:created", "recordcreated", $result[0]),
-				);
+			$this->capabilities[] = new Capability("recorddate", "Date information available", "Either mo:Record or mo:Track objects have date information provided by either the dc:date or dc:created predicates.", isset($result[0]["track"]) ? array(
+				sparqlresulttotriple("track", "rdf:type", "mo:Track", $result[0]),
+				isset($result[0]["trackdate"]) ? sparqlresulttotriple("track", "dc:date", "trackdate", $result[0]) : sparqlresulttotriple("track", "dc:created", "trackcreated", $result[0]),
+			) : array(
+				sparqlresulttotriple("record", "rdf:type", "mo:Record", $result[0]),
+				isset($result[0]["recorddate"]) ? sparqlresulttotriple("record", "dc:date", "recorddate", $result[0]) : sparqlresulttotriple("record", "dc:created", "recordcreated", $result[0]),
+			));
 		}
 
 		// record tag
@@ -251,10 +248,10 @@ class Endpoint {
 			LIMIT 1
 		");
 		if (!empty($result))
-			$this->capabilitytriples["recordtag"] = array(
+			$this->capabilities[] = new Capability("recordtag", "Records are tagged", "Objects of type mo:Record are tagged using the tags:taggedWithTag predicate.", array(
 				sparqlresulttotriple("record", "rdf:type", "mo:Record", $result[0]),
 				sparqlresulttotriple("record", "tags:taggedWithTag", "tag", $result[0]),
-			);
+			));
 
 		// track number
 		$result = $this->query($this->probequeries[] = prefix(array("mo")) . "
@@ -266,10 +263,10 @@ class Endpoint {
 			LIMIT 1
 		");
 		if (!empty($result))
-			$this->capabilitytriples["tracknumber"] = array(
+			$this->capabilities[] = new Capability("tracknumber", "Track numbers available", "Objects of type mo:Track in this endpoint are linked via mo:track_number to their track numbers.", array(
 				sparqlresulttotriple("track", "rdf:type", "mo:Track", $result[0]),
 				sparqlresulttotriple("track", "mo:track_number", "tracknumber", $result[0]),
-			);
+			));
 
 		// avaliable_as (could be MP3, could be something else)
 		// if we get an MP3 let's say we can ground against it too
@@ -282,12 +279,14 @@ class Endpoint {
 			LIMIT 1
 		");
 		if (!empty($result)) {
-			$this->capabilitytriples["availableas"] = array(
+			$this->capabilities[] = new Capability("availableas", "Samples available", "The endpoint links mo:Track objects via mo:available_as statements to other resources. These could be anything but in practice tend to be playlist files, audio files or torrent files.", array(
 				sparqlresulttotriple("track", "rdf:type", "mo:Track", $result[0]),
 				sparqlresulttotriple("track", "mo:available_as", "manifestation", $result[0]),
-			);
+			));
+
+			// if manifestation gives an MP3 we can try to ground on this
 			if (preg_match('%^https?://%', (string) $result[0]["manifestation"]) && ismp3((string) $result[0]["manifestation"]))
-				$this->capabilitytriples["grounding"] = array(); // manifestation gives an MP3 -- we can try to ground on this
+				$this->capabilities[] = new Capability("grounding", "Can be grounded against", "The endpoint can be grounded against: mo:Track objects are linked via mo:available_as statements to URLs which when resolved give MP3 files.", array());
 		}
 
 		// grounding (proper grounding)
@@ -302,24 +301,19 @@ class Endpoint {
 			LIMIT 1
 		");
 		if (!empty($result))
-			$this->capabilitytriples["grounding"] = array(
+			$this->capabilities[] = new Capability("grounding", "Can be grounded against", "The endpoint can be grounded against: mo:Track objects are linked via mo:available_as statements to mo:AudioFile objects.", array(
 				sparqlresulttotriple("track", "rdf:type", "mo:Track", $result[0]),
 				sparqlresulttotriple("track", "mo:available_as", "manifestation", $result[0]),
 				sparqlresulttotriple("manifestation", "rdf:type", "mo:AudioFile", $result[0]),
-			);
+			));
 
 		return !empty($this->errors);
 	}
 
 	// return an associative array of this endpoint's capabilities to the 
 	// example triples which support it
-	public function capabilitytriples() {
-		return $this->capabilitytriples;
-	}
-
-	// return an array of this endpoint's capabilities
 	public function capabilities() {
-		return array_keys($this->capabilitytriples());
+		return $this->capabilities;
 	}
 
 	// return an array of the Sparql queries which were used when probing the 
@@ -333,9 +327,13 @@ class Endpoint {
 		return $this->errors;
 	}
 
-	// return true if this endpoint has a given capability
+	// return true if this endpoint has a given capability (string capability ID 
+	// or Capability object with the same ID)
 	public function hascapability($capability) {
-		return array_key_exists($capability, $this->capabilities());
+		foreach ($this->capabilities() as $cap)
+			if (is_string($capability) && $cap->id() == $capability || is_object($capability) && get_class($capability) == "Capability" && $capability->id() == $cap->id())
+				return true;
+		return false;
 	}
 
 	// save this endpoint as a serialized object

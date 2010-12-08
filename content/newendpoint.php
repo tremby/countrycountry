@@ -3,49 +3,6 @@
 require_once SITEROOT_LOCAL . "include/arc/ARC2.php";
 require_once SITEROOT_LOCAL . "include/Graphite.php";
 
-$capabilities = array(
-	"relationships" => array(
-		"title" => "Relationships between artists, records, tracks and signals are present",
-		"description" => "There exist objects of types mo:MusicArtist, mo:Record, mo:Track and mo:Signal linked in such a way that their relationships can be understood.",
-	),
-	"artistname" => array(
-		"title" => "Artist names are available",
-		"description" => "Objects of type mo:MusicArtist have names available via the foaf:name predicate.",
-	),
-	"recordname" => array(
-		"title" => "Record names are available",
-		"description" => "Objects of type mo:Record have names available via the dc:title predicate.",
-	),
-	"trackname" => array(
-		"title" => "Track names are available",
-		"description" => "Objects of type mo:Track have names available via the dc:title predicate.",
-	),
-	"artistcountry" => array(
-		"title" => "Artist country data available",
-		"description" => "Artists are declared to be foaf:based_near a place and the triples which are necessary to determine which country this place is in are also present.",
-	),
-	"recorddate" => array(
-		"title" => "Date information available",
-		"description" => "Either mo:Record or mo:Track objects have date information provided by either the dc:date or dc:created predicates.",
-	),
-	"recordtag" => array(
-		"title" => "Records are tagged",
-		"description" => "Objects of type mo:Record are tagged using the tags:taggedWithTag predicate.",
-	),
-	"tracknumber" => array(
-		"title" => "Track numbers available",
-		"description" => "Objects of type mo:Track in this endpoint are linked via mo:track_number to their track numbers.",
-	),
-	"availableas" => array(
-		"title" => "Samples available",
-		"description" => "The endpoint links mo:Track objects via mo:available_as statements to other resources. These could be anything but in practice tend to be playlist files, audio files or torrent files.",
-	),
-	"grounding" => array(
-		"title" => "Can be grounded against",
-		"description" => "The endpoint can be grounded against: mo:Track objects are linked via mo:available_as statements to either mo:AudioFile objects or URLs which when resolved give MP3 files.",
-	),
-);
-
 if (isset($_REQUEST["endpointurl"])) {
 	if (Endpoint::exists($_REQUEST["endpointurl"])) {
 		flash("An endpoint with that URL is already saved -- taken you to its edit page");
@@ -85,10 +42,10 @@ if (isset($_REQUEST["endpointurl"])) {
 		<?php } ?>
 		<p>Some probing of the endpoint found the following capabilities.</p>
 		<dl>
-			<?php foreach ($endpoint->capabilitytriples() as $cap => $triples) { ?>
-				<dt><?php echo htmlspecialchars($capabilities[$cap]["title"]); ?></dt>
+			<?php foreach ($endpoint->capabilities() as $cap) { ?>
+				<dt><?php echo htmlspecialchars($cap->name()); ?></dt>
 				<dd>
-					<p><?php echo htmlspecialchars($capabilities[$cap]["description"]); ?></p>
+					<p><?php echo htmlspecialchars($cap->description()); ?></p>
 					<?php if (!empty($triples)) { ?>
 						<p>This was determined by finding the following example triples.</p>
 						<?php
