@@ -72,6 +72,17 @@ $(document).ready(function() {
 		}, "json");
 	});
 
+	// delete endpoint button
+	$(".deleteendpointbutton").click(function() {
+		if (!confirm("Are you sure you want to delete the endpoint '" + $(this).parents("tr:first").find("td:first").text() + "'?"))
+			return false;
+		$.post("<?php echo SITEROOT_WEB; ?>deleteendpoint", {"id": $(this).parents("tr:first").attr("id").split("_")[1]}, function(data) {
+			successalert("Deleted endpoint '" + $("#endpoint_" + data.id).find("td:first").text() + "'");
+			$("#endpoint_" + data.id).remove();
+			stripetables();
+		}, "json");
+	});
+
 	// stripe tables
 	stripetables();
 

@@ -344,6 +344,14 @@ class Endpoint {
 		return (boolean) file_put_contents($this->serializedpath(), serialize($this));
 	}
 
+	// delete this endpoint, return false on failure (if it didn't exist that's 
+	// counted as success)
+	public function delete() {
+		if (file_exists($this->serializedpath()))
+			return unlink($this->serializedpath());
+		return true;
+	}
+
 	// return the serialization file's full path by URL
 	public static function serializedpathbyid($url, $hash = false) {
 		return SITEROOT_LOCAL . "endpoints/" . ($hash ? $url : md5($url));
@@ -359,6 +367,18 @@ class Endpoint {
 		if (!self::exists($url, $hash))
 			trigger_error("tried to load a non-existant endpoint " . ($hash ? "by hash " : "") . "'$url'", E_USER_ERROR);
 		return unserialize(file_get_contents(self::serializedpathbyid($url, $hash)));
+	}
+
+	// load all saved endpoints, return them as an array
+	public static function loadall() {
+		$endpoints = array();
+		foreach (glob(SITEROOT_LOCAL . "endpoints/*") as $file) {
+			$file = basename($file);
+			if (!preg_match('%^[0-9a-f]{32}$%i', $file))
+				continue;
+			$endpoints[] = self::load($file, true);
+		}
+		return $endpoints;
 	}
 }
 
