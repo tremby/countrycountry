@@ -59,7 +59,7 @@ if (isset($_REQUEST["endpointurl"])) {
 		</dl>
 		<h3>Actions</h3>
 		<ul>
-			<li><a href="<?php echo SITEROOT_WEB; ?>saveendpoint">Save this endpoint</a></li>
+			<li><form action="<?php echo SITEROOT_WEB; ?>saveendpoint" method="post"><input type="submit" name="save" value="Save this endpoint"></form></li>
 		</ul>
 		<?php
 		include "htmlfooter.php";
