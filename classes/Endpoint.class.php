@@ -370,7 +370,7 @@ class Endpoint {
 	}
 
 	// load all saved endpoints, return them as an array
-	public static function loadall() {
+	public static function all() {
 		$endpoints = array();
 		foreach (glob(SITEROOT_LOCAL . "endpoints/*") as $file) {
 			$file = basename($file);

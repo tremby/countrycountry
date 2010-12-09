@@ -7,7 +7,7 @@ include "htmlheader.php";
 
 <h3>Existing endpoints</h3>
 <?php
-$endpoints = Endpoint::loadall();
+$endpoints = Endpoint::all();
 if (empty($endpoints)) { ?>
 	<p>No endpoints have yet been saved.</p>
 <?php } else { ?>
@@ -22,7 +22,7 @@ if (empty($endpoints)) { ?>
 			</tr>
 		</thead>
 		<tbody>
-			<?php foreach (Endpoint::loadall() as $endpoint) { ?>
+			<?php foreach (Endpoint::all() as $endpoint) { ?>
 				<tr id="endpoint_<?php echo $endpoint->hash(); ?>">
 					<td><?php echo htmlspecialchars($endpoint->name()); ?></td>
 					<td><a href="<?php echo htmlspecialchars($endpoint->url()); ?>"><?php echo htmlspecialchars(parse_url($endpoint->url(), PHP_URL_HOST)); ?>...</a></td>
