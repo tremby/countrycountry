@@ -23,8 +23,8 @@ class Endpoint {
 
 		// set the properties
 		$this->url = $url;
-		$this->name = $name;
-		$this->description = empty($description) ? null : $description;
+		$this->name($name);
+		$this->description($description); // if null this will get the description -- no harm
 
 		// load any existing data about the endpoint
 		if (file_exists($this->serializedpath())) {
@@ -51,14 +51,22 @@ class Endpoint {
 		return $this->url;
 	}
 
-	// get the endpoint name
-	public function name() {
-		return $this->name;
+	// get or set the endpoint name
+	public function name($name = null) {
+		if (is_null($name))
+			return $this->name;
+		if (empty($name))
+			trigger_error("tried to give an endpoint an empty name", E_USER_ERROR);
+		$this->name = $name;
 	}
 
-	// get the endpoint description
-	public function description() {
-		return $this->description;
+	// get or set the endpoint description
+	public function description($description = null) {
+		if (is_null($description))
+			return $this->description;
+		if (empty($description))
+			$this->description = null;
+		$this->description = $description;
 	}
 
 	// get the hash of the endpoint's URL (used for its cache directory)
