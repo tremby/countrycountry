@@ -79,6 +79,7 @@ header("Content-Script-Type: text/javascript");
 			"newcollection" => "New collection",
 			"existingcollections" => "Existing collections",
 			"viewcollectionresults" => "View collection results",
+			"endpointadmin" => "Administer endpoints",
 		);
 		if (user_loggedin())
 			$menu["logout"] = "Log out";
