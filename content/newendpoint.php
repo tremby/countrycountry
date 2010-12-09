@@ -46,11 +46,11 @@ if (isset($_REQUEST["endpointurl"])) {
 				<dt><?php echo htmlspecialchars($cap->name()); ?></dt>
 				<dd>
 					<p><?php echo htmlspecialchars($cap->description()); ?></p>
-					<?php if (!empty($triples)) { ?>
+					<?php if (count($cap->triples())) { ?>
 						<p>This was determined by finding the following example triples.</p>
 						<?php
 						$graph = new Graphite($GLOBALS["ns"]);
-						$graph->addTriples($triples);
+						$graph->addTriples($cap->triples());
 						echo $graph->dump();
 						?>
 					<?php } ?>
