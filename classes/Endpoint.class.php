@@ -357,9 +357,14 @@ class Endpoint {
 	// save this endpoint as a serialized object
 	public function save() {
 		if (!is_dir(dirname($this->serializedpath())))
-			if (!mkdir(dirname($this->serializedpath())))
+			if (!mkdir(dirname($this->serializedpath()))) {
+				$this->errors[] = "endpoints directory couldn't be made";
 				return false;
-		return (boolean) file_put_contents($this->serializedpath(), serialize($this));
+			}
+		if (file_put_contents($this->serializedpath(), serialize($this)))
+			return true;
+		$errors[] = "Endpoint couldn't be saved";
+		return false;
 	}
 
 	// delete this endpoint, return false on failure (if it didn't exist that's 
