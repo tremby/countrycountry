@@ -315,7 +315,7 @@ class Endpoint {
 				sparqlresulttotriple("manifestation", "rdf:type", "mo:AudioFile", $result[0]),
 			));
 
-		return !empty($this->errors);
+		return empty($this->errors);
 	}
 
 	// return an associative array of this endpoint's capabilities to the 
