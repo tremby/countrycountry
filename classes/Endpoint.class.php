@@ -100,7 +100,7 @@ class Endpoint {
 
 	// given an endpoint URL, probe it to find out what comparisons we can do on 
 	// its music data
-	private function probe() {
+	public function probe() {
 		$this->capabilities = array();
 		$this->probequeries = array();
 
