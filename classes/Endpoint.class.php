@@ -318,8 +318,7 @@ class Endpoint {
 		return empty($this->errors);
 	}
 
-	// return an associative array of this endpoint's capabilities to the 
-	// example triples which support it
+	// return array of this endpoint's capabilities
 	public function capabilities() {
 		return $this->capabilities;
 	}
