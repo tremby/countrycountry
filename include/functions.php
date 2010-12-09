@@ -878,4 +878,11 @@ function sparqlresulttotriple($s, $p, $o, $resultarray = null) {
 	return $triple;
 }
 
+// return a singular or plural ending
+function plural($input, $pluralsuffix = "s", $singularsuffix = "") {
+	if (is_array($input) && count($input) != 1 || is_numeric($input) && $input != 1)
+		return $pluralsuffix;
+	return $singularsuffix;
+}
+
 ?>

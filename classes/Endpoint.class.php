@@ -327,13 +327,24 @@ class Endpoint {
 		return $this->errors;
 	}
 
-	// return true if this endpoint has a given capability (string capability ID 
-	// or Capability object with the same ID)
-	public function hascapability($capability) {
-		foreach ($this->capabilities() as $cap)
-			if (is_string($capability) && $cap->id() == $capability || is_object($capability) && get_class($capability) == "Capability" && $capability->id() == $cap->id())
-				return true;
-		return false;
+	// return true if this endpoint has the given capabilities (string 
+	// capability ID or Capability object with the same ID, or array of any 
+	// combination of these)
+	public function hascapability($capabilities) {
+		if (!is_array($capabilities))
+			$capabilities = array($capabilities);
+
+		$has = 0;
+		foreach ($capabilities as $capability) {
+			foreach ($this->capabilities() as $cap) {
+				if (is_string($capability) && $cap->id() == $capability || is_object($capability) && get_class($capability) == "Capability" && $capability->id() == $cap->id()) {
+					$has++;
+					continue 2;
+				}
+			}
+		}
+
+		return $has == count($capabilities);
 	}
 
 	// save this endpoint as a serialized object
@@ -379,6 +390,16 @@ class Endpoint {
 			$endpoints[] = self::load($file, true);
 		}
 		return $endpoints;
+	}
+
+	// return all endpoints with a particular (array of) capability
+	public static function allwith($capabilities) {
+		$possible = self::all();
+		$good = array();
+		foreach ($possible as $ep)
+			if ($ep->hascapability($capabilities))
+				$good[] = $ep;
+		return $good;
 	}
 }
 

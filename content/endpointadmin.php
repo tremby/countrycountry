@@ -11,6 +11,7 @@ $endpoints = Endpoint::all();
 if (empty($endpoints)) { ?>
 	<p>No endpoints have yet been saved.</p>
 <?php } else { ?>
+	<p>There <?php echo plural($c = count(Endpoint::all()), "are", "is"); ?> <?php echo $c; ?> endpoint<?php echo plural($c); ?> saved, of which <?php echo $c = count(Endpoint::allwith("relationships")); ?> ha<?php echo plural($c, "ve", "s"); ?> structure information and <?php echo count(Endpoint::allwith("grounding")); ?> can be grounded against. <?php echo $c = count(Endpoint::allwith(array("grounding", "relationships"))); ?> ha<?php echo plural($c, "ve", "s"); ?> both structure information and grounding capabilties.</p>
 	<table class="tablesorter {sortlist: [[0,0]]}">
 		<thead>
 			<tr>
