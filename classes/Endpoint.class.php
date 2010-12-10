@@ -386,7 +386,15 @@ class Endpoint {
 	}
 
 	// load a serialized endpoint object by URL or hash
+	// if given an array, return an array of many. all must be hashes or URLs
 	public static function load($url, $hash = false) {
+		if (is_array($url)) {
+			$endpoints = array();
+			foreach ($url as $u)
+				$endpoints[] = self::load($u, $hash);
+			return $endpoints;
+		}
+
 		if (!self::exists($url, $hash))
 			trigger_error("tried to load a non-existant endpoint " . ($hash ? "by hash " : "") . "'$url'", E_USER_ERROR);
 		return unserialize(file_get_contents(self::serializedpathbyid($url, $hash)));
