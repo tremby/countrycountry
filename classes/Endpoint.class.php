@@ -413,6 +413,39 @@ class Endpoint {
 				$good[] = $ep;
 		return $good;
 	}
+
+	// return the common capabilities of all given endpoints
+	public static function commoncapabilities($endpoints) {
+		$capabilities = array();
+
+		// collect all distinct capabilities (different IDs)
+		foreach ($endpoints as $ep) {
+			foreach ($ep->capabilities() as $epcap) {
+				$exists = false;
+				foreach ($capabilities as $cap) {
+					if ($cap->id() == $epcap->id()) {
+						$exists = true;
+						break;
+					}
+				}
+				if (!$exists)
+					$capabilities[] = $epcap;
+			}
+		}
+
+		// for each capability, loop through endpoints and remove it if an 
+		// endpoint doesn't provide it
+		foreach ($capabilities as $index => $cap) {
+			foreach ($endpoints as $ep) {
+				if (!$ep->hascapability($cap)) {
+					unset($capabilities[$index]);
+					continue 2;
+				}
+			}
+		}
+
+		return $capabilities;
+	}
 }
 
 ?>
