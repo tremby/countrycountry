@@ -178,6 +178,13 @@ function prefix($n) {
 // result however old it is)
 // type is passed straight through to Arc
 function sparqlquery($endpoint, $query, $type = "rows", $maxage = 86400/*1 day*/) {
+	if (is_object($endpoint)) {
+		if (get_class($endpoint) == "Endpoint")
+			$endpoint = $endpoint->url();
+		else
+			trigger_error("sparqlquery expected an Endpoint object or string endpoint URL", E_USER_ERROR);
+	}
+
 	$cachedir = SITEROOT_LOCAL . "cache/" . md5($endpoint);
 
 	if (!is_dir($cachedir))
