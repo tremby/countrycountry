@@ -426,6 +426,9 @@ class Endpoint {
 	public static function commoncapabilities($endpoints) {
 		$capabilities = array();
 
+		if (!is_array($endpoints))
+			$endpoints = array($endpoints);
+
 		// collect all distinct capabilities (different IDs)
 		foreach ($endpoints as $ep) {
 			foreach ($ep->capabilities() as $epcap) {
