@@ -98,7 +98,7 @@ if (isset($_REQUEST["submit"])) {
 	// record tag
 	if ($collection->hascapability("recordtag") && isset($collection->data["filteractive_recordtag"]) && isset($collection->data["recordtag_tag"]) && !empty($collection->data["recordtag_tag"]))
 		$collection->addfilter("
-			?record tags:taggedWithTag <http://dbtune.org/jamendo/tag/" . strtolower($collection->data["recordtag_tag"]) . "> .
+			?record tags:taggedWithTag <" . strtolower($collection->data["recordtag_tag"]) . "> .
 		", true);
 	else
 		unset($collection->data["filteractive_recordtag"]);
@@ -190,7 +190,7 @@ include "htmlheader.php";
 		<p>You can build up a custom collection by switching filters on and off and customizing them or you can choose from some demo queries by clicking the "show demo query shortcuts" link below.</p>
 		<p>You might like to try (given that the endpoints you chose support these options)</p>
 		<ul>
-			<li>something practical like "<em>music from Germany tagged as punk</em> (choose Germany from the countries list and enter "punk" in the record tag box)</li>
+			<li>something practical like "<em>music from Germany tagged as punk</em> (choose Germany from the countries list and enter "http://dbtune.org/jamendo/tag/punk" in the record tag URI box)</li>
 			<li>or something more frivolous like "<em>songs whose names begin with the letter F by artists whose names also begin with F from countries which also begin with F</em>" (use control+click to select the France and Finland, enter "^f" in the artist name and track name boxes and check "case insensitive" for each)</li>
 		</ul>
 		<p>Click "update" to perform the Sparql query on the chosen endpoints, then you can see how many results were returned and view the query and results by clicking the corresponding links.</p>
@@ -322,7 +322,7 @@ include "htmlheader.php";
 						<dt>
 							<label>
 								<input type="checkbox" name="filteractive_recordtag" id="filteractive_recordtag" value="true"<?php if (isset($collection->data["filteractive_recordtag"])) { ?> checked="checked"<?php } ?>>
-								Record tag
+								Record tag URI
 							</label>
 						</dt>
 						<dd>
