@@ -10,12 +10,14 @@ class Collection {
 	private $query = null;
 	private $results = array();
 	private $groundhash = null;
-	private $groundendpoint = null;
+	private $groundendpoints = null;
 	private $groundedresults = array();
 	private $limited = true;
+	private $endpoints = array();
 
-	public function __construct() {
+	public function __construct($endpoints) {
 		$this->id = md5(microtime());
+		$this->endpoints = $endpoints;
 	}
 
 	// get collection's ID
@@ -101,7 +103,10 @@ class Collection {
 			return $this->query;
 
 		$this->query = $query;
-		$this->results = sparqlquery(ENDPOINT_JAMENDO, $query);
+		$this->results = array();
+
+		foreach ($this->endpoints() as $endpoint)
+			$this->results = array_merge($this->results, sparqlquery($endpoint, $query));
 	}
 
 	// get or set whether the collection is limited in the number of results it 
@@ -137,25 +142,39 @@ class Collection {
 		return "http://collections.nema.ecs.soton.ac.uk/filecollection/" . $this->id() . "/" . $this->groundhash();
 	}
 
-	// ground the collection (find actual files for the signals) given a signal 
-	// repository endpoint
-	public function ground($endpoint) {
+	// ground the collection (find actual files for the signals) given signal 
+	// repository endpoints
+	public function ground($endpoints) {
 		global $ns;
 
+		if (!is_array($endpoints))
+			$endpoints = array($endpoints);
+
+		// check we've got endpoint objects
+		foreach ($endpoints as $endpoint)
+			if (!is_object($endpoint) || get_class($endpoint) != "Endpoint")
+				trigger_error("expected an Endpoint object or an array of such", E_USER_ERROR);
+
+
 		$this->groundhash = md5(microtime());
-		$this->groundendpoint = $endpoint;
+		$this->groundendpoints = $endpoints;
 
 		$this->groundedresults = array();
-		foreach ($this->results as $result) {
-			$result = sparqlquery($endpoint, "
-				" . prefix(array("rdf", "mo")) . "
-				SELECT ?audiofile WHERE {
-					<" . $result["track"] . "> mo:available_as ?audiofile .
-					?audiofile a mo:AudioFile .
+		foreach ($this->results as $cresult) {
+			foreach ($endpoints as $endpoint) {
+				// ideally we'd only grab those where ?audiofile a mo:AudioFile 
+				// but in practice we have to grab those which aren't typed too
+				$qresult = $endpoint->query("
+					" . prefix(array("rdf", "mo")) . "
+					SELECT ?audiofile WHERE {
+						<" . $cresult["track"] . "> mo:available_as ?audiofile .
+					}
+				", "row");
+				if (!empty($qresult)) {
+					$this->groundedresults[] = $qresult["audiofile"];
+					continue 2;
 				}
-			", "row");
-			if (!empty($result))
-				$this->groundedresults[] = $result["audiofile"];
+			}
 		}
 	}
 
@@ -378,6 +397,25 @@ class Collection {
 		// serialize to RDF+XML
 		$ser = ARC2::getRDFXMLSerializer($conf);
 		return $ser->getSerializedTriples($triples);
+	}
+
+	// get endpoint objects
+	public function endpoints() {
+		return $this->endpoints;
+	}
+
+	// get common capabilities of the endpoints
+	public function endpointcapabilities() {
+		return Endpoint::commoncapabilities($this->endpoints());
+	}
+
+	// return whether all endpoints have a particular capability or array of 
+	// capabilities
+	public function hascapability($capabilities) {
+		foreach ($this->endpoints() as $ep)
+			if (!$ep->hascapability($capabilities))
+				return false;
+		return true;
 	}
 
 	// get a collection object from session memory given its ID

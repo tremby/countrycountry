@@ -36,14 +36,8 @@ $ns = array(
 	"sioc" => "http://rdfs.org/sioc/ns#",
 );
 
-// Jamendo Sparql endpoint address
-define("ENDPOINT_JAMENDO", "http://dbtune.org/jamendo/sparql/");
-
 // results endpoint address
 define("ENDPOINT_RESULTS", "http://results.nema.ecs.soton.ac.uk:8000/sparql/");
-
-// audiofile repository endpoint address
-define("ENDPOINT_REPOSITORY", "http://repository.nema.ecs.soton.ac.uk:7000/sparql/");
 
 // dbpedia endpoint
 define("ENDPOINT_DBPEDIA", "http://dbpedia.org/sparql/");

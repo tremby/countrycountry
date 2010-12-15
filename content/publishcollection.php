@@ -21,7 +21,7 @@ include "htmlheader.php";
 <div class="trythis collapsed">
 	<div class="content">
 		<p>You've published your collection and it has had a new URI minted for it. The collection can't be analysed until it has been <strong>grounded</strong> – that is, its descriptions of signals linked to actual audio files by comparing against an audiofile respository.</p>
-		<p>You can ground the collection by clicking the button below.</p>
+		<p>You can ground the collection by clicking the link below.</p>
 	</div>
 </div>
 
@@ -30,11 +30,7 @@ include "htmlheader.php";
 
 <h3>Actions</h3>
 <ul>
-	<li>
-		<form action="<?php echo SITEROOT_WEB; ?>groundcollection/<?php echo $collection->id(); ?>" method="post">
-			<input type="submit" name="ground" value="Ground this collection">
-		</form>
-	</li>
+	<li><a href="<?php echo SITEROOT_WEB; ?>groundcollection?id=<?php echo $_REQUEST["id"]; ?>">Ground this collection</a></li>
 	<li><a href="<?php echo SITEROOT_WEB; ?>existingcollections">View all existing collections</a></li>
 	<li><a href="<?php echo SITEROOT_WEB; ?>">Back to the main menu</a></li>
 </ul>

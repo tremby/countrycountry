@@ -228,58 +228,84 @@ function iso3166toname($cc) {
 		return false;
 }
 
-// get information about a signal
-function signalinfo($signal) {
-	$result = sparqlquery(ENDPOINT_JAMENDO, prefix(array_keys($GLOBALS["ns"])) . "
-		SELECT * WHERE {
-			<$signal>
-				mo:published_as ?track .
-			?track
-				dc:title ?trackname ;
-				mo:track_number ?tracknumber .
-			?record
-				mo:track ?track ;
-				a mo:Record ;
-				foaf:maker ?artist ;
-				dc:date ?recorddate ;
-				dc:title ?recordname .
-			?artist
-				a mo:MusicArtist ;
-				foaf:name ?artistname ;
-				foaf:based_near ?basednear .
-			OPTIONAL { ?basednear geo:inCountry ?country . }
-		}
-	");
+// get information about a signal from given endpoints
+function signalinfo($signal, $endpoints = null) {
+	if (is_null($endpoints))
+		$endpoints = Endpoint::all();
+
+	if (!is_array($endpoints))
+		$endpoints = array($endpoints);
+
+	// check we have endpoint objects
+	foreach ($endpoints as $ep)
+		if (!is_object($ep) || get_class($ep) != "Endpoint")
+			trigger_error("expected Endpoint object or array of such", E_USER_ERROR);
+
+	$result = null;
+	foreach ($endpoints as $ep) {
+		$result = $ep->query("
+			" . prefix(array_keys($GLOBALS["ns"])) . "
+			SELECT * WHERE {
+				<$signal>
+					mo:published_as ?track .
+				OPTIONAL { ?track dc:title ?trackname . }
+				OPTIONAL { ?track mo:track_number ?tracknumber . }
+				OPTIONAL { ?track dc:date ?recorddate . }
+				OPTIONAL { ?track dc:created ?recorddate . }
+				?record
+					mo:track ?track ;
+					a mo:Record ;
+					foaf:maker ?artist .
+				OPTIONAL { ?record dc:date ?recorddate . }
+				OPTIONAL { ?record dc:created ?recorddate . }
+				OPTIONAL { ?record dc:title ?recordname . }
+				?artist
+					a mo:MusicArtist .
+				OPTIONAL { ?artist foaf:name ?artistname . }
+				OPTIONAL { ?artist foaf:based_near ?basednear . }
+				OPTIONAL { ?basednear geo:inCountry ?country . }
+			}
+		");
+		if (!empty($result))
+			break;
+	}
 
 	if (empty($result))
 		return false;
 
-	$tags = sparqlquery(ENDPOINT_JAMENDO, prefix(array_keys($GLOBALS["ns"])) . "
-		SELECT * WHERE {
-			<" . $result[0]["record"] . "> tags:taggedWithTag ?tag .
+	// get tags
+	$result[0]["tags"] = array();
+	foreach ($endpoints as $ep) {
+		if ($ep->hascapability("tags")) {
+			$result[0]["tags"] = array_merge($result[0]["tags"], $ep->query(prefix(array("tags")) . "
+				SELECT * WHERE {
+					<" . $result[0]["record"] . "> tags:taggedWithTag ?tag .
+				}
+				ORDER BY ?tag
+			"));
 		}
-		ORDER BY ?tag
-	");
-	$result[0]["tags"] = $tags;
+	}
 
-	$javailableas = sparqlquery(ENDPOINT_JAMENDO, prefix(array_keys($GLOBALS["ns"])) . "
-		SELECT * WHERE {
-			<" . $result[0]["track"] . "> mo:available_as ?availableas .
+	// get links to samples
+	$result[0]["availableas"] = array();
+	foreach ($endpoints as $ep) {
+		if ($ep->hascapability("availableas")) {
+			$result[0]["availableas"] = array_merge($result[0]["availableas"], $ep->query(prefix(array("mo")) . "
+				SELECT * WHERE {
+					<" . $result[0]["track"] . "> mo:available_as ?availableas .
+				}
+			"));
 		}
-	");
-
-	$ravailableas = sparqlquery(ENDPOINT_REPOSITORY, prefix("mo") . "
-		SELECT * WHERE {
-			<" . $result[0]["track"] . "> mo:available_as ?availableas .
-		}
-	");
-	$result[0]["availableas"] = array_merge($javailableas, $ravailableas);
+	}
 
 	return $result[0];
 }
 
 function audiosources($signal) {
 	$signalinfo = signalinfo($signal);
+
+	if (!isset($signalinfo["availableas"]) || empty($signalinfo["availableas"]))
+		return array();
 
 	$audiosources = array();
 	foreach ($signalinfo["availableas"] as $aa) {

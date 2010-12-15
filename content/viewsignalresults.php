@@ -57,10 +57,13 @@ if (empty($data))
 
 $signalinfo = signalinfo($_REQUEST["uri"]);
 
-$title = "Results for " . $signalinfo["trackname"] . " by " . $signalinfo["artistname"];
+$title = "Results for "
+	. (isset($signalinfo["trackname"]) ? "'" . $signalinfo["trackname"] . "'" : "track <" . $signalinfo["track"] . ">")
+	. " by "
+	. (isset($signalinfo["artistname"]) ? "'" . $signalinfo["artistname"] . "'" : "artist <" . $signalinfo["artist"] . ">");
 include "htmlheader.php";
 ?>
-<h2>Results for <em><?php echo htmlspecialchars($signalinfo["trackname"]); ?></em> by <?php echo htmlspecialchars($signalinfo["artistname"]); ?></h2>
+<h2><?php echo htmlspecialchars($title); ?></h2>
 
 <div class="trythis collapsed">
 	<div class="content">
@@ -79,29 +82,53 @@ include "htmlheader.php";
 		<dl>
 			<dt>Name</dt>
 			<dd>
-				<?php echo htmlspecialchars($signalinfo["trackname"]); ?>
+				<?php if (isset($signalinfo["trackname"])) { ?>
+					<?php echo htmlspecialchars($signalinfo["trackname"]); ?>
+				<?php } else { ?>
+					<span class="hint">Unknown</span>
+				<?php } ?>
 				<?php echo urilink($_REQUEST["uri"], "signal URI"); ?>
 				<?php echo urilink($signalinfo["track"], "track URI"); ?>
 			</dd>
 
 			<dt>Artist</dt>
 			<dd>
-				<?php echo htmlspecialchars($signalinfo["artistname"]); ?>
+				<?php if (isset($signalinfo["artistname"])) { ?>
+					<?php echo htmlspecialchars($signalinfo["artistname"]); ?>
+				<?php } else { ?>
+					<span class="hint">Unknown</span>
+				<?php } ?>
 				<?php echo urilink($signalinfo["artist"]); ?>
 			</dd>
 
 			<dt>Location</dt>
 			<dd>
-				<?php echo htmlspecialchars(iso3166toname(substr($signalinfo["country"], -2))); ?>
+				<?php if (isset($signalinfo["country"])) { ?>
+					<?php echo htmlspecialchars(iso3166toname(substr($signalinfo["country"], -2))); ?>
+				<?php } else { ?>
+					<span class="hint">Unknown</span>
+				<?php } ?>
 				<?php echo urilink($signalinfo["country"]); ?>
 			</dd>
 
 			<dt>Record</dt>
 			<dd>
-				<?php echo htmlspecialchars($signalinfo["recordname"]); ?>
+				<?php if (isset($signalinfo["recordname"])) { ?>
+					<?php echo htmlspecialchars($signalinfo["recordname"]); ?>
+				<?php } else { ?>
+					<span class="hint">Unknown</span>
+				<?php } ?>
 				<?php echo urilink($signalinfo["record"]); ?>
-				(<?php echo date("Y-m-d", strtotime($signalinfo["recorddate"])); ?>),
-				track <?php echo $signalinfo["tracknumber"]; ?>
+				<?php if (isset($signalinfo["recorddate"])) { ?>
+					(<?php echo date("Y-m-d", strtotime($signalinfo["recorddate"])); ?>),
+				<?php } else { ?>
+					<span class="hint">(release date unknown)</span>,
+				<?php } ?>
+				<?php if (isset($signalinfo["tracknumber"])) { ?>
+					track <?php echo $signalinfo["tracknumber"]; ?>
+				<?php } else { ?>
+					<span class="hint">track number unknown</span>
+				<?php } ?>
 			</dd>
 
 			<?php if (!empty($signalinfo["tags"])) { ?>
@@ -338,11 +365,14 @@ if ($bbcuri === false) { ?>
 		<dd>
 			<p>Most heavily weighted genre: <strong><?php echo htmlspecialchars(uriendpart($heavy)); ?></strong> <?php echo urilink($heavy); ?></p>
 			<?php
-			$country = true;
-			$artists = dbpediaartists($heavy, $signalinfo["country"]);
-			if (empty($artists)) {
-				$country = false;
-				$artists = dbpediaartists($heavy);
+			$country = false;
+			if (isset($signalinfo["country"])) {
+				$country = true;
+				$artists = dbpediaartists($heavy, $signalinfo["country"]);
+				if (empty($artists)) {
+					$country = false;
+					$artists = dbpediaartists($heavy);
+				}
 			}
 			?>
 			<h4>Some random artists from the same <?php if ($country) echo "country and "; ?>genre:</h4>

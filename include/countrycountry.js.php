@@ -131,6 +131,9 @@ $(document).ready(function() {
 	$(".trythis").not(".collapsed").prepend("<h2><a href=\"#\" class=\"collapselink\"></a>Try this</h2>").end().filter(".collapsed").prepend("<h2><a href=\"#\" class=\"expandlink\"></a>Try this</h2>");
 	$(".trythis.collapsed .content").hide();
 	$(".trythis .collapselink, .trythis .expandlink").click(expandcollapsetrythis);
+
+	// endpoint selection
+	$("#endpointselect input[type=checkbox]").click(updateendpointcapabilities);
 });
 function showhidescrollbuttons() {
 	$(".scroll").each(function() {
@@ -168,4 +171,22 @@ function successalert(message) {
 }
 function stripetables() {
 	$("table tbody tr").filter(":even").addClass("even").removeClass("odd").end().filter(":odd").addClass("odd").removeClass("even");
+}
+function updateendpointcapabilities() {
+	var hashes = [];
+	$("#endpointselect input[type=checkbox]:checked").each(function() {
+		hashes.push($(this).val());
+	});
+
+	if (hashes.length == 0) {
+		$("#commoncapabilities").empty();
+		return;
+	}
+
+	$.get("<?php echo SITEROOT_WEB; ?>commoncapabilities", {"endpoints": hashes}, function(data) {
+		$("#commoncapabilities").empty();
+		for (cap in data.capabilities) {
+			$("#commoncapabilities").append("<li>" + data.capabilities[cap] + "</li>");
+		}
+	}, "json");
 }

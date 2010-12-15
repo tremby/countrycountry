@@ -356,17 +356,35 @@ include "htmlheader.php";
 									<dd>
 										<?php $info = signalinfo($leastmost[0]); ?>
 										<a href="<?php echo SITEROOT_WEB; ?>viewsignalresults?uri=<?php echo urlencode($leastmost[0]); ?>">
-											<em><?php echo htmlspecialchars($info["trackname"]); ?></em>
-											by <?php echo htmlspecialchars($info["artistname"]); ?>
+											<?php if (isset($info["trackname"])) { ?>
+												<em><?php echo htmlspecialchars($info["trackname"]); ?></em>
+											<?php } else { ?>
+												Track &lt;<?php echo htmlspecialchars($info["track"]); ?>&gt;
+											<?php } ?>
+											by
+											<?php if (isset($info["artistname"])) { ?>
+												<?php echo htmlspecialchars($info["artistname"]); ?>
+											<?php } else { ?>
+												artist &lt;<?php echo htmlspecialchars($info["artist"]); ?>&gt;
+											<?php } ?>
 										</a>
 										(weight: <?php echo sprintf("%.2f", $collection["assertions"][$leastmost[0]][$classifier][$genre]); ?>)
 									</dd>
 									<dt>Most</dt>
 									<dd>
+										<?php $info = signalinfo($leastmost[1]); ?>
 										<a href="<?php echo SITEROOT_WEB; ?>viewsignalresults?uri=<?php echo urlencode($leastmost[1]); ?>">
-											<?php $info = signalinfo($leastmost[1]); ?>
-											<em><?php echo htmlspecialchars($info["trackname"]); ?></em>
-										by <?php echo htmlspecialchars($info["artistname"]); ?>
+											<?php if (isset($info["trackname"])) { ?>
+												<em><?php echo htmlspecialchars($info["trackname"]); ?></em>
+											<?php } else { ?>
+												Track &lt;<?php echo htmlspecialchars($info["track"]); ?>&gt;
+											<?php } ?>
+											by
+											<?php if (isset($info["artistname"])) { ?>
+												<?php echo htmlspecialchars($info["artistname"]); ?>
+											<?php } else { ?>
+												artist &lt;<?php echo htmlspecialchars($info["artist"]); ?>&gt;
+											<?php } ?>
 										</a>
 										(weight: <?php echo sprintf("%.2f", $collection["assertions"][$leastmost[1]][$classifier][$genre]); ?>)
 									</dd>
@@ -408,9 +426,9 @@ include "htmlheader.php";
 					</tr>
 					<?php foreach ($collection["signals"] as $signal) { $signalinfo = signalinfo($signal); ?>
 						<tr>
-							<td title="<?php echo htmlspecialchars($signalinfo["artistname"]); ?> &ndash; <?php echo htmlspecialchars($signalinfo["trackname"]); ?>">
+							<td title="<?php echo htmlspecialchars(isset($signalinfo["artistname"]) ? $signalinfo["artistname"] : "artist <" . $signalinfo["artist"] . ">"); ?> &ndash; <?php echo htmlspecialchars(isset($signalinfo["trackname"]) ? $signalinfo["trackname"] : "track <" . $signalinfo["track"] . ">"); ?>">
 								<a href="<?php echo SITEROOT_WEB; ?>viewsignalresults?uri=<?php echo urlencode($signal); ?>">
-									<?php echo htmlspecialchars($signalinfo["trackname"]); ?>
+									<?php echo htmlspecialchars(isset($signalinfo["trackname"]) ? $signalinfo["trackname"] : "track <" . $signalinfo["track"] . ">"); ?>
 								</a>
 							</td>
 							<?php if (empty($collection["assertions"][$signal])) { ?>
