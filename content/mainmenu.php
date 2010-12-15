@@ -17,7 +17,7 @@ include "htmlheader.php";
 	<dd>About the project: abstract and poster</dd>
 
 	<dt><a href="<?php echo SITEROOT_WEB; ?>newcollection">New collection</a></dt>
-	<dd>Build a new collection of signals by filtering <a href="http://dbtune.org/">DBTune</a>'s linked data representation of music from <a href="http://www.jamendo.com/">Jamendo</a>.</dd>
+	<dd>Build a new collection of signals by filtering linked data representations of music from any of the defined Sparql endpoints.</dd>
 
 	<dt><a href="<?php echo SITEROOT_WEB; ?>existingcollections">Existing collections</a></dt>
 	<dd>View a table of existing collections with links to see their results and ground them against audio file repositories.</dd>
