@@ -24,5 +24,8 @@ include "htmlheader.php";
 
 	<dt><a href="<?php echo SITEROOT_WEB; ?>viewcollectionresults">View collection results</a></dt>
 	<dd>Enter a single collection's URI or multiple collections' URIs to see or compare the results.</dd>
+
+	<dt><a href="<?php echo SITEROOT_WEB; ?>endpointadmin">Administer endpoints</a></dt>
+	<dd>View, add, edit and delete the Sparql endpoints used to build and ground collections.</dd>
 </dl>
 <?php include "htmlfooter.php"; ?>
