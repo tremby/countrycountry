@@ -367,7 +367,7 @@ function findmp3($uri, $depth = 0) {
 
 	// if it is an MP3 return it
 	// or if we had an "unauthorized" code return it anyway in the blind hope 
-	// that it points to an MP3
+	// that it points to an MP3 -- check client side
 	if ($contenttype == "audio/mpeg" || $code == 401)
 		return $uri;
 

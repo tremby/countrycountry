@@ -134,6 +134,23 @@ $(document).ready(function() {
 
 	// endpoint selection
 	$("#endpointselect input[type=checkbox]").click(updateendpointcapabilities);
+
+	// client side checking for audio sources -- some may have been 401s
+	$("#audiochooser li").each(function() {
+		var origurl = $(this).find("input").attr("value");
+		var proxyurl = "<?php echo SITEROOT_WEB; ?>headproxy?url=" + encodeURIComponent(origurl);
+		$.head(proxyurl, null, function(data) {
+			console.log("head callback, origurl is '" + origurl + "', data follows");
+			console.debug(data);
+
+			// if it isn't an MP3 remove the option
+			if (data["Content-Type"] != "audio/mpeg") {
+				$("#audiochooser li").each(function() {
+					$("#audiochooser li input[value=" + origurl + "]").parents("li:first").remove();
+				});
+			}
+		});
+	});
 });
 function showhidescrollbuttons() {
 	$(".scroll").each(function() {

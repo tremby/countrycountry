@@ -16,6 +16,8 @@ header("Content-Script-Type: text/javascript");
 	<script type="text/javascript" src="<?php echo SITEROOT_WEB; ?>include/fancybox/jquery.fancybox-1.3.1.pack.js"></script>
 	<link rel="stylesheet" href="<?php echo SITEROOT_WEB; ?>include/fancybox/jquery.fancybox-1.3.1.css" media="screen" type="text/css">
 
+	<script type="text/javascript" src="<?php echo SITEROOT_WEB; ?>include/jquery.ajax_head.js"></script>
+
 	<script type="text/javascript" src="<?php echo SITEROOT_WEB; ?>include/flot/jquery.flot.js"></script>
 	<script type="text/javascript" src="<?php echo SITEROOT_WEB; ?>include/flot/jquery.flot.pie.js"></script>
 	<script type="text/javascript" src="<?php echo SITEROOT_WEB; ?>include/flot/jquery.flot.orderBars.js"></script>
