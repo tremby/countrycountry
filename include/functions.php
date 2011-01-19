@@ -334,6 +334,7 @@ function findmp3($uri, $depth = 0) {
 	curl_setopt($c, CURLOPT_HEADER, true);
 	curl_setopt($c, CURLOPT_NOBODY, true);
 	curl_setopt($c, CURLOPT_URL, $uri);
+	curl_setopt($c, CURLOPT_SSL_VERIFYPEER, false);
 	curl_setopt($c, CURLOPT_HTTPHEADER, array(
 		//       MP3         XSPF playlist               M3U playlist           scrapeable    XML?                 other audio, could be playlist like M3U
 		"Accept: audio/mpeg, application/xspf+xml;q=0.8, audio/x-mpegurl;q=0.8, text/*;q=0.3, application/*;q=0.2, audio/*,q=0.1",
@@ -398,7 +399,7 @@ function findmp3($uri, $depth = 0) {
 		$lines = preg_split('%\s*(\r\n|\r|\n)\s*%', trim($contents));
 		foreach ($lines as $line)
 			// collect HTTP URL lines
-			if (preg_match('%^http%', $line))
+			if (preg_match('%^https?:%', $line))
 				$urls[] = $line;
 	} else {
 		// other -- scrape for URLs
