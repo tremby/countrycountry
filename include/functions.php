@@ -102,7 +102,7 @@ function redirect($destination = null, $code = 301) {
 		case "text/plain":
 		default:
 			header("Content-Type: text/plain");
-			echo "Redirect to $location\n";
+			echo "Redirect to $destination\n";
 			break;
 	}
 	exit;
