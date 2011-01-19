@@ -337,7 +337,7 @@ function findmp3($uri, $depth = 0) {
 	curl_setopt($c, CURLOPT_SSL_VERIFYPEER, false);
 	curl_setopt($c, CURLOPT_HTTPHEADER, array(
 		//       MP3         XSPF playlist               M3U playlist           scrapeable    XML?                 other audio, could be playlist like M3U
-		"Accept: audio/mpeg, application/xspf+xml;q=0.8, audio/x-mpegurl;q=0.8, text/*;q=0.3, application/*;q=0.2, audio/*,q=0.1",
+		"Accept: audio/mpeg, application/xspf+xml;q=0.8, audio/x-mpegurl;q=0.8, text/*;q=0.3, application/*;q=0.2, audio/*;q=0.1",
 	));
 
 	$headers = explode("\r\n", curl_exec($c));
