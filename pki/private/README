@@ -1,0 +1,6 @@
+This is where (passwordless) private keys go when required for accessing external sites
+They should be named <hostname>.key
+The corresponding certificate needs to be in the certs directory.
+
+Obviously the contents of this directory will be sensitive and it should be
+protected as necessary.

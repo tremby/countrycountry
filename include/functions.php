@@ -340,6 +340,13 @@ function findmp3($uri, $depth = 0) {
 		"Accept: audio/mpeg, application/xspf+xml;q=0.8, audio/x-mpegurl;q=0.8, text/*;q=0.3, application/*;q=0.2, audio/*;q=0.1",
 	));
 
+	// see if we have a certificate and key for this hostname -- if so, use it
+	$hostname = parse_url($uri, PHP_URL_HOST);
+	if (file_exists(SITEROOT_LOCAL . "pki/certs/$hostname.crt") && file_exists(SITEROOT_LOCAL . "pki/private/$hostname.key")) {
+		curl_setopt($c, CURLOPT_SSLCERT, SITEROOT_LOCAL . "pki/certs/$hostname.crt");
+		curl_setopt($c, CURLOPT_SSLKEY, SITEROOT_LOCAL . "pki/private/$hostname.key");
+	}
+
 	$headers = explode("\r\n", curl_exec($c));
 	$code = curl_getinfo($c, CURLINFO_HTTP_CODE);
 

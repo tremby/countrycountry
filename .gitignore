@@ -13,3 +13,8 @@ cache/*
 
 endpoints/*
 !endpoints/README
+
+pki/certs/*
+!pki/certs/README
+pki/private/*
+!pki/private/README
