@@ -37,7 +37,7 @@ $ns = array(
 );
 
 // results endpoint address
-define("ENDPOINT_RESULTS", "http://results.nema.ecs.soton.ac.uk:8000/sparql/");
+define("ENDPOINT_RESULTS", "http://results.nema.linkedmusic.org:8000/sparql/");
 
 // dbpedia endpoint
 define("ENDPOINT_DBPEDIA", "http://dbpedia.org/sparql/");

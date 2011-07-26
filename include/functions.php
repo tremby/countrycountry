@@ -435,7 +435,7 @@ function mp3urlrank($url) {
 		$rank += 10;
 	else if (preg_match('%mp3%i', $url))
 		$rank += 5;
-	if (preg_match('%repository.nema.ecs.soton.ac.uk%i', $url))
+	if (preg_match('%jamendo.audiofiles.linkedmusic.org%i', $url))
 		$rank += 5;
 	if (preg_match('%listen%i', $url))
 		$rank += 1;
@@ -478,8 +478,8 @@ function urilink($uri, $text = "URI") {
 // return a nicer name for a classifier URI if we have one, otherwise the URI
 function classifiermapping($uri) {
 	static $map = array(
-		"http://results.nema.ecs.soton.ac.uk/classifiers/BlinkieGenreSupportVectorVersion2.ser0.serial" => "Genre Support Vector version 2",
-		"http://results.nema.ecs.soton.ac.uk/classifiers/BlinkieGenreJ48DecisionTree.ser0.serial" => "Genre J48 Decision Tree",
+		"http://results.nema.linkedmusic.org/classifiers/BlinkieGenreSupportVectorVersion2.ser0.serial" => "Genre Support Vector version 2",
+		"http://results.nema.linkedmusic.org/classifiers/BlinkieGenreJ48DecisionTree.ser0.serial" => "Genre J48 Decision Tree",
 	);
 	if (array_key_exists($uri, $map))
 		return $map[$uri];
@@ -721,7 +721,7 @@ function getcollectioninfo($uri, &$errors) {
 
 function getcollections() {
 	require_once "include/arc/ARC2.php";
-	$uristem = "http://collections.nema.ecs.soton.ac.uk/";
+	$uristem = "http://collections.nema.linkedmusic.org/";
 
 	$collections = array();
 	foreach (glob(SITEROOT_LOCAL . "signalcollections/*.xml") as $filename) {
