@@ -4,7 +4,7 @@ if (!isset($_POST["id"]))
 	badrequest("No collection ID specified");
 
 $errors = array();
-$collection = getcollectioninfo("http://collections.nema.ecs.soton.ac.uk/signalcollection/" . $_POST["id"], $errors);
+$collection = getcollectioninfo("http://collections.nema.linkedmusic.org/signalcollection/" . $_POST["id"], $errors);
 $aggregate = $collection["index"][$collection["uri"] . "#aggregate"];
 if ($aggregate[$ns["dc"] . "creator"][0] == "bjn")
 	badrequest("For demo purposes you can't delete collections by bjn.");

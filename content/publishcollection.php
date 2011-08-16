@@ -8,7 +8,7 @@ if (!$collection)
 
 $filename = SITEROOT_LOCAL . "/signalcollections/" . $collection->id() . ".xml";
 if (file_exists($filename))
-	badrequest("A signal collection with this ID has already been published at\nhttp://collections.nema.ecs.soton.ac.uk/signalcollection/" . $collection->id());
+	badrequest("A signal collection with this ID has already been published at\nhttp://collections.nema.linkedmusic.org/signalcollection/" . $collection->id());
 file_put_contents($filename, $collection->rdf());
 
 $title = "Collection published";

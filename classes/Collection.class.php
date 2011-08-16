@@ -129,7 +129,7 @@ class Collection {
 
 	// get URI for this collection (may not have been minted yet)
 	public function uri() {
-		return "http://collections.nema.ecs.soton.ac.uk/signalcollection/" . $this->id();
+		return "http://collections.nema.linkedmusic.org/signalcollection/" . $this->id();
 	}
 
 	// get ground hash which was generated last time the collection was grounded
@@ -139,7 +139,7 @@ class Collection {
 
 	// get URI for this collection, grounded (may not have been minted yet)
 	public function groundeduri() {
-		return "http://collections.nema.ecs.soton.ac.uk/filecollection/" . $this->id() . "/" . $this->groundhash();
+		return "http://collections.nema.linkedmusic.org/filecollection/" . $this->id() . "/" . $this->groundhash();
 	}
 
 	// ground the collection (find actual files for the signals) given signal 
@@ -365,7 +365,7 @@ class Collection {
 			array(
 				"s" => $this->groundeduri() . "#grounding",
 				"p" => $ns["pv"] . "accessedService",
-				"o" => "http://repository.nema.ecs.soton.ac.uk/",
+				"o" => "http://jamendo.audiofiles.linkedmusic.org/",
 				"s_type" => "uri",
 				"o_type" => "uri",
 			),
