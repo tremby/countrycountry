@@ -78,7 +78,8 @@ include "htmlheader.php";
 										<?php echo urilink($grounding["uri"], "Grounded collection URI and RDF representation"); ?>
 										(<?php echo count($grounding["index"][$grounding["uri"] . "#aggregate"][$ns["ore"] . "aggregates"]); ?> files)
 										&ndash;
-										<a href="http://myexperiment.nema.ecs.soton.ac.uk/workflows/all?collection=<?php echo urlencode($grounding["uri"]); ?>">Run in MyExperiment</a>
+										<!-- <a href="http://myexperiment.nema.ecs.soton.ac.uk/workflows/all?collection=<?php echo urlencode($grounding["uri"]); ?>">Run in MyExperiment</a> -->
+										<a href="<?php echo SITEROOT_WEB; ?>myexperiment?collection=<?php echo urlencode($collection["uri"]); ?>">Run in MyExperiment</a>
 									</li>
 								<?php } ?>
 							</ul>

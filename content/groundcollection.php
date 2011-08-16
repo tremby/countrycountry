@@ -55,7 +55,8 @@ if (isset($_POST["groundcollection"])) {
 		<h3>Actions</h3>
 		<ul>
 			<?php if (count($collection->groundedresults()) > 0) { ?>
-				<li><a href="http://myexperiment.nema.ecs.soton.ac.uk/workflows/all?collection=<?php echo urlencode($collection->groundeduri()); ?>">Run in MyExperiment</a></li>
+				<!-- <li><a href="http://myexperiment.nema.ecs.soton.ac.uk/workflows/all?collection=<?php echo urlencode($collection->groundeduri()); ?>">Run in MyExperiment</a></li> -->
+				<li><a href="<?php echo SITEROOT_WEB; ?>myexperiment?collection=<?php echo urlencode($collection->uri()); ?>">Run in MyExperiment</a></li>
 				<li><a href="<?php echo SITEROOT_WEB; ?>viewcollectionresults?uri[]=<?php echo urlencode($collection->uri()); ?>">View collection results</a> (there may not be any yet!)</li>
 			<?php } ?>
 			<li><a href="<?php echo SITEROOT_WEB; ?>existingcollections">View all existing collections</a></li>

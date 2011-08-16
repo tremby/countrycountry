@@ -1,0 +1,3 @@
+[submodule "include/arc"]
+	path = include/arc
+	url = git://github.com/tremby/arc2.git
