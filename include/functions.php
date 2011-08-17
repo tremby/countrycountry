@@ -488,7 +488,7 @@ function classifiermapping($uri) {
 
 // query dbpedia for artists and their locations given a genre and optionally a 
 // country URI
-function dbpediaartists($genreuri, $countryuri = null) {
+function dbpediaartists($genreuri) {
 	$query = prefix(array("dbpedia-owl", "foaf")) . "
 		SELECT ?artist ?artistname ?place ?placename WHERE {
 			?artist
@@ -523,42 +523,7 @@ function dbpediaartists($genreuri, $countryuri = null) {
 	}
 	$dbartists = $dbartists2;
 
-	if (is_null($countryuri))
-		return $dbartists;
-
-	// array of places
-	$places = array();
-	foreach ($dbartists as $dbartist)
-		$places[] = $dbartist["place"];
-	sort($places);
-	$places = array_unique($places);
-
-	// ask geonames for the dbpedia place URIs from the query above which are in 
-	// the country given
-	$subqueries = array();
-	foreach ($places as $place) $subqueries[] = "{
-		?feat
-			owl:sameAs <$place> ;
-			owl:sameAs ?same ;
-			geo:inCountry <" . $countryuri . "> .
-	}";
-	$query = prefix(array("owl", "geo")) . "
-		SELECT * WHERE {
-			" . implode(" UNION ", $subqueries) . "
-		}
-	";
-	$result = sparqlquery(ENDPOINT_GEONAMES, $query);
-
-	$places_in_country = array();
-	foreach ($result as $geoplace)
-		$places_in_country[] = $geoplace["same"];
-
-	$dbartists_in_country = array();
-	foreach ($dbartists as $dbartist)
-		if (in_array($dbartist["place"], $places_in_country))
-			$dbartists_in_country[] = $dbartist;
-
-	return $dbartists_in_country;
+	return $dbartists;
 }
 
 // get BBC URI which is the sameAs the given DBpedia URI. return false if there 

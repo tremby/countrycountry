@@ -365,17 +365,9 @@ if ($bbcuri === false) { ?>
 		<dd>
 			<p>Most heavily weighted genre: <strong><?php echo htmlspecialchars(uriendpart($heavy)); ?></strong> <?php echo urilink($heavy); ?></p>
 			<?php
-			$country = false;
-			if (isset($signalinfo["country"])) {
-				$country = true;
-				$artists = dbpediaartists($heavy, $signalinfo["country"]);
-				if (empty($artists)) {
-					$country = false;
-					$artists = dbpediaartists($heavy);
-				}
-			}
+			$artists = dbpediaartists($heavy);
 			?>
-			<h4>Some random artists from the same <?php if ($country) echo "country and "; ?>genre:</h4>
+			<h4>Some random artists from the same genre:</h4>
 			<p class="hint">Data from DBpedia</p>
 			<?php if (empty($artists)) { ?>
 				<p>No artists matching this genre were found in DBpedia.</p>

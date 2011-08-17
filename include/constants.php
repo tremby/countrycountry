@@ -42,9 +42,6 @@ define("ENDPOINT_RESULTS", "http://results.nema.linkedmusic.org/sparql/");
 // dbpedia endpoint
 define("ENDPOINT_DBPEDIA", "http://dbpedia.org/sparql/");
 
-// geonames endpoint
-define("ENDPOINT_GEONAMES", "http://geonames.nema.ecs.soton.ac.uk/sparql/");
-
 // BBC data endpoint (note no slash at the end of this one)
 define("ENDPOINT_BBC", "http://api.talis.com/stores/bbc-backstage/services/sparql");
 
